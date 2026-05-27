@@ -1,16 +1,13 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
+<html lang="ko"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>설정 — Hospital Site OS</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet">
 <link rel="stylesheet" href="../css/common.css">
 <link rel="stylesheet" href="../css/settings.css">
 <script src="../js/gate.js"></script>
-</head>
-<body>
+</head><body>
 <div id="sidebar-mount" data-active="settings"></div>
-
 <main class="main">
   <div class="topbar">
     <div class="topbar-left"><a class="topbar-back" href="../index.html">← 대시보드</a><span style="color:var(--gray-300)">/</span><span class="topbar-title">설정</span></div>
@@ -29,53 +26,16 @@
       </div>
       <div id="sec-content"></div>
     </div>
-
     <footer class="site-footer">© 2026 MEDIFLOW. All rights reserved.</footer>
   </div>
 </main>
-
-
 <script src="../js/auth.js"></script>
 <script src="../js/sidebar.js"></script>
 <script>
-function showToast(msg, type) {
-  var existing = document.getElementById('__toast');
-  if (existing) existing.remove();
-  var bg = type === 'success' ? '#059669' : type === 'error' ? '#DC2626' : '#1A2642';
-  var t = document.createElement('div');
-  t.id = '__toast';
-  t.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:11px 22px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;white-space:nowrap;animation:fadeUp .25s ease';
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(function(){ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(function(){ t.remove(); },300); }, 2500);
-}
-
-function openModal(title, bodyHtml, onConfirm, confirmLabel, confirmClass) {
-  var existing = document.getElementById('__modal');
-  if (existing) existing.remove();
-  var m = document.createElement('div');
-  m.id = '__modal';
-  m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center';
-  m.innerHTML = '<div style="background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.2)">'
-    + '<div style="font-size:16px;font-weight:700;color:#1A2642;margin-bottom:14px">'+title+'</div>'
-    + '<div style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:20px">'+bodyHtml+'</div>'
-    + '<div style="display:flex;gap:8px;justify-content:flex-end">'
-    + '<button class="btn" onclick="closeModal()">취소</button>'
-    + '<button class="btn '+(confirmClass||'btn-primary')+'" id="__modal-confirm">'+(confirmLabel||'확인')+'</button>'
-    + '</div></div>';
-  m.addEventListener('click', function(e){ if(e.target===m) closeModal(); });
-  document.body.appendChild(m);
-  document.getElementById('__modal-confirm').addEventListener('click', function(){
-    closeModal();
-    if (typeof onConfirm === 'function') onConfirm();
-  });
-}
-function closeModal(){ var m=document.getElementById('__modal'); if(m) m.remove(); }
-
-function saveSettings() {
-  showToast('✓ 설정이 저장되었습니다.', 'success');
-}
+function showToast(msg,type){var e=document.getElementById('__toast');if(e)e.remove();var bg=type==='success'?'#059669':type==='error'?'#DC2626':'#0D1B3E';var t=document.createElement('div');t.id='__toast';t.style.cssText='position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:11px 22px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;white-space:nowrap';t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(function(){t.remove();},300);},2500);}
+function openModal(title,bodyHtml,onConfirm,confirmLabel,confirmClass){var e=document.getElementById('__modal');if(e)e.remove();var m=document.createElement('div');m.id='__modal';m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center';m.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.2)"><div style="font-size:16px;font-weight:700;color:#0D1B3E;margin-bottom:14px">'+title+'</div><div style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:20px">'+bodyHtml+'</div><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" onclick="closeModal()">취소</button><button class="btn '+(confirmClass||'btn-primary')+'" id="__modal-confirm">'+(confirmLabel||'확인')+'</button></div></div>';m.addEventListener('click',function(e){if(e.target===m)closeModal();});document.body.appendChild(m);document.getElementById('__modal-confirm').addEventListener('click',function(){closeModal();if(typeof onConfirm==='function')onConfirm();});}
+function closeModal(){var m=document.getElementById('__modal');if(m)m.remove();}
+function saveSettings(){showToast('✓ 설정이 저장되었습니다.','success');}
 </script>
 <script src="../js/settings.js"></script>
-</body>
-</html>
+</body></html>

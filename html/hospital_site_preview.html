@@ -1,24 +1,19 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
+<html lang="ko"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>사이트 관리 — 미리보기 — Hospital Site OS</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/common.css">
-<link rel="stylesheet" href="../css/site.css">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../css/common.css"><link rel="stylesheet" href="../css/site.css">
 <script src="../js/gate.js"></script>
-</head>
-<body>
+</head><body>
 <div id="sidebar-mount" data-active="site_preview"></div>
-
 <main class="main">
   <div class="topbar">
     <div class="topbar-left">
       <a class="topbar-back" href="../index.html">← 대시보드</a>
-      <span style="color:var(--gray-300)">/</span>
-      <span class="topbar-title">사이트 관리</span>
+      <span style="color:var(--gray-300)">/</span><span class="topbar-title">사이트 관리</span>
       <span style="font-size:12px;color:var(--gray-400)">/</span>
-      <span style="font-size:14px;color:var(--gray-600)">미리보기 & 게시</span>
+      <span style="font-size:14px;color:var(--gray-600)">미리보기 &amp; 게시</span>
     </div>
     <div class="topbar-right">
       <a class="btn" href="hospital_site_content.html">✏ 편집으로</a>
@@ -29,7 +24,7 @@
     <div class="tab-bar">
       <button class="tab" onclick="location.href='hospital_site_content.html'">콘텐츠 편집</button>
       <button class="tab" onclick="location.href='hospital_site_assets.html'">자산 관리</button>
-      <button class="tab active">미리보기 & 게시</button>
+      <button class="tab active">미리보기 &amp; 게시</button>
     </div>
     <div class="layout-preview">
       <div>
@@ -49,7 +44,8 @@
               <div style="display:flex;gap:20px"><a style="font-size:11px;color:rgba(255,255,255,.6);text-decoration:none" href="#">施術案内</a><a style="font-size:11px;color:rgba(255,255,255,.6);text-decoration:none" href="#">医師紹介</a><a style="font-size:11px;color:rgba(255,255,255,.6);text-decoration:none" href="#">アクセス</a></div>
             </div>
             <div style="background:#1E3A5F;padding:40px 24px;text-align:center">
-              <div style="display:inline-block;background:rgba(13,148,136,.3);color:#5EEAD4;font-size:10px;padding:3px 10px;border-radius:10px;margin-bottom:12px">日本語スタッフ常駐</div>
+              <!-- ZENO v2: 배지 blue 계열 -->
+              <div style="display:inline-block;background:rgba(37,99,235,.2);color:#93C5FD;font-size:10px;padding:3px 10px;border-radius:10px;margin-bottom:12px">日本語スタッフ常駐</div>
               <div style="font-size:22px;font-weight:600;color:#fff;margin-bottom:8px;line-height:1.4">江南の美容整形クリニック<br>オーレ整形外科</div>
               <div style="font-size:12px;color:rgba(255,255,255,.6);margin-bottom:20px">経験豊富な専門医チームが<br>あなたの理想の美をお手伝いします</div>
               <button class="btn btn-primary" style="font-size:13px">💬 LINEで無料相談</button>
@@ -61,9 +57,10 @@
                 <div style="background:var(--gray-50);border-radius:8px;padding:10px 12px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">👃</span><div><div style="font-size:12px;font-weight:500;color:var(--navy)">鼻整形</div><div style="font-size:10px;color:var(--gray-400)">隆鼻術 · 鼻尖形成</div></div></div>
               </div>
             </div>
-            <div style="background:var(--teal);padding:16px 24px;text-align:center">
+            <!-- ZENO v2: CTA 배너 → navy -->
+            <div style="background:var(--navy);padding:16px 24px;text-align:center">
               <div style="font-size:12px;color:#fff;margin-bottom:10px;font-weight:500">日本語でお気軽にご相談ください</div>
-              <button style="background:#fff;color:var(--teal-d);border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer">💬 LINEで相談する</button>
+              <button style="background:#fff;color:var(--navy);border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer">💬 LINEで相談する</button>
             </div>
           </div>
         </div>
@@ -92,14 +89,8 @@
         <button class="btn btn-navy" style="width:100%;justify-content:center;font-size:14px;padding:10px" onclick="publishSite(this)">🚀 지금 게시하기</button>
       </div>
     </div>
-
     <footer class="site-footer">© 2026 MEDIFLOW. All rights reserved.</footer>
   </div>
 </main>
-
-
-<script src="../js/auth.js"></script>
-<script src="../js/sidebar.js"></script>
-<script src="../js/site_preview.js"></script>
-</body>
-</html>
+<script src="../js/auth.js"></script><script src="../js/sidebar.js"></script><script src="../js/site_preview.js"></script>
+</body></html>

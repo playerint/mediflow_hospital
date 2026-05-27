@@ -1,46 +1,40 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
+<html lang="ko"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>LINE 자동상담 설정 — Hospital Site OS</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/common.css">
-<link rel="stylesheet" href="../css/line.css">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../css/common.css"><link rel="stylesheet" href="../css/line.css">
 <script src="../js/gate.js"></script>
-</head>
-<body>
+</head><body>
 <div id="sidebar-mount" data-active="line"></div>
-
 <main class="main">
   <div class="topbar">
-    <div class="topbar-left">
-      <a class="topbar-back" href="../index.html">← 대시보드</a>
-      <span style="color:var(--gray-300)">/</span>
-      <span class="topbar-title">LINE 자동상담 설정</span>
-    </div>
+    <div class="topbar-left"><a class="topbar-back" href="../index.html">← 대시보드</a><span style="color:var(--gray-300)">/</span><span class="topbar-title">LINE 자동상담 설정</span></div>
     <div class="topbar-right">
       <span style="font-size:12px;color:var(--gray-400)">모델: claude-sonnet-4</span>
       <button class="btn btn-primary" onclick="testLineSend()">📤 테스트 발송</button>
     </div>
   </div>
   <div class="content">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;background:linear-gradient(135deg,#F0FDFA,#CCFBF1);border:1px solid #5EEAD4;border-radius:var(--rl);padding:14px 20px">
+    <!-- ZENO v2: 배너 — navy-l + blue border (teal gradient 제거) -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;background:var(--navy-l);border:1px solid #DBEAFE;border-radius:var(--rl);padding:14px 20px">
       <div style="display:flex;align-items:center;gap:14px">
-        <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#0D9488,#0F766E);color:#fff;font-size:22px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans JP',sans-serif;box-shadow:0 3px 12px rgba(13,148,136,.35);flex-shrink:0">は</div>
+        <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#0D1B3E,#162952);color:#fff;font-size:22px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans JP',sans-serif;box-shadow:0 3px 12px rgba(13,27,62,.3);flex-shrink:0">は</div>
         <div>
           <div style="font-size:15px;font-weight:700;color:var(--navy)">하나 (はな)</div>
-          <div style="font-size:12px;color:var(--teal-d);margin-top:2px">AI はな · LINE 자동상담</div>
+          <div style="font-size:12px;color:var(--navy-h);margin-top:2px">AI はな · LINE 자동상담</div>
           <div style="font-size:11px;color:var(--gray-400);margin-top:2px">24/7 자동 응답 · LINE Official Account 연결됨</div>
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:14px"><span style="font-size:22px">🤖</span><div><div style="font-size:14px;font-weight:600;color:var(--navy)">LINE 자동상담</div><div style="font-size:12px;color:var(--gray-400)">24/7 AI 자동 응답 · LINE Official Account 연결됨</div></div></div>
       <div style="display:flex;align-items:center;gap:10px"><span style="font-size:13px;color:var(--gray-500)" id="toggle-label">자동상담 ON</span><label class="toggle-wrap"><input type="checkbox" checked onchange="toggleAuto(this)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
     </div>
+    <!-- ZENO v2: KPI — teal→navy, purple→blue, amber→gray -->
     <div class="kpi-grid">
-      <div style="background:#fff;border:1px solid var(--gray-200);border-top:3px solid var(--teal);border-radius:var(--r);padding:12px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">AI 자동 해결률</div><div style="font-size:22px;font-weight:600;color:var(--navy)">94%</div><div class="up" style="font-size:11px">↑ +3%p</div></div>
-      <div style="background:#fff;border:1px solid var(--gray-200);border-top:3px solid var(--green);border-radius:var(--r);padding:12px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">평균 첫 응답</div><div style="font-size:22px;font-weight:600;color:var(--navy)">8초</div><div class="up" style="font-size:11px">↓ 2시간 단축</div></div>
-      <div style="background:#fff;border:1px solid var(--gray-200);border-top:3px solid var(--purple);border-radius:var(--r);padding:12px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">예약 전환율</div><div style="font-size:22px;font-weight:600;color:var(--navy)">41%</div><div class="up" style="font-size:11px">↑ +7%p</div></div>
-      <div style="background:#fff;border:1px solid var(--gray-200);border-top:3px solid var(--amber);border-radius:var(--r);padding:12px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">이번 달 처리</div><div style="font-size:22px;font-weight:600;color:var(--navy)">142건</div><div class="neu" style="font-size:11px">인계 9건</div></div>
+      <div style="background:#fff;border:1px solid var(--gray-200);border-top:3px solid var(--navy);border-radius:var(--r);padding:12px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">AI 자동 해결률</div><div style="font-size:22px;font-weight:700;color:var(--navy)">94%</div><div class="up" style="font-size:11px">↑ +3%p</div></div>
+      <div style="background:#fff;border:1px solid var(--gray-200);border-top:3px solid var(--green);border-radius:var(--r);padding:12px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">평균 첫 응답</div><div style="font-size:22px;font-weight:700;color:var(--navy)">8초</div><div class="up" style="font-size:11px">↓ 2시간 단축</div></div>
+      <div style="background:#fff;border:1px solid var(--gray-200);border-top:3px solid var(--blue);border-radius:var(--r);padding:12px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">예약 전환율</div><div style="font-size:22px;font-weight:700;color:var(--navy)">41%</div><div class="up" style="font-size:11px">↑ +7%p</div></div>
+      <div style="background:#fff;border:1px solid var(--gray-200);border-top:3px solid var(--gray-300);border-radius:var(--r);padding:12px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">이번 달 처리</div><div style="font-size:22px;font-weight:700;color:var(--navy)">142건</div><div class="neu" style="font-size:11px">인계 9건</div></div>
     </div>
     <div class="card" style="margin-bottom:14px">
       <div class="card-head"><div class="card-title">📈 일별 처리 현황</div></div>
@@ -48,28 +42,26 @@
     </div>
     <div class="grid3">
       <div class="card">
-        <div class="card-head"><div class="card-title"><span class="layer-badge" style="background:var(--teal-l);color:var(--teal-d)">L1</span>즉시 자동응답</div><label class="toggle-wrap" style="width:32px;height:18px"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb" style="width:12px;height:12px"></div></label></div>
+        <!-- ZENO v2: L1 badge — navy-l/navy -->
+        <div class="card-head"><div class="card-title"><span class="layer-badge" style="background:var(--navy-l);color:var(--navy)">L1</span>즉시 자동응답</div><label class="toggle-wrap" style="width:32px;height:18px"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb" style="width:12px;height:12px"></div></label></div>
         <div style="font-size:12px;color:var(--gray-500);margin-bottom:10px">첫 메시지 수신 즉시 0초 응답</div>
         <div style="position:relative">
           <div style="position:absolute;top:8px;right:8px;display:flex;border-radius:6px;overflow:hidden;border:1px solid var(--gray-200);z-index:1">
-            <button onclick="setWelcomeLang('ja')" id="wlang-ja"
-              style="padding:2px 8px;font-size:10px;font-family:inherit;cursor:pointer;border:none;background:var(--navy);color:#fff;font-weight:500;transition:all .15s">日</button>
-            <button onclick="setWelcomeLang('ko')" id="wlang-ko"
-              style="padding:2px 8px;font-size:10px;font-family:inherit;cursor:pointer;border:none;background:#fff;color:var(--gray-500);transition:all .15s">한</button>
+            <button onclick="setWelcomeLang('ja')" id="wlang-ja" style="padding:2px 8px;font-size:10px;font-family:inherit;cursor:pointer;border:none;background:var(--navy);color:#fff;font-weight:500;transition:all .15s">日</button>
+            <button onclick="setWelcomeLang('ko')" id="wlang-ko" style="padding:2px 8px;font-size:10px;font-family:inherit;cursor:pointer;border:none;background:#fff;color:var(--gray-500);transition:all .15s">한</button>
           </div>
-          <div id="welcome-preview" style="background:var(--gray-50);border-radius:var(--r);padding:10px 10px 10px 10px;padding-right:70px;font-size:12px;color:var(--gray-700);line-height:1.65;margin-bottom:10px;min-height:60px"></div>
+          <div id="welcome-preview" style="background:var(--gray-50);border-radius:var(--r);padding:10px;padding-right:70px;font-size:12px;color:var(--gray-700);line-height:1.65;margin-bottom:10px;min-height:60px"></div>
         </div>
         <button class="btn" style="width:100%;justify-content:center;font-size:12px" onclick="editWelcomeMsg()">✏ 메시지 편집</button>
       </div>
       <div class="card">
+        <!-- ZENO v2: L2 badge — blue-l/blue -->
         <div class="card-head">
-          <div class="card-title"><span class="layer-badge" style="background:var(--purple-l);color:var(--purple)">L2</span>AI 상담</div>
+          <div class="card-title"><span class="layer-badge" style="background:var(--blue-l);color:var(--blue)">L2</span>AI 상담</div>
           <div style="display:flex;align-items:center;gap:6px">
             <div style="display:flex;border-radius:8px;overflow:hidden;border:1px solid var(--gray-200)">
-              <button id="lang-ja" onclick="setLang('ja')"
-                style="padding:4px 10px;font-size:11px;font-family:inherit;cursor:pointer;border:none;background:var(--navy);color:#fff;font-weight:500;transition:all .15s">日</button>
-              <button id="lang-ko" onclick="setLang('ko')"
-                style="padding:4px 10px;font-size:11px;font-family:inherit;cursor:pointer;border:none;background:#fff;color:var(--gray-500);transition:all .15s">한</button>
+              <button id="lang-ja" onclick="setLang('ja')" style="padding:4px 10px;font-size:11px;font-family:inherit;cursor:pointer;border:none;background:var(--navy);color:#fff;font-weight:500;transition:all .15s">日</button>
+              <button id="lang-ko" onclick="setLang('ko')" style="padding:4px 10px;font-size:11px;font-family:inherit;cursor:pointer;border:none;background:#fff;color:var(--gray-500);transition:all .15s">한</button>
             </div>
             <button class="btn" style="font-size:11px;padding:4px 10px" onclick="addScenario()">+ 추가</button>
           </div>
@@ -78,7 +70,8 @@
         <div id="sc-list"></div>
       </div>
       <div class="card">
-        <div class="card-head"><div class="card-title"><span class="layer-badge" style="background:var(--amber-l);color:var(--amber)">L3</span>인계 판단</div><button class="btn" style="font-size:11px;padding:4px 10px" onclick="addTrigger()">+ 추가</button></div>
+        <!-- ZENO v2: L3 badge — s100/s700 (amber 완전 제거) -->
+        <div class="card-head"><div class="card-title"><span class="layer-badge" style="background:var(--s100);color:var(--s700)">L3</span>인계 판단</div><button class="btn" style="font-size:11px;padding:4px 10px" onclick="addTrigger()">+ 추가</button></div>
         <div style="font-size:12px;color:var(--gray-500);margin-bottom:10px">트리거 감지 → 담당자 자동 알림</div>
         <div id="tr-list"></div>
       </div>
@@ -87,48 +80,15 @@
       <div class="card-head"><div class="card-title">🕐 업무시간 설정</div><span style="font-size:12px;color:var(--gray-400)">업무시간 외 → AI 단독 대응</span></div>
       <div class="hrs-grid" id="hrs-grid"></div>
     </div>
-
     <footer class="site-footer">© 2026 MEDIFLOW. All rights reserved.</footer>
   </div>
 </main>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<script src="../js/auth.js"></script>
-<script src="../js/sidebar.js"></script>
+<script src="../js/auth.js"></script><script src="../js/sidebar.js"></script>
 <script>
-function showToast(msg, type) {
-  var existing = document.getElementById('__toast');
-  if (existing) existing.remove();
-  var bg = type === 'success' ? '#059669' : type === 'error' ? '#DC2626' : '#1A2642';
-  var t = document.createElement('div');
-  t.id = '__toast';
-  t.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:11px 22px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;white-space:nowrap';
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(function(){ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(function(){ t.remove(); },300); }, 2500);
-}
-function openModal(title, bodyHtml, onConfirm, confirmLabel, confirmClass) {
-  var existing = document.getElementById('__modal');
-  if (existing) existing.remove();
-  var m = document.createElement('div');
-  m.id = '__modal';
-  m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center';
-  m.innerHTML = '<div style="background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.2);max-height:90vh;overflow-y:auto">'
-    + '<div style="font-size:16px;font-weight:700;color:#1A2642;margin-bottom:14px">'+title+'</div>'
-    + '<div style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:20px">'+bodyHtml+'</div>'
-    + '<div style="display:flex;gap:8px;justify-content:flex-end">'
-    + '<button class="btn" onclick="closeModal()">취소</button>'
-    + '<button class="btn '+(confirmClass||'btn-primary')+'" id="__modal-confirm">'+(confirmLabel||'확인')+'</button>'
-    + '</div></div>';
-  /* 딤 레이어 클릭 시 닫기 비활성화 — 작성 중 실수 방지 */
-  document.body.appendChild(m);
-  document.getElementById('__modal-confirm').addEventListener('click', function(){
-    closeModal();
-    if (typeof onConfirm === 'function') onConfirm();
-  });
-}
-function closeModal(){ var m=document.getElementById('__modal'); if(m) m.remove(); }
+function showToast(msg,type){var e=document.getElementById('__toast');if(e)e.remove();var bg=type==='success'?'#059669':type==='error'?'#DC2626':'#0D1B3E';var t=document.createElement('div');t.id='__toast';t.style.cssText='position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:11px 22px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;white-space:nowrap';t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(function(){t.remove();},300);},2500);}
+function openModal(title,bodyHtml,onConfirm,confirmLabel,confirmClass){var e=document.getElementById('__modal');if(e)e.remove();var m=document.createElement('div');m.id='__modal';m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center';m.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.2);max-height:90vh;overflow-y:auto"><div style="font-size:16px;font-weight:700;color:#0D1B3E;margin-bottom:14px">'+title+'</div><div style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:20px">'+bodyHtml+'</div><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" onclick="closeModal()">취소</button><button class="btn '+(confirmClass||'btn-primary')+'" id="__modal-confirm">'+(confirmLabel||'확인')+'</button></div></div>';document.body.appendChild(m);document.getElementById('__modal-confirm').addEventListener('click',function(){closeModal();if(typeof onConfirm==='function')onConfirm();});}
+function closeModal(){var m=document.getElementById('__modal');if(m)m.remove();}
 </script>
 <script src="../js/line_auto.js"></script>
-</body>
-</html>
+</body></html>

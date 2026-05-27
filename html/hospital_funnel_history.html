@@ -1,24 +1,15 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
+<html lang="ko"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>퍼널·자동화 변경 이력 — Hospital Site OS</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/common.css">
-<link rel="stylesheet" href="../css/funnel.css">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../css/common.css"><link rel="stylesheet" href="../css/funnel.css">
 <script src="../js/gate.js"></script>
-</head>
-<body>
+</head><body>
 <div id="sidebar-mount" data-active="funnel"></div>
-
 <main class="main">
   <div class="topbar">
-    <div class="topbar-left">
-      <a class="topbar-back" href="hospital_funnel.html">← 퍼널·자동화</a>
-      <span style="color:var(--gray-300)">/</span>
-      <span class="topbar-title">변경 이력</span>
-    </div>
+    <div class="topbar-left"><a class="topbar-back" href="hospital_funnel.html">← 퍼널·자동화</a><span style="color:var(--gray-300)">/</span><span class="topbar-title">변경 이력</span></div>
     <div class="topbar-right">
       <div class="filter-pills" style="margin:0">
         <button class="pill on" onclick="setFilter('all',this)">전체</button>
@@ -29,148 +20,67 @@
       </div>
     </div>
   </div>
-
   <div class="content" style="max-width:780px">
-
-    <!-- 요약 KPI -->
     <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:20px">
-      <div style="background:#fff;border:1px solid var(--gray-200);border-radius:var(--r);padding:12px 16px">
-        <div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">전체 변경</div>
-        <div style="font-size:22px;font-weight:600;color:var(--navy)">24회</div>
-        <div style="font-size:11px;color:var(--gray-400);margin-top:2px">최근 30일</div>
-      </div>
-      <div style="background:#fff;border:1px solid var(--gray-200);border-radius:var(--r);padding:12px 16px">
-        <div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">롤백</div>
-        <div style="font-size:22px;font-weight:600;color:var(--navy)">2회</div>
-        <div style="font-size:11px;color:var(--gray-400);margin-top:2px">최근 30일</div>
-      </div>
-      <div style="background:#fff;border:1px solid var(--gray-200);border-radius:var(--r);padding:12px 16px">
-        <div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">마지막 변경</div>
-        <div style="font-size:14px;font-weight:600;color:var(--navy);margin-top:4px">오늘 14:23</div>
-        <div style="font-size:11px;color:var(--gray-400);margin-top:2px">김지현</div>
-      </div>
-      <div style="background:#fff;border:1px solid var(--gray-200);border-radius:var(--r);padding:12px 16px">
-        <div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">변경 멤버</div>
-        <div style="font-size:22px;font-weight:600;color:var(--navy)">2명</div>
-        <div style="font-size:11px;color:var(--gray-400);margin-top:2px">김지현, 이수진</div>
-      </div>
+      <div style="background:#fff;border:1px solid var(--gray-200);border-radius:var(--r);padding:12px 16px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">전체 변경</div><div style="font-size:22px;font-weight:700;color:var(--navy)">24회</div><div style="font-size:11px;color:var(--gray-400);margin-top:2px">최근 30일</div></div>
+      <div style="background:#fff;border:1px solid var(--gray-200);border-radius:var(--r);padding:12px 16px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">롤백</div><div style="font-size:22px;font-weight:700;color:var(--navy)">2회</div><div style="font-size:11px;color:var(--gray-400);margin-top:2px">최근 30일</div></div>
+      <div style="background:#fff;border:1px solid var(--gray-200);border-radius:var(--r);padding:12px 16px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">마지막 변경</div><div style="font-size:14px;font-weight:700;color:var(--navy);margin-top:4px">오늘 14:23</div><div style="font-size:11px;color:var(--gray-400);margin-top:2px">김지현</div></div>
+      <div style="background:#fff;border:1px solid var(--gray-200);border-radius:var(--r);padding:12px 16px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">변경 멤버</div><div style="font-size:22px;font-weight:700;color:var(--navy)">2명</div><div style="font-size:11px;color:var(--gray-400);margin-top:2px">김지현, 이수진</div></div>
     </div>
-
-    <!-- 이력 목록 -->
-    <div class="card">
-      <div id="log-list"></div>
-    </div>
-
+    <div class="card"><div id="log-list"></div></div>
     <footer class="site-footer">© 2026 MEDIFLOW. All rights reserved.</footer>
   </div>
 </main>
-
-<script src="../js/auth.js"></script>
-<script src="../js/sidebar.js"></script>
+<script src="../js/auth.js"></script><script src="../js/sidebar.js"></script>
 <script>
-const logs = [
-  {type:'retarget', date:'오늘', time:'14:23', who:'김지현', avatar:'김', ab:'#EEEDFE', ac:'#3C3489',
-   action:'D+3 리타게팅 메시지 수정',
-   detail:'「先日のカウンセリング…」→「お気軽にご相談ください」로 마무리 문구 변경',
-   tag:'리타게팅', tb:'#DBEAFE', tc:'#1E40AF', canRollback:true},
-  {type:'cta', date:'오늘', time:'11:05', who:'김지현', avatar:'김', ab:'#EEEDFE', ac:'#3C3489',
-   action:'CTA 버튼 순서 변경',
-   detail:'LINE 상담 1위 → 예약 폼 2위 순서 유지 (클릭률 기준 재정렬)',
-   tag:'CTA', tb:'#D1FAE5', tc:'#065F46', canRollback:true},
-  {type:'rule', date:'오늘', time:'09:30', who:'이수진', avatar:'이', ab:'#E1F5EE', ac:'#085041',
-   action:'자동화 규칙 추가',
-   detail:'신규 규칙: 「예약 D-1 → 리마인더 LINE 발송 (전일 10:00)」',
-   tag:'자동화 규칙', tb:'#EDE9FE', tc:'#4C1D95', canRollback:true},
-  {type:'retarget', date:'어제', time:'16:42', who:'김지현', avatar:'김', ab:'#EEEDFE', ac:'#3C3489',
-   action:'D+7 메시지 A/B 테스트 종료',
-   detail:'B안 클릭률 44% → A안 38% · B안 채택 확정',
-   tag:'리타게팅', tb:'#DBEAFE', tc:'#1E40AF', canRollback:false},
-  {type:'webhook', date:'어제', time:'14:10', who:'김지현', avatar:'김', ab:'#EEEDFE', ac:'#3C3489',
-   action:'웹훅 URL 변경',
-   detail:'https://old-crm.example.com → https://crm.example.com/webhook/oleps',
-   tag:'웹훅', tb:'#FEF3C7', tc:'#92400E', canRollback:true},
-  {type:'retarget', date:'어제', time:'10:00', who:'이수진', avatar:'이', ab:'#E1F5EE', ac:'#085041',
-   action:'D+14 메시지 수정',
-   detail:'캠페인 문구에 기간 한정 문구 추가 「今月末まで…」',
-   tag:'리타게팅', tb:'#DBEAFE', tc:'#1E40AF', canRollback:true},
-  {type:'cta', date:'5월 18일', time:'15:20', who:'김지현', avatar:'김', ab:'#EEEDFE', ac:'#3C3489',
-   action:'전화 상담 CTA 비활성화',
-   detail:'야간 문의 집중으로 전화 CTA OFF → LINE 단일 채널 집중',
-   tag:'CTA', tb:'#D1FAE5', tc:'#065F46', canRollback:true},
-  {type:'rule', date:'5월 18일', time:'11:30', who:'김지현', avatar:'김', ab:'#EEEDFE', ac:'#3C3489',
-   action:'자동화 규칙 수정',
-   detail:'폼 제출 → LINE 환영 메시지 딜레이 0초 → 3초로 변경 (발송 안정성)',
-   tag:'자동화 규칙', tb:'#EDE9FE', tc:'#4C1D95', canRollback:true},
-  {type:'retarget', date:'5월 15일', time:'09:00', who:'이수진', avatar:'이', ab:'#E1F5EE', ac:'#085041',
-   action:'D+3 메시지 롤백',
-   detail:'이전 버전으로 롤백 · 수정 후 클릭률 28% → 44%로 회복',
-   tag:'롤백', tb:'#FEE2E2', tc:'#991B1B', canRollback:false},
+const logs=[
+  {type:'retarget',date:'오늘',time:'14:23',who:'김지현',avatar:'김',ab:'#EEF2FF',ac:'#0D1B3E',action:'D+3 리타게팅 메시지 수정',detail:'마무리 문구 변경',tag:'리타게팅',tb:'#EFF6FF',tc:'#1E40AF',canRollback:true},
+  {type:'cta',date:'오늘',time:'11:05',who:'김지현',avatar:'김',ab:'#EEF2FF',ac:'#0D1B3E',action:'CTA 버튼 순서 변경',detail:'LINE 상담 1위 유지',tag:'CTA',tb:'#D1FAE5',tc:'#065F46',canRollback:true},
+  {type:'rule',date:'오늘',time:'09:30',who:'이수진',avatar:'이',ab:'#D1FAE5',ac:'#065F46',action:'자동화 규칙 추가',detail:'예약 D-1 → 리마인더 발송',tag:'자동화 규칙',tb:'#EEF2FF',tc:'#0D1B3E',canRollback:true},
+  {type:'webhook',date:'어제',time:'14:10',who:'김지현',avatar:'김',ab:'#EEF2FF',ac:'#0D1B3E',action:'웹훅 URL 변경',detail:'https://old-crm → https://crm.example.com/webhook/oleps',tag:'웹훅',tb:'#F3F4F6',tc:'#374151',canRollback:true},
+  {type:'retarget',date:'5월 15일',time:'09:00',who:'이수진',avatar:'이',ab:'#D1FAE5',ac:'#065F46',action:'D+3 메시지 롤백',detail:'클릭률 44%로 회복',tag:'롤백',tb:'#FEF2F2',tc:'#991B1B',canRollback:false},
 ];
-
-let curFilter = 'all';
-let expanded = new Set();
-
-function render(filter) {
-  const el = document.getElementById('log-list');
-  const filtered = filter === 'all' ? logs : logs.filter(l => l.type === filter);
-
-  // 날짜별 그룹핑
-  const groups = {};
-  filtered.forEach(l => {
-    if (!groups[l.date]) groups[l.date] = [];
-    groups[l.date].push(l);
-  });
-
-  let html = '';
-  Object.entries(groups).forEach(([date, items]) => {
-    html += `<div style="font-size:11px;font-weight:600;color:var(--gray-400);letter-spacing:.05em;text-transform:uppercase;padding:10px 0 6px;border-bottom:1px solid var(--gray-200);margin-bottom:2px">${date}</div>`;
-    items.forEach((l, i) => {
-      const id = date + '-' + i;
-      html += `
-        <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 4px;border-bottom:1px solid var(--gray-100);cursor:pointer" onclick="toggle('${id}', this)">
-          <div style="width:32px;height:32px;border-radius:50%;background:${l.ab};color:${l.ac};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0">${l.avatar}</div>
-          <div style="flex:1;min-width:0">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
-              <span style="font-size:13px;font-weight:500;color:var(--gray-900)">${l.action}</span>
-              <span style="font-size:10px;padding:2px 7px;border-radius:6px;background:${l.tb};color:${l.tc};flex-shrink:0">${l.tag}</span>
-            </div>
-            <div style="font-size:11px;color:var(--gray-400)">${l.who} · ${l.time}</div>
-            <div id="detail-${id}" style="display:none;margin-top:8px;font-size:12px;color:var(--gray-600);background:var(--gray-50);padding:10px 12px;border-radius:var(--r);line-height:1.6">${l.detail}
-              ${l.canRollback ? `<div style="margin-top:8px"><button class="btn btn-danger" style="font-size:11px;padding:4px 10px" onclick="event.stopPropagation();rollback('${l.action}')">↺ 이 시점으로 롤백</button></div>` : '<div style="margin-top:6px;font-size:11px;color:var(--gray-400)">롤백 불가 항목</div>'}
-            </div>
+let curFilter='all';
+function render(filter){
+  const el=document.getElementById('log-list');
+  const filtered=filter==='all'?logs:logs.filter(l=>l.type===filter);
+  const groups={};
+  filtered.forEach(l=>{if(!groups[l.date])groups[l.date]=[];groups[l.date].push(l);});
+  let html='';
+  Object.entries(groups).forEach(([date,items])=>{
+    html+=`<div style="font-size:11px;font-weight:600;color:var(--gray-400);letter-spacing:.05em;text-transform:uppercase;padding:10px 0 6px;border-bottom:1px solid var(--gray-200);margin-bottom:2px">${date}</div>`;
+    items.forEach((l,i)=>{
+      const id=date+'-'+i;
+      html+=`<div style="display:flex;align-items:flex-start;gap:12px;padding:12px 4px;border-bottom:1px solid var(--gray-100);cursor:pointer" onclick="toggle('${id}',this)">
+        <div style="width:32px;height:32px;border-radius:50%;background:${l.ab};color:${l.ac};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0">${l.avatar}</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+            <span style="font-size:13px;font-weight:500;color:var(--gray-900)">${l.action}</span>
+            <span style="font-size:10px;padding:2px 7px;border-radius:6px;background:${l.tb};color:${l.tc};flex-shrink:0">${l.tag}</span>
           </div>
-          <div style="font-size:12px;color:var(--gray-300);margin-top:6px;flex-shrink:0" id="arrow-${id}">›</div>
-        </div>`;
+          <div style="font-size:11px;color:var(--gray-400)">${l.who} · ${l.time}</div>
+          <div id="detail-${id}" style="display:none;margin-top:8px;font-size:12px;color:var(--gray-600);background:var(--gray-50);padding:10px 12px;border-radius:var(--r);line-height:1.6">${l.detail}
+            ${l.canRollback?`<div style="margin-top:8px"><button class="btn btn-danger" style="font-size:11px;padding:4px 10px" onclick="event.stopPropagation();rollback('${l.action}')">↺ 이 시점으로 롤백</button></div>`:'<div style="margin-top:6px;font-size:11px;color:var(--gray-400)">롤백 불가 항목</div>'}
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--gray-300);margin-top:6px;flex-shrink:0" id="arrow-${id}">›</div>
+      </div>`;
     });
   });
-
-  if (!html) html = '<div style="text-align:center;padding:40px;color:var(--gray-400);font-size:13px">해당 항목이 없습니다</div>';
-  el.innerHTML = html;
+  if(!html) html='<div style="text-align:center;padding:40px;color:var(--gray-400);font-size:13px">해당 항목이 없습니다</div>';
+  el.innerHTML=html;
 }
-
-function toggle(id, row) {
-  const detail = document.getElementById('detail-' + id);
-  const arrow = document.getElementById('arrow-' + id);
-  const isOpen = detail.style.display === 'block';
-  detail.style.display = isOpen ? 'none' : 'block';
-  arrow.style.transform = isOpen ? '' : 'rotate(90deg)';
-  arrow.style.color = isOpen ? 'var(--gray-300)' : 'var(--teal)';
+function toggle(id,row){
+  const detail=document.getElementById('detail-'+id);
+  const arrow=document.getElementById('arrow-'+id);
+  const isOpen=detail.style.display==='block';
+  detail.style.display=isOpen?'none':'block';
+  arrow.style.transform=isOpen?'':'rotate(90deg)';
+  /* ZENO v2: arrow color → blue */
+  arrow.style.color=isOpen?'var(--gray-300)':'var(--blue)';
 }
-
-function setFilter(f, btn) {
-  curFilter = f;
-  document.querySelectorAll('.pill').forEach(p => p.classList.remove('on'));
-  btn.classList.add('on');
-  render(f);
-}
-
-function rollback(action) {
-  if (confirm('"' + action + '" 이전 버전으로 롤백하시겠습니까?')) {
-    alert('롤백이 완료되었습니다.');
-  }
-}
-
+function setFilter(f,btn){curFilter=f;document.querySelectorAll('.pill').forEach(p=>p.classList.remove('on'));btn.classList.add('on');render(f);}
+function rollback(action){if(confirm('"'+action+'" 이전 버전으로 롤백하시겠습니까?')){alert('롤백이 완료되었습니다.');}}
 render('all');
 </script>
-</body>
-</html>
+</body></html>

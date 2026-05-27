@@ -1,63 +1,54 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
+<html lang="ko"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>예약 등록 — Hospital Site OS</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/common.css">
-<link rel="stylesheet" href="../css/crm.css">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../css/common.css"><link rel="stylesheet" href="../css/crm.css">
 <style>
-.form-wrap { max-width: 620px; }
-.form-section { background: #fff; border: 1px solid var(--gray-200); border-radius: var(--rl); padding: 20px 24px; margin-bottom: 14px; }
-.form-section-title { font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-.form-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.field { margin-bottom: 12px; }
-.field:last-child { margin-bottom: 0; }
-.f-label { font-size: 12px; font-weight: 500; color: var(--gray-700); margin-bottom: 5px; }
-.f-label .req { color: var(--red); margin-left: 2px; }
-.f-input { width: 100%; padding: 8px 12px; border: 1px solid var(--gray-200); border-radius: var(--r); font-size: 13px; font-family: inherit; outline: none; color: var(--gray-700); background: #fff; }
-.f-input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(13,148,136,.08); }
-.f-select { width: 100%; padding: 8px 12px; border: 1px solid var(--gray-200); border-radius: var(--r); font-size: 13px; font-family: inherit; outline: none; color: var(--gray-700); background: #fff; appearance: auto; }
-.f-select:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(13,148,136,.08); }
-.f-textarea { width: 100%; padding: 8px 12px; border: 1px solid var(--gray-200); border-radius: var(--r); font-size: 13px; font-family: inherit; outline: none; color: var(--gray-700); background: #fff; resize: vertical; line-height: 1.6; }
-.f-textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(13,148,136,.08); }
-.patient-search-wrap { position: relative; }
-.patient-result { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid var(--gray-200); border-radius: var(--r); box-shadow: 0 4px 16px rgba(0,0,0,.08); z-index: 10; margin-top: 3px; display: none; }
-.patient-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; cursor: pointer; transition: background .1s; border-bottom: 1px solid var(--gray-100); }
-.patient-item:last-child { border-bottom: none; }
-.patient-item:hover { background: var(--gray-50); }
-.p-avatar { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; }
-.p-name { font-size: 13px; font-weight: 500; color: var(--gray-900); }
-.p-meta { font-size: 11px; color: var(--gray-400); }
-.selected-patient { display: none; align-items: center; gap: 10px; padding: 10px 12px; background: var(--teal-l); border: 1px solid var(--teal); border-radius: var(--r); margin-top: 6px; }
-.time-slots { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 6px; }
-.time-slot { padding: 7px 4px; text-align: center; border: 1px solid var(--gray-200); border-radius: var(--r); font-size: 12px; cursor: pointer; color: var(--gray-600); transition: all .15s; background: #fff; }
-.time-slot:hover { border-color: var(--teal); color: var(--teal); }
-.time-slot.on { background: var(--teal); border-color: var(--teal); color: #fff; font-weight: 500; }
-.time-slot.off { background: var(--gray-100); color: var(--gray-300); cursor: not-allowed; pointer-events: none; }
-.send-check { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--gray-50); border-radius: var(--r); font-size: 12px; color: var(--gray-700); cursor: pointer; }
-.send-check input { width: 14px; height: 14px; accent-color: var(--teal); }
-.action-bar { display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding: 16px 24px; background: #fff; border-top: 1px solid var(--gray-200); position: sticky; bottom: 0; }
+.form-wrap{max-width:620px;}
+.form-section{background:#fff;border:1px solid var(--gray-200);border-radius:var(--rl);padding:20px 24px;margin-bottom:14px;}
+.form-section-title{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.form-grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.field{margin-bottom:12px;}.field:last-child{margin-bottom:0;}
+.f-label{font-size:12px;font-weight:500;color:var(--gray-700);margin-bottom:5px;}
+.f-label .req{color:var(--red);margin-left:2px;}
+.f-input{width:100%;padding:8px 12px;border:1px solid var(--gray-200);border-radius:var(--r);font-size:13px;font-family:inherit;outline:none;color:var(--gray-700);background:#fff;}
+/* ZENO v2: focus → blue */
+.f-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.08);}
+.f-select{width:100%;padding:8px 12px;border:1px solid var(--gray-200);border-radius:var(--r);font-size:13px;font-family:inherit;outline:none;color:var(--gray-700);background:#fff;appearance:auto;}
+.f-select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.08);}
+.f-textarea{width:100%;padding:8px 12px;border:1px solid var(--gray-200);border-radius:var(--r);font-size:13px;font-family:inherit;outline:none;color:var(--gray-700);background:#fff;resize:vertical;line-height:1.6;}
+.f-textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.08);}
+.patient-search-wrap{position:relative;}
+.patient-result{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--gray-200);border-radius:var(--r);box-shadow:0 4px 16px rgba(0,0,0,.08);z-index:10;margin-top:3px;display:none;}
+.patient-item{display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;transition:background .1s;border-bottom:1px solid var(--gray-100);}
+.patient-item:last-child{border-bottom:none;}
+.patient-item:hover{background:var(--gray-50);}
+.p-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
+.p-name{font-size:13px;font-weight:500;color:var(--gray-900);}
+.p-meta{font-size:11px;color:var(--gray-400);}
+/* ZENO v2: selected-patient — navy-l (teal 제거) */
+.selected-patient{display:none;align-items:center;gap:10px;padding:10px 12px;background:var(--navy-l);border:1px solid var(--blue);border-radius:var(--r);margin-top:6px;}
+.time-slots{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:6px;}
+.time-slot{padding:7px 4px;text-align:center;border:1px solid var(--gray-200);border-radius:var(--r);font-size:12px;cursor:pointer;color:var(--gray-600);transition:all .15s;background:#fff;}
+/* ZENO v2: hover/on → blue/navy */
+.time-slot:hover{border-color:var(--blue);color:var(--blue);}
+.time-slot.on{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:500;}
+.time-slot.off{background:var(--gray-100);color:var(--gray-300);cursor:not-allowed;pointer-events:none;}
+/* ZENO v2: accent-color → navy */
+.send-check{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--gray-50);border-radius:var(--r);font-size:12px;color:var(--gray-700);cursor:pointer;}
+.send-check input{width:14px;height:14px;accent-color:var(--navy);}
+.action-bar{display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:16px 24px;background:#fff;border-top:1px solid var(--gray-200);position:sticky;bottom:0;}
 </style>
 <script src="../js/gate.js"></script>
-</head>
-<body>
+</head><body>
 <div id="sidebar-mount" data-active="booking"></div>
-
 <main class="main">
   <div class="topbar">
-    <div class="topbar-left">
-      <a class="topbar-back" href="hospital_crm_booking.html">← 예약 관리</a>
-      <span style="color:var(--gray-300)">/</span>
-      <span class="topbar-title">예약 등록</span>
-    </div>
+    <div class="topbar-left"><a class="topbar-back" href="hospital_crm_booking.html">← 예약 관리</a><span style="color:var(--gray-300)">/</span><span class="topbar-title">예약 등록</span></div>
   </div>
-
   <div class="content">
     <div class="form-wrap">
-
-      <!-- 환자 정보 -->
       <div class="form-section">
         <div class="form-section-title">👤 환자 정보</div>
         <div class="field">
@@ -67,7 +58,7 @@
             <div class="patient-result" id="patient-result"></div>
           </div>
           <div class="selected-patient" id="selected-patient">
-            <div class="p-avatar" id="sel-avatar" style="background:#EEEDFE;color:#3C3489">야마</div>
+            <div class="p-avatar" id="sel-avatar" style="background:#EEF2FF;color:#0D1B3E">야마</div>
             <div style="flex:1">
               <div style="font-size:13px;font-weight:500;color:var(--navy)" id="sel-name">야마다 사오리</div>
               <div style="font-size:11px;color:var(--gray-500)" id="sel-meta">LINE · 쌍꺼풀 상담 이력</div>
@@ -81,208 +72,56 @@
           <div style="flex:1;height:1px;background:var(--gray-100)"></div>
         </div>
         <div class="form-grid2">
-          <div class="field">
-            <div class="f-label">성명 (일본어)<span class="req">*</span></div>
-            <input class="f-input" id="name-ja" placeholder="山田 沙織">
-          </div>
-          <div class="field">
-            <div class="f-label">성명 (한국어)</div>
-            <input class="f-input" id="name-ko" placeholder="야마다 사오리">
-          </div>
-          <div class="field">
-            <div class="f-label">연락처 (LINE ID / 전화)</div>
-            <input class="f-input" id="contact" placeholder="@yamada_saori">
-          </div>
-          <div class="field">
-            <div class="f-label">접점 채널</div>
-            <select class="f-select" id="channel">
-              <option value="">선택</option>
-              <option value="LINE">LINE</option>
-              <option value="form">상담 폼</option>
-              <option value="phone">전화</option>
-              <option value="walkin">워크인</option>
-            </select>
-          </div>
+          <div class="field"><div class="f-label">성명 (일본어)<span class="req">*</span></div><input class="f-input" id="name-ja" placeholder="山田 沙織"></div>
+          <div class="field"><div class="f-label">성명 (한국어)</div><input class="f-input" id="name-ko" placeholder="야마다 사오리"></div>
+          <div class="field"><div class="f-label">연락처 (LINE ID / 전화)</div><input class="f-input" id="contact" placeholder="@yamada_saori"></div>
+          <div class="field"><div class="f-label">접점 채널</div><select class="f-select" id="channel"><option value="">선택</option><option value="LINE">LINE</option><option value="form">상담 폼</option><option value="phone">전화</option><option value="walkin">워크인</option></select></div>
         </div>
       </div>
-
-      <!-- 예약 정보 -->
       <div class="form-section">
         <div class="form-section-title">📅 예약 정보</div>
         <div class="form-grid2">
-          <div class="field">
-            <div class="f-label">예약 유형<span class="req">*</span></div>
-            <select class="f-select" id="type" onchange="updateSlots()">
-              <option value="">선택</option>
-              <option value="consult">상담 (카운슬링)</option>
-              <option value="online">비대면 상담</option>
-              <option value="surgery">수술</option>
-              <option value="checkup">사후 체크업</option>
-              <option value="laser">시술 (레이저 등)</option>
-            </select>
-          </div>
-          <div class="field">
-            <div class="f-label">관심 시술</div>
-            <select class="f-select" id="procedure">
-              <option value="">선택</option>
-              <option>쌍꺼풀 (매몰법)</option>
-              <option>쌍꺼풀 (절개법)</option>
-              <option>코 성형</option>
-              <option>윤곽 수술</option>
-              <option>지방흡입</option>
-              <option>피부 레이저</option>
-              <option>기타</option>
-            </select>
-          </div>
-          <div class="field">
-            <div class="f-label">예약 날짜<span class="req">*</span></div>
-            <input class="f-input" type="date" id="date" value="2026-05-21" onchange="updateSlots()">
-          </div>
-          <div class="field">
-            <div class="f-label">담당 의사</div>
-            <select class="f-select" id="doctor">
-              <option value="">배정 없음</option>
-              <option>김민준 원장</option>
-              <option>이수진 전문의</option>
-              <option>박정호 전문의</option>
-              <option>최유리 전문의</option>
-            </select>
-          </div>
+          <div class="field"><div class="f-label">예약 유형<span class="req">*</span></div><select class="f-select" id="type" onchange="updateSlots()"><option value="">선택</option><option value="consult">상담 (카운슬링)</option><option value="online">비대면 상담</option><option value="surgery">수술</option><option value="checkup">사후 체크업</option><option value="laser">시술 (레이저 등)</option></select></div>
+          <div class="field"><div class="f-label">관심 시술</div><select class="f-select" id="procedure"><option value="">선택</option><option>쌍꺼풀 (매몰법)</option><option>쌍꺼풀 (절개법)</option><option>코 성형</option><option>윤곽 수술</option><option>지방흡입</option><option>피부 레이저</option><option>기타</option></select></div>
+          <div class="field"><div class="f-label">예약 날짜<span class="req">*</span></div><input class="f-input" type="date" id="date" value="2026-05-21" onchange="updateSlots()"></div>
+          <div class="field"><div class="f-label">담당 의사</div><select class="f-select" id="doctor"><option value="">배정 없음</option><option>김민준 원장</option><option>이수진 전문의</option><option>박정호 전문의</option><option>최유리 전문의</option></select></div>
         </div>
-        <div class="field">
-          <div class="f-label">예약 시간<span class="req">*</span></div>
-          <div class="time-slots" id="time-slots"></div>
-          <input type="hidden" id="selected-time">
-        </div>
+        <div class="field"><div class="f-label">예약 시간<span class="req">*</span></div><div class="time-slots" id="time-slots"></div><input type="hidden" id="selected-time"></div>
       </div>
-
-      <!-- 메모 -->
       <div class="form-section">
         <div class="form-section-title">📝 메모 및 알림</div>
-        <div class="field">
-          <div class="f-label">내부 메모</div>
-          <textarea class="f-textarea" id="memo" rows="3" placeholder="예) 일본어 전담 스탭 배정 필요 · 이전 상담 내용 참고"></textarea>
-        </div>
+        <div class="field"><div class="f-label">내부 메모</div><textarea class="f-textarea" id="memo" rows="3" placeholder="예) 일본어 전담 스탭 배정 필요 · 이전 상담 내용 참고"></textarea></div>
         <div class="field">
           <div class="f-label">LINE 확정 메시지 발송</div>
-          <label class="send-check">
-            <input type="checkbox" id="send-line" checked>
-            예약 등록 즉시 LINE으로 확정 메시지 자동 발송
-          </label>
-          <label class="send-check" style="margin-top:6px">
-            <input type="checkbox" id="send-reminder" checked>
-            예약 전일 오전 10시 리마인더 발송
-          </label>
+          <label class="send-check"><input type="checkbox" id="send-line" checked> 예약 등록 즉시 LINE으로 확정 메시지 자동 발송</label>
+          <label class="send-check" style="margin-top:6px"><input type="checkbox" id="send-reminder" checked> 예약 전일 오전 10시 리마인더 발송</label>
         </div>
       </div>
-
     </div>
   </div>
-
-  <!-- 하단 액션 바 -->
   <div class="action-bar">
     <a class="btn" href="hospital_crm_booking.html">취소</a>
     <button class="btn btn-primary" onclick="submitBooking()">📅 예약 등록</button>
-
     <footer class="site-footer">© 2026 MEDIFLOW. All rights reserved.</footer>
   </div>
 </main>
-
-<script src="../js/auth.js"></script>
-<script src="../js/sidebar.js"></script>
+<script src="../js/auth.js"></script><script src="../js/sidebar.js"></script>
 <script>
-const patients = [
-  {init:'야마',bg:'#EEEDFE',tc:'#3C3489',name:'야마다 사오리',nameJa:'山田 沙織',ch:'LINE',proc:'쌍꺼풀 상담 이력'},
-  {init:'스즈',bg:'#E1F5EE',tc:'#085041',name:'스즈키 미카',  nameJa:'鈴木 美花',ch:'LINE',proc:'코 성형 상담 이력'},
-  {init:'이토',bg:'#FBEAF0',tc:'#4B1528',name:'이토 나나미',  nameJa:'伊藤 七海',ch:'LINE',proc:'쌍꺼풀 예약 완료'},
-  {init:'사토',bg:'#E6F1FB',tc:'#0C447C',name:'사토 하루카',  nameJa:'佐藤 春花',ch:'상담폼',proc:'윤곽 상담 이력'},
-  {init:'다나',bg:'#FAEEDA',tc:'#412402',name:'다나카 유키',  nameJa:'田中 雪',  ch:'LINE',proc:'첫 방문'},
+const patients=[
+  {init:'야마',bg:'#EEF2FF',tc:'#0D1B3E',name:'야마다 사오리',nameJa:'山田 沙織',ch:'LINE',proc:'쌍꺼풀 상담 이력'},
+  {init:'스즈',bg:'#D1FAE5',tc:'#065F46',name:'스즈키 미카',nameJa:'鈴木 美花',ch:'LINE',proc:'코 성형 상담 이력'},
+  {init:'이토',bg:'#FEF2F2',tc:'#991B1B',name:'이토 나나미',nameJa:'伊藤 七海',ch:'LINE',proc:'쌍꺼풀 예약 완료'},
+  {init:'사토',bg:'#EFF6FF',tc:'#1E40AF',name:'사토 하루카',nameJa:'佐藤 春花',ch:'상담폼',proc:'윤곽 상담 이력'},
+  {init:'다나',bg:'#F3F4F6',tc:'#374151',name:'다나카 유키',nameJa:'田中 雪',ch:'LINE',proc:'첫 방문'},
 ];
-
-const slots = {
-  consult: ['10:00','10:30','11:00','11:30','13:00','13:30','14:00','14:30','15:00','16:00'],
-  online:  ['10:00','10:30','11:00','14:00','14:30','15:00','15:30','16:00','16:30','17:00'],
-  surgery: ['09:00','10:00','13:00','14:00'],
-  checkup: ['10:00','11:00','14:00','15:00','16:00'],
-  laser:   ['10:00','11:00','13:30','14:30','15:30','16:30'],
-};
-const booked = ['10:00','14:00'];
-
-function searchPatient(v) {
-  const res = document.getElementById('patient-result');
-  if (!v.trim()) { res.style.display = 'none'; return; }
-  const matched = patients.filter(p => p.name.includes(v) || p.nameJa.includes(v));
-  if (!matched.length) { res.style.display = 'none'; return; }
-  res.innerHTML = matched.map(p => `
-    <div class="patient-item" onclick="selectPatient(${JSON.stringify(p).replace(/"/g,'&quot;')})">
-      <div class="p-avatar" style="background:${p.bg};color:${p.tc}">${p.init}</div>
-      <div><div class="p-name">${p.name} (${p.nameJa})</div><div class="p-meta">${p.ch} · ${p.proc}</div></div>
-    </div>`).join('');
-  res.style.display = 'block';
-}
-
-function selectPatient(p) {
-  document.getElementById('patient-search').value = p.name;
-  document.getElementById('patient-result').style.display = 'none';
-  const sp = document.getElementById('selected-patient');
-  document.getElementById('sel-avatar').textContent = p.init;
-  document.getElementById('sel-avatar').style.background = p.bg;
-  document.getElementById('sel-avatar').style.color = p.tc;
-  document.getElementById('sel-name').textContent = p.name + ' (' + p.nameJa + ')';
-  document.getElementById('sel-meta').textContent = p.ch + ' · ' + p.proc;
-  sp.style.display = 'flex';
-  document.getElementById('name-ja').value = p.nameJa;
-  document.getElementById('name-ko').value = p.name;
-  document.getElementById('channel').value = p.ch === 'LINE' ? 'LINE' : p.ch === '상담폼' ? 'form' : 'phone';
-}
-
-function clearPatient() {
-  document.getElementById('patient-search').value = '';
-  document.getElementById('selected-patient').style.display = 'none';
-  document.getElementById('name-ja').value = '';
-  document.getElementById('name-ko').value = '';
-}
-
-function updateSlots() {
-  const type = document.getElementById('type').value || 'consult';
-  const times = slots[type] || slots.consult;
-  const el = document.getElementById('time-slots');
-  document.getElementById('selected-time').value = '';
-  el.innerHTML = times.map(t => `
-    <div class="time-slot${booked.includes(t) ? ' off' : ''}" onclick="selectTime('${t}', this)">
-      ${t}${booked.includes(t) ? '<br><span style="font-size:9px">예약됨</span>' : ''}
-    </div>`).join('');
-}
-
-function selectTime(t, el) {
-  document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('on'));
-  el.classList.add('on');
-  document.getElementById('selected-time').value = t;
-}
-
-function submitBooking() {
-  const nameJa = document.getElementById('name-ja').value.trim();
-  const type   = document.getElementById('type').value;
-  const date   = document.getElementById('date').value;
-  const time   = document.getElementById('selected-time').value;
-
-  if (!nameJa) { alert('환자 성명(일본어)을 입력해주세요.'); return; }
-  if (!type)   { alert('예약 유형을 선택해주세요.'); return; }
-  if (!date)   { alert('예약 날짜를 선택해주세요.'); return; }
-  if (!time)   { alert('예약 시간을 선택해주세요.'); return; }
-
-  const sendLine = document.getElementById('send-line').checked;
-  let msg = '예약이 등록되었습니다.\n\n';
-  msg += '환자: ' + nameJa + '\n';
-  msg += '일시: ' + date + ' ' + time + '\n';
-  msg += '유형: ' + document.getElementById('type').options[document.getElementById('type').selectedIndex].text;
-  if (sendLine) msg += '\n\nLINE 확정 메시지가 자동 발송됩니다.';
-  alert(msg);
-  location.href = 'hospital_crm_booking.html';
-}
-
-// 초기 슬롯 렌더
+const slots={consult:['10:00','10:30','11:00','11:30','13:00','13:30','14:00','14:30','15:00','16:00'],online:['10:00','10:30','11:00','14:00','14:30','15:00','15:30','16:00','16:30','17:00'],surgery:['09:00','10:00','13:00','14:00'],checkup:['10:00','11:00','14:00','15:00','16:00'],laser:['10:00','11:00','13:30','14:30','15:30','16:30']};
+const booked=['10:00','14:00'];
+function searchPatient(v){const res=document.getElementById('patient-result');if(!v.trim()){res.style.display='none';return;}const matched=patients.filter(p=>p.name.includes(v)||p.nameJa.includes(v));if(!matched.length){res.style.display='none';return;}res.innerHTML=matched.map(p=>`<div class="patient-item" onclick="selectPatient(${JSON.stringify(p).replace(/"/g,'&quot;')})"><div class="p-avatar" style="background:${p.bg};color:${p.tc}">${p.init}</div><div><div class="p-name">${p.name} (${p.nameJa})</div><div class="p-meta">${p.ch} · ${p.proc}</div></div></div>`).join('');res.style.display='block';}
+function selectPatient(p){document.getElementById('patient-search').value=p.name;document.getElementById('patient-result').style.display='none';const sp=document.getElementById('selected-patient');document.getElementById('sel-avatar').textContent=p.init;document.getElementById('sel-avatar').style.background=p.bg;document.getElementById('sel-avatar').style.color=p.tc;document.getElementById('sel-name').textContent=p.name+' ('+p.nameJa+')';document.getElementById('sel-meta').textContent=p.ch+' · '+p.proc;sp.style.display='flex';document.getElementById('name-ja').value=p.nameJa;document.getElementById('name-ko').value=p.name;document.getElementById('channel').value=p.ch==='LINE'?'LINE':p.ch==='상담폼'?'form':'phone';}
+function clearPatient(){document.getElementById('patient-search').value='';document.getElementById('selected-patient').style.display='none';document.getElementById('name-ja').value='';document.getElementById('name-ko').value='';}
+function updateSlots(){const type=document.getElementById('type').value||'consult';const times=slots[type]||slots.consult;const el=document.getElementById('time-slots');document.getElementById('selected-time').value='';el.innerHTML=times.map(t=>`<div class="time-slot${booked.includes(t)?' off':''}" onclick="selectTime('${t}',this)">${t}${booked.includes(t)?'<br><span style="font-size:9px">예약됨</span>':''}</div>`).join('');}
+function selectTime(t,el){document.querySelectorAll('.time-slot').forEach(s=>s.classList.remove('on'));el.classList.add('on');document.getElementById('selected-time').value=t;}
+function submitBooking(){const nameJa=document.getElementById('name-ja').value.trim();const type=document.getElementById('type').value;const date=document.getElementById('date').value;const time=document.getElementById('selected-time').value;if(!nameJa){alert('환자 성명(일본어)을 입력해주세요.');return;}if(!type){alert('예약 유형을 선택해주세요.');return;}if(!date){alert('예약 날짜를 선택해주세요.');return;}if(!time){alert('예약 시간을 선택해주세요.');return;}alert('예약이 등록되었습니다.');location.href='hospital_crm_booking.html';}
 updateSlots();
 </script>
-</body>
-</html>
+</body></html>

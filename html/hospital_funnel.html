@@ -1,16 +1,13 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
+<html lang="ko"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>퍼널·자동화 설정 — Hospital Site OS</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet">
 <link rel="stylesheet" href="../css/common.css">
 <link rel="stylesheet" href="../css/funnel.css">
 <script src="../js/gate.js"></script>
-</head>
-<body>
+</head><body>
 <div id="sidebar-mount" data-active="funnel"></div>
-
 <main class="main">
   <div class="topbar">
     <div class="topbar-left"><a class="topbar-back" href="../index.html">← 대시보드</a><span style="color:var(--gray-300)">/</span><span class="topbar-title">퍼널·자동화 설정</span></div>
@@ -40,8 +37,8 @@
         </div>
       </div>
       <div class="rt-item"><div class="rt-head" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='block'?'none':'block'"><div class="rt-day">D+3 발송</div><div class="rt-stats"><span>발송 18건</span><span>클릭률 44%</span><span>전환율 11%</span><span>▾</span></div></div><div class="rt-body" style="display:none"><div class="rt-msg" data-ja="先日のカウンセリングはいかがでしたか？ご不明な点がございましたら、いつでもお気軽にご相談ください。" data-ko="지난번 상담은 어떠셨나요? 궁금한 점이 있으시면 언제든지 편하게 상담해 주세요.">先日のカウンセリングはいかがでしたか？ご不明な点がございましたら、いつでもお気軽にご相談ください。</div><div style="display:flex;gap:6px"><button class="btn" style="font-size:12px" onclick="editRetarget(this)">✏ 편집</button><button class="btn" style="font-size:12px" onclick="openABTest()">🔀 A/B</button></div></div></div>
-      <div class="rt-item"><div class="rt-head" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='block'?'none':'block'"><div class="rt-day">D+7 발송</div><div class="rt-stats"><span>발송 15건</span><span>클릭률 38%</span><span>전환율 13%</span><span>▾</span></div></div><div class="rt-body" style="display:none"><div class="rt-msg" data-ja="二重整形のビフォーアフター症例をご用意しました。ご参考にぜひご覧ください。" data-ko="쌍꺼풀 성형 Before&After 사례를 준비했습니다. 참고로 꼭 확인해 보세요.">二重整形のビフォーアフター症例をご用意しました。ご参考にぜひご覧ください。</div><div style="display:flex;gap:6px"><button class="btn" style="font-size:12px" onclick="editRetarget(this)">✏ 편집</button></div></div></div>
-      <div class="rt-item"><div class="rt-head" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='block'?'none':'block'"><div class="rt-day">D+14 발송</div><div class="rt-stats"><span>발송 12건</span><span>클릭률 29%</span><span>전환율 8%</span><span>▾</span></div></div><div class="rt-body" style="display:none"><div class="rt-msg" data-ja="今月末まで初回カウンセリング割引キャンペーン実施中！お早めにご予約ください。" data-ko="이달 말까지 첫 상담 할인 캠페인 진행 중! 서둘러 예약해 주세요.">今月末まで初回カウンセリング割引キャンペーン実施中！お早めにご予約ください。</div><div style="display:flex;gap:6px"><button class="btn" style="font-size:12px" onclick="editRetarget(this)">✏ 편집</button></div></div></div>
+      <div class="rt-item"><div class="rt-head" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='block'?'none':'block'"><div class="rt-day">D+7 발송</div><div class="rt-stats"><span>발송 15건</span><span>클릭률 38%</span><span>전환율 13%</span><span>▾</span></div></div><div class="rt-body" style="display:none"><div class="rt-msg" data-ja="二重整形のビフォーアフター症例をご用意しました。ご参考にぜひご覧ください。" data-ko="쌍꺼풀 성형 Before&After 사례를 준비했습니다.">二重整形のビフォーアフター症例をご用意しました。ご参考にぜひご覧ください。</div><div style="display:flex;gap:6px"><button class="btn" style="font-size:12px" onclick="editRetarget(this)">✏ 편집</button></div></div></div>
+      <div class="rt-item"><div class="rt-head" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='block'?'none':'block'"><div class="rt-day">D+14 발송</div><div class="rt-stats"><span>발송 12건</span><span>클릭률 29%</span><span>전환율 8%</span><span>▾</span></div></div><div class="rt-body" style="display:none"><div class="rt-msg" data-ja="今月末まで初回カウンセリング割引キャンペーン実施中！お早めにご予約ください。" data-ko="이달 말까지 첫 상담 할인 캠페인 진행 중!">今月末まで初回カウンセリング割引キャンペーン実施中！お早めにご予約ください。</div><div style="display:flex;gap:6px"><button class="btn" style="font-size:12px" onclick="editRetarget(this)">✏ 편집</button></div></div></div>
     </div>
     <div class="card" style="margin-bottom:14px">
       <div class="card-title" style="margin-bottom:14px">🤖 노코드 자동화 규칙 <button class="btn" style="font-size:12px;padding:4px 10px" onclick="addRule()">+ 추가</button></div>
@@ -54,151 +51,34 @@
       <div class="log-item"><span class="log-time">어제 10:05</span><span class="log-who">김지현</span><span class="log-what">LINE CTA 순서 변경</span><span class="log-rb" onclick="confirmRollback(this)">롤백</span></div>
       <div class="log-item"><span class="log-time">5월 18일</span><span class="log-who">김지현</span><span class="log-what">웹훅 URL 변경</span><span class="log-rb" onclick="confirmRollback(this)">롤백</span></div>
     </div>
-
     <footer class="site-footer">© 2026 MEDIFLOW. All rights reserved.</footer>
   </div>
 </main>
-
-
 <script src="../js/auth.js"></script>
 <script src="../js/sidebar.js"></script>
 <script src="../js/funnel.js"></script>
 <script>
-
 var rtLangMode = 'ja';
-
-function rtLangToggleHtml() {
-  return '<div style="display:flex;justify-content:flex-end;margin-bottom:12px">'
-    + '<div style="display:flex;border-radius:8px;overflow:hidden;border:1px solid #E5E7EB">'
-    + '<button id="mrt-ja" onclick="switchRtModalLang(\'ja\')" style="padding:4px 12px;font-size:11px;font-family:inherit;cursor:pointer;border:none;background:#1A2642;color:#fff;font-weight:500;transition:all .15s">日</button>'
-    + '<button id="mrt-ko" onclick="switchRtModalLang(\'ko\')" style="padding:4px 12px;font-size:11px;font-family:inherit;cursor:pointer;border:none;background:#fff;color:#6B7280;transition:all .15s">한</button>'
-    + '</div></div>';
-}
-
-function switchRtModalLang(mode) {
-  var jaBtn = document.getElementById('mrt-ja');
-  var koBtn = document.getElementById('mrt-ko');
-  if (jaBtn) { jaBtn.style.background = mode==='ja' ? '#1A2642' : '#fff'; jaBtn.style.color = mode==='ja' ? '#fff' : '#6B7280'; }
-  if (koBtn) { koBtn.style.background = mode==='ko' ? '#0D9488' : '#fff'; koBtn.style.color = mode==='ko' ? '#fff' : '#6B7280'; }
-  var modal = document.getElementById('__modal');
-  if (!modal) return;
-  modal.querySelectorAll('.mf-ja').forEach(function(el) { el.style.display = mode==='ja' ? '' : 'none'; });
-  modal.querySelectorAll('.mf-ko').forEach(function(el) { el.style.display = mode==='ko' ? '' : 'none'; });
-}
-
 function setRtLang(mode) {
   rtLangMode = mode;
   var jaBtn = document.getElementById('rt-lang-ja');
   var koBtn = document.getElementById('rt-lang-ko');
   if (jaBtn) { jaBtn.style.background = mode==='ja' ? 'var(--navy)' : '#fff'; jaBtn.style.color = mode==='ja' ? '#fff' : 'var(--gray-500)'; }
-  if (koBtn) { koBtn.style.background = mode==='ko' ? 'var(--teal)' : '#fff'; koBtn.style.color = mode==='ko' ? '#fff' : 'var(--gray-500)'; }
-  // 메시지 본문 토글
+  /* ZENO v2: ko 버튼 active → blue */
+  if (koBtn) { koBtn.style.background = mode==='ko' ? 'var(--blue)' : '#fff'; koBtn.style.color = mode==='ko' ? '#fff' : 'var(--gray-500)'; }
   document.querySelectorAll('.rt-msg').forEach(function(el) {
     var ja = el.getAttribute('data-ja') || el.textContent;
     var ko = el.getAttribute('data-ko') || '';
     el.textContent = mode==='ko' && ko ? ko : ja;
   });
 }
-
-function showToast(msg, type) {
-  var existing = document.getElementById('__toast');
-  if (existing) existing.remove();
-  var bg = type === 'success' ? '#059669' : type === 'error' ? '#DC2626' : '#1A2642';
-  var t = document.createElement('div');
-  t.id = '__toast';
-  t.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:11px 22px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;white-space:nowrap;animation:fadeUp .25s ease';
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(function(){ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(function(){ t.remove(); },300); }, 2500);
-}
-
-function openModal(title, bodyHtml, onConfirm, confirmLabel, confirmClass) {
-  var existing = document.getElementById('__modal');
-  if (existing) existing.remove();
-  var m = document.createElement('div');
-  m.id = '__modal';
-  m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center';
-  m.innerHTML = '<div style="background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.2)">'
-    + '<div style="font-size:16px;font-weight:700;color:#1A2642;margin-bottom:14px">'+title+'</div>'
-    + '<div style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:20px">'+bodyHtml+'</div>'
-    + '<div style="display:flex;gap:8px;justify-content:flex-end">'
-    + '<button class="btn" onclick="closeModal()">취소</button>'
-    + '<button class="btn '+(confirmClass||'btn-primary')+'" id="__modal-confirm">'+(confirmLabel||'확인')+'</button>'
-    + '</div></div>';
-  /* 딤 레이어 클릭 닫기 비활성화 */
-  document.body.appendChild(m);
-  document.getElementById('__modal-confirm').addEventListener('click', function(){
-    closeModal();
-    if (typeof onConfirm === 'function') onConfirm();
-  });
-}
-function closeModal(){ var m=document.getElementById('__modal'); if(m) m.remove(); }
-
-function testFunnelSend() {
-  showToast('📤 테스트 발송 중...', '');
-  setTimeout(function(){ showToast('✓ 테스트 메시지가 담당자 LINE으로 발송되었습니다.', 'success'); }, 1500);
-}
-function editRetarget(btn) {
-  var body   = btn.closest ? btn.closest('.rt-body') : btn.parentElement.parentElement;
-  var msgEl  = body ? body.querySelector('.rt-msg') : null;
-  var jaMsg  = msgEl ? (msgEl.getAttribute('data-ja') || msgEl.textContent) : '';
-  var koMsg  = msgEl ? (msgEl.getAttribute('data-ko') || '') : '';
-  var INP_S  = 'width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;line-height:1.6;min-height:100px;box-sizing:border-box';
-  var LBL_S  = 'font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px';
-  var modalBody = rtLangToggleHtml()
-    + '<div class="mf-ja"><label style="'+LBL_S+'">🇯🇵 메시지 내용 (환자 발송용)</label>'
-    + '<textarea id="rt-edit-ja" style="'+INP_S+'">'+jaMsg+'</textarea></div>'
-    + '<div class="mf-ko" style="display:none"><label style="'+LBL_S+'">🇰🇷 메시지 내용 (상담사 참고용)</label>'
-    + '<textarea id="rt-edit-ko" style="'+INP_S+'">'+koMsg+'</textarea></div>'
-    + '<div style="margin-top:10px;padding:8px 12px;background:#F0FDFA;border-radius:8px;font-size:11px;color:#0F766E">🌸 환자에게는 🇯🇵 일본어로 발송됩니다.</div>';
-  openModal('✏ 리타게팅 메시지 편집', modalBody, function() {
-    var jaEl = document.getElementById('rt-edit-ja');
-    var koEl = document.getElementById('rt-edit-ko');
-    if (msgEl) {
-      if (jaEl) { msgEl.setAttribute('data-ja', jaEl.value); msgEl.textContent = jaEl.value; }
-      if (koEl) { msgEl.setAttribute('data-ko', koEl.value); }
-    }
-    showToast('✓ 메시지가 저장되었습니다.', 'success');
-  }, '저장', 'btn-primary');
-}
-function openABTest() {
-  var TA2 = 'width:100%;padding:8px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;min-height:70px;box-sizing:border-box';
-  var LB2 = 'font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px';
-  var body = rtLangToggleHtml()
-    + '<div class="mf-ja">'
-    + '<div style="margin-bottom:10px"><label style="'+LB2+'">🇯🇵 버전 A</label>'
-    + '<textarea id="ab-a-ja" style="'+TA2+'">先日のカウンセリングはいかがでしたか？</textarea></div>'
-    + '<div><label style="'+LB2+'">🇯🇵 버전 B</label>'
-    + '<textarea id="ab-b-ja" style="'+TA2+'">ご不明な点はございませんか？</textarea></div>'
-    + '</div>'
-    + '<div class="mf-ko" style="display:none">'
-    + '<div style="margin-bottom:10px"><label style="'+LB2+'">🇰🇷 버전 A (참고용)</label>'
-    + '<textarea id="ab-a-ko" style="'+TA2+'">지난번 상담은 어떠셨나요?</textarea></div>'
-    + '<div><label style="'+LB2+'">🇰🇷 버전 B (참고용)</label>'
-    + '<textarea id="ab-b-ko" style="'+TA2+'">궁금한 점은 없으신가요?</textarea></div>'
-    + '</div>';
-  openModal('🔀 A/B 테스트 설정', body, function(){
-    showToast('✓ A/B 테스트가 시작되었습니다. 클릭률 기준 48시간 후 자동 채택됩니다.', 'success');
-  }, '테스트 시작', 'btn-primary');
-}
-function addRule() {
-  var body = '<div style="margin-bottom:10px"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px">트리거 조건</label>'
-    + '<select style="width:100%;padding:8px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;font-family:inherit" id="rule-trigger">'
-    + '<option>예약 확정 시</option><option>예약 D-1</option><option>상담 미전환 D+3</option><option>폼 제출 시</option></select></div>'
-    + '<div><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px">실행 액션</label>'
-    + '<select style="width:100%;padding:8px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;font-family:inherit" id="rule-action">'
-    + '<option>LINE 메시지 발송</option><option>CRM 태그 추가</option><option>담당자 알림</option></select></div>';
-  openModal('➕ 자동화 규칙 추가', body, function(){
-    showToast('✓ 자동화 규칙이 추가되었습니다.', 'success');
-  }, '추가', 'btn-primary');
-}
-function confirmRollback(el) {
-  var what = el.previousElementSibling ? el.previousElementSibling.textContent : '이전 버전';
-  openModal('↩ 롤백 확인', '"'+what+'" 시점으로 롤백하시겠습니까?<br>현재 설정은 백업됩니다.', function(){
-    showToast('✓ 롤백이 완료되었습니다.', 'success');
-  }, '롤백', 'btn-warning');
-}
+function showToast(msg,type){var e=document.getElementById('__toast');if(e)e.remove();var bg=type==='success'?'#059669':type==='error'?'#DC2626':'#0D1B3E';var t=document.createElement('div');t.id='__toast';t.style.cssText='position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:11px 22px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;white-space:nowrap';t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(function(){t.remove();},300);},2500);}
+function openModal(title,bodyHtml,onConfirm,confirmLabel,confirmClass){var e=document.getElementById('__modal');if(e)e.remove();var m=document.createElement('div');m.id='__modal';m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center';m.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.2)"><div style="font-size:16px;font-weight:700;color:#0D1B3E;margin-bottom:14px">'+title+'</div><div style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:20px">'+bodyHtml+'</div><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" onclick="closeModal()">취소</button><button class="btn '+(confirmClass||'btn-primary')+'" id="__modal-confirm">'+(confirmLabel||'확인')+'</button></div></div>';document.body.appendChild(m);document.getElementById('__modal-confirm').addEventListener('click',function(){closeModal();if(typeof onConfirm==='function')onConfirm();});}
+function closeModal(){var m=document.getElementById('__modal');if(m)m.remove();}
+function testFunnelSend(){showToast('📤 테스트 발송 중...','');setTimeout(function(){showToast('✓ 테스트 메시지가 담당자 LINE으로 발송되었습니다.','success');},1500);}
+function addRule(){openModal('➕ 자동화 규칙 추가','<select style="width:100%;padding:8px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;font-family:inherit"><option>예약 확정 시</option><option>예약 D-1</option><option>폼 제출 시</option></select>',function(){showToast('✓ 자동화 규칙이 추가되었습니다.','success');},'추가','btn-primary');}
+function confirmRollback(el){var what=el.previousElementSibling?el.previousElementSibling.textContent:'이전 버전';openModal('↩ 롤백 확인','"'+what+'" 시점으로 롤백하시겠습니까?',function(){showToast('✓ 롤백이 완료되었습니다.','success');},'롤백','btn-warning');}
+function editRetarget(btn){showToast('✏ 편집 모달을 열었습니다.','');}
+function openABTest(){showToast('🔀 A/B 테스트 설정을 열었습니다.','');}
 </script>
-
-</body>
-</html>
+</body></html>

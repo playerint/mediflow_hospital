@@ -4,8 +4,7 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>예약 관리 — Hospital Site OS</title>
 <script src="../js/gate.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet">
 <link rel="stylesheet" href="../css/common.css">
 <link rel="stylesheet" href="../css/crm.css">
 <style>
@@ -36,16 +35,9 @@
 .table td{font-size:13px;color:var(--gray-700);padding:0 14px;height:48px;border-bottom:1px solid var(--gray-100);vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .table tr:last-child td{border-bottom:none;}
 .table tbody tr:hover td{background:var(--gray-50);cursor:pointer;}
-/* 컬럼 너비 고정 */
-.table th:nth-child(1){width:60px;}
-.table th:nth-child(2){width:70px;}
-.table th:nth-child(3){width:120px;}
-.table th:nth-child(4){width:140px;}
-.table th:nth-child(5){width:80px;}
-.table th:nth-child(6){width:130px;}
-.table th:nth-child(7){width:90px;}
-.table th:nth-child(8){width:70px;}
-.table th:nth-child(9){width:60px;}
+.table th:nth-child(1){width:60px;}.table th:nth-child(2){width:70px;}.table th:nth-child(3){width:120px;}
+.table th:nth-child(4){width:140px;}.table th:nth-child(5){width:80px;}.table th:nth-child(6){width:130px;}
+.table th:nth-child(7){width:90px;}.table th:nth-child(8){width:70px;}.table th:nth-child(9){width:60px;}
 .badge{display:inline-flex;align-items:center;font-size:11px;padding:2px 8px;border-radius:6px;font-weight:500;}
 </style>
 </head>
@@ -64,32 +56,21 @@
     </div>
   </div>
   <div class="content">
-
-    <!-- KPI -->
+    <!-- KPI — teal→navy, amber→gray -->
     <div class="kpi-grid">
-      <div class="card" style="border-top:3px solid var(--teal)">
-        <div class="kpi-lbl">이번 주 예약</div>
-        <div class="kpi-num">6건</div>
-        <div class="kpi-dl up">↑ +2</div>
+      <div class="card" style="border-top:3px solid var(--navy)">
+        <div class="kpi-lbl">이번 주 예약</div><div class="kpi-num">6건</div><div class="kpi-dl up">↑ +2</div>
       </div>
       <div class="card" style="border-top:3px solid var(--blue)">
-        <div class="kpi-lbl">이번 달 예약</div>
-        <div class="kpi-num">14건</div>
-        <div class="kpi-dl up">↑ +40%</div>
+        <div class="kpi-lbl">이번 달 예약</div><div class="kpi-num">14건</div><div class="kpi-dl up">↑ +40%</div>
       </div>
       <div class="card" style="border-top:3px solid var(--red)">
-        <div class="kpi-lbl">노쇼율</div>
-        <div class="kpi-num">7.1%</div>
-        <div class="kpi-dl down">↓ -2.3%p</div>
+        <div class="kpi-lbl">노쇼율</div><div class="kpi-num">7.1%</div><div class="kpi-dl down">↓ -2.3%p</div>
       </div>
-      <div class="card" style="border-top:3px solid var(--amber)">
-        <div class="kpi-lbl">평균 리드타임</div>
-        <div class="kpi-num">8.3일</div>
-        <div class="kpi-dl neu">문의→예약</div>
+      <div class="card" style="border-top:3px solid var(--gray-300)">
+        <div class="kpi-lbl">평균 리드타임</div><div class="kpi-num">8.3일</div><div class="kpi-dl neu">문의→예약</div>
       </div>
     </div>
-
-    <!-- 캘린더 + 오늘 일정 -->
     <div class="grid2">
       <div class="cal-wrap">
         <div class="cal-nav">
@@ -107,8 +88,6 @@
         <div id="today-list"></div>
       </div>
     </div>
-
-    <!-- 전체 예약 리스트 -->
     <div class="list-wrap">
       <div class="list-head">
         <div class="list-title">전체 예약 리스트</div>
@@ -125,16 +104,11 @@
       </div>
       <table class="table">
         <thead>
-          <tr>
-            <th>날짜</th><th>시간</th><th>환자명</th><th>시술</th>
-            <th>유형</th><th>담당 의사</th><th>LINE 발송</th><th>상태</th><th></th>
-          </tr>
+          <tr><th>날짜</th><th>시간</th><th>환자명</th><th>시술</th><th>유형</th><th>담당 의사</th><th>LINE 발송</th><th>상태</th><th></th></tr>
         </thead>
         <tbody id="booking-tbody"></tbody>
       </table>
     </div>
-
-
     <footer class="site-footer">© 2026 MEDIFLOW. All rights reserved.</footer>
   </div>
 </main>
@@ -143,28 +117,28 @@
 <script src="../js/sidebar.js"></script>
 <script>
 var ALL_BOOKINGS = [
-  {date:'5/19',time:'09:30',name:'모리 아카리',    proc:'쌍꺼풀 매몰법',  type:'consult',doctor:'김민준 원장',   line:true,  status:'완료', sbc:'#EDE9FE',stc:'#4C1D95'},
-  {date:'5/19',time:'11:00',name:'이시카와 유이',   proc:'코 필러',       type:'online', doctor:'이수진 전문의',  line:true,  status:'완료', sbc:'#EDE9FE',stc:'#4C1D95'},
-  {date:'5/19',time:'14:30',name:'하마다 미사키',   proc:'눈밑 지방',     type:'visit',  doctor:'박정호 전문의',  line:true,  status:'완료', sbc:'#EDE9FE',stc:'#4C1D95'},
-  {date:'5/19',time:'16:00',name:'우에다 나나',     proc:'피부 보톡스',   type:'auto',   doctor:'최유리 전문의',  line:true,  status:'완료', sbc:'#EDE9FE',stc:'#4C1D95'},
-  {date:'5/20',time:'10:00',name:'스즈키 미카',    proc:'쌍꺼풀 비대면', type:'online', doctor:'이수진 전문의',  line:true,  status:'완료', sbc:'#EDE9FE',stc:'#4C1D95'},
-  {date:'5/20',time:'11:30',name:'이토 나나미',    proc:'쌍꺼풀 내원',   type:'visit',  doctor:'김민준 원장',   line:true,  status:'완료', sbc:'#EDE9FE',stc:'#4C1D95'},
-  {date:'5/20',time:'13:00',name:'고바야시 에미',   proc:'윤곽 상담',     type:'consult',doctor:'박정호 전문의',  line:false, status:'완료', sbc:'#EDE9FE',stc:'#4C1D95'},
-  {date:'5/20',time:'14:00',name:'와타나베 아오이', proc:'비대면 상담',   type:'online', doctor:'이수진 전문의',  line:true,  status:'완료', sbc:'#EDE9FE',stc:'#4C1D95'},
-  {date:'5/20',time:'15:30',name:'마츠모토 사야',   proc:'지방흡입 상담', type:'consult',doctor:'김민준 원장',   line:true,  status:'완료', sbc:'#EDE9FE',stc:'#4C1D95'},
-  {date:'5/21',time:'10:30',name:'기무라 아야카',   proc:'눈 성형 절개',  type:'auto',   doctor:'이수진 전문의',  line:true,  status:'완료', sbc:'#EDE9FE',stc:'#4C1D95'},
-  {date:'5/21',time:'13:00',name:'나카무라 리나',   proc:'코 성형',       type:'consult',doctor:'김민준 원장',   line:true,  status:'완료', sbc:'#EDE9FE',stc:'#4C1D95'},
-  {date:'5/21',time:'14:30',name:'요시다 호노카',   proc:'피부레이저',    type:'auto',   doctor:'최유리 전문의',  line:true,  status:'완료', sbc:'#EDE9FE',stc:'#4C1D95'},
-  {date:'5/21',time:'16:00',name:'오노 미유',       proc:'보톡스 시술',   type:'auto',   doctor:'최유리 전문의',  line:false, status:'취소', sbc:'#FEE2E2',stc:'#991B1B'},
+  {date:'5/19',time:'09:30',name:'모리 아카리',    proc:'쌍꺼풀 매몰법',  type:'consult',doctor:'김민준 원장',   line:true,  status:'완료', sbc:'#EEF2FF',stc:'#0D1B3E'},
+  {date:'5/19',time:'11:00',name:'이시카와 유이',   proc:'코 필러',       type:'online', doctor:'이수진 전문의',  line:true,  status:'완료', sbc:'#EEF2FF',stc:'#0D1B3E'},
+  {date:'5/19',time:'14:30',name:'하마다 미사키',   proc:'눈밑 지방',     type:'visit',  doctor:'박정호 전문의',  line:true,  status:'완료', sbc:'#EEF2FF',stc:'#0D1B3E'},
+  {date:'5/19',time:'16:00',name:'우에다 나나',     proc:'피부 보톡스',   type:'auto',   doctor:'최유리 전문의',  line:true,  status:'완료', sbc:'#EEF2FF',stc:'#0D1B3E'},
+  {date:'5/20',time:'10:00',name:'스즈키 미카',    proc:'쌍꺼풀 비대면', type:'online', doctor:'이수진 전문의',  line:true,  status:'완료', sbc:'#EEF2FF',stc:'#0D1B3E'},
+  {date:'5/20',time:'11:30',name:'이토 나나미',    proc:'쌍꺼풀 내원',   type:'visit',  doctor:'김민준 원장',   line:true,  status:'완료', sbc:'#EEF2FF',stc:'#0D1B3E'},
+  {date:'5/20',time:'13:00',name:'고바야시 에미',   proc:'윤곽 상담',     type:'consult',doctor:'박정호 전문의',  line:false, status:'완료', sbc:'#EEF2FF',stc:'#0D1B3E'},
+  {date:'5/20',time:'14:00',name:'와타나베 아오이', proc:'비대면 상담',   type:'online', doctor:'이수진 전문의',  line:true,  status:'완료', sbc:'#EEF2FF',stc:'#0D1B3E'},
+  {date:'5/20',time:'15:30',name:'마츠모토 사야',   proc:'지방흡입 상담', type:'consult',doctor:'김민준 원장',   line:true,  status:'완료', sbc:'#EEF2FF',stc:'#0D1B3E'},
+  {date:'5/21',time:'10:30',name:'기무라 아야카',   proc:'눈 성형 절개',  type:'auto',   doctor:'이수진 전문의',  line:true,  status:'완료', sbc:'#EEF2FF',stc:'#0D1B3E'},
+  {date:'5/21',time:'13:00',name:'나카무라 리나',   proc:'코 성형',       type:'consult',doctor:'김민준 원장',   line:true,  status:'완료', sbc:'#EEF2FF',stc:'#0D1B3E'},
+  {date:'5/21',time:'14:30',name:'요시다 호노카',   proc:'피부레이저',    type:'auto',   doctor:'최유리 전문의',  line:true,  status:'완료', sbc:'#EEF2FF',stc:'#0D1B3E'},
+  {date:'5/21',time:'16:00',name:'오노 미유',       proc:'보톡스 시술',   type:'auto',   doctor:'최유리 전문의',  line:false, status:'취소', sbc:'#FEF2F2',stc:'#991B1B'},
   {date:'5/22',time:'09:30',name:'가토 아이리',    proc:'쌍꺼풀 상담',   type:'consult',doctor:'김민준 원장',   line:true,  status:'확정', sbc:'#D1FAE5',stc:'#065F46'},
-  {date:'5/22',time:'10:00',name:'다나카 유키',    proc:'눈 성형',       type:'consult',doctor:'박정호 전문의',  line:false, status:'대기', sbc:'#FEF3C7',stc:'#92400E'},
+  {date:'5/22',time:'10:00',name:'다나카 유키',    proc:'눈 성형',       type:'consult',doctor:'박정호 전문의',  line:false, status:'대기', sbc:'#F3F4F6',stc:'#374151'},
   {date:'5/22',time:'11:30',name:'이케다 미오',    proc:'코 필러',       type:'online', doctor:'이수진 전문의',  line:true,  status:'확정', sbc:'#D1FAE5',stc:'#065F46'},
   {date:'5/22',time:'13:00',name:'후지와라 유나',   proc:'피부 보톡스',   type:'auto',   doctor:'최유리 전문의',  line:true,  status:'확정', sbc:'#D1FAE5',stc:'#065F46'},
   {date:'5/22',time:'14:30',name:'나가타 사쿠라',   proc:'눈밑 지방',     type:'visit',  doctor:'박정호 전문의',  line:true,  status:'확정', sbc:'#D1FAE5',stc:'#065F46'},
   {date:'5/22',time:'15:00',name:'기타노 유이',    proc:'피부레이저',    type:'auto',   doctor:'최유리 전문의',  line:true,  status:'확정', sbc:'#D1FAE5',stc:'#065F46'},
-  {date:'5/22',time:'16:30',name:'오오키 레나',    proc:'지방흡입',      type:'visit',  doctor:'김민준 원장',   line:false, status:'대기', sbc:'#FEF3C7',stc:'#92400E'},
+  {date:'5/22',time:'16:30',name:'오오키 레나',    proc:'지방흡입',      type:'visit',  doctor:'김민준 원장',   line:false, status:'대기', sbc:'#F3F4F6',stc:'#374151'},
   {date:'5/23',time:'10:00',name:'미야자키 유즈키', proc:'쌍꺼풀 매몰법', type:'auto',   doctor:'이수진 전문의',  line:true,  status:'확정', sbc:'#D1FAE5',stc:'#065F46'},
-  {date:'5/23',time:'11:00',name:'야마다 사오리',   proc:'쌍꺼풀 상담',   type:'consult',doctor:'김민준 원장',   line:false, status:'대기', sbc:'#FEF3C7',stc:'#92400E'},
+  {date:'5/23',time:'11:00',name:'야마다 사오리',   proc:'쌍꺼풀 상담',   type:'consult',doctor:'김민준 원장',   line:false, status:'대기', sbc:'#F3F4F6',stc:'#374151'},
   {date:'5/23',time:'13:30',name:'사카모토 아오이', proc:'윤곽 주사',     type:'auto',   doctor:'최유리 전문의',  line:true,  status:'확정', sbc:'#D1FAE5',stc:'#065F46'},
   {date:'5/23',time:'15:00',name:'엔도 치히로',    proc:'코 성형 상담',  type:'consult',doctor:'박정호 전문의',  line:true,  status:'확정', sbc:'#D1FAE5',stc:'#065F46'},
   {date:'5/24',time:'10:00',name:'시미즈 아스카',   proc:'눈 성형 절개',  type:'auto',   doctor:'이수진 전문의',  line:true,  status:'확정', sbc:'#D1FAE5',stc:'#065F46'},
@@ -173,23 +147,24 @@ var ALL_BOOKINGS = [
   {date:'5/24',time:'15:30',name:'니시무라 코토네', proc:'피부레이저',    type:'auto',   doctor:'최유리 전문의',  line:true,  status:'확정', sbc:'#D1FAE5',stc:'#065F46'},
   {date:'5/25',time:'09:30',name:'마에다 히나',    proc:'쌍꺼풀 매몰법', type:'auto',   doctor:'이수진 전문의',  line:true,  status:'확정', sbc:'#D1FAE5',stc:'#065F46'},
   {date:'5/25',time:'10:30',name:'오카다 미오',    proc:'코 성형',       type:'visit',  doctor:'김민준 원장',   line:true,  status:'확정', sbc:'#D1FAE5',stc:'#065F46'},
-  {date:'5/25',time:'13:00',name:'구보타 나츠미',   proc:'지방흡입 상담', type:'consult',doctor:'김민준 원장',   line:false, status:'대기', sbc:'#FEF3C7',stc:'#92400E'},
+  {date:'5/25',time:'13:00',name:'구보타 나츠미',   proc:'지방흡입 상담', type:'consult',doctor:'김민준 원장',   line:false, status:'대기', sbc:'#F3F4F6',stc:'#374151'},
   {date:'5/25',time:'14:30',name:'아오야마 미나',   proc:'보톡스',        type:'auto',   doctor:'최유리 전문의',  line:true,  status:'확정', sbc:'#D1FAE5',stc:'#065F46'},
   {date:'5/26',time:'10:00',name:'이와사키 유코',   proc:'눈 성형 상담',  type:'consult',doctor:'박정호 전문의',  line:true,  status:'확정', sbc:'#D1FAE5',stc:'#065F46'},
   {date:'5/26',time:'11:30',name:'후쿠다 마이',    proc:'코 필러',       type:'online', doctor:'이수진 전문의',  line:true,  status:'확정', sbc:'#D1FAE5',stc:'#065F46'},
-  {date:'5/26',time:'14:00',name:'나카지마 리쿠',   proc:'쌍꺼풀 상담',   type:'consult',doctor:'김민준 원장',   line:false, status:'대기', sbc:'#FEF3C7',stc:'#92400E'},
-  {date:'5/26',time:'16:00',name:'하야시 유카',    proc:'지방흡입',      type:'visit',  doctor:'이수진 전문의',  line:true,  status:'취소', sbc:'#FEE2E2',stc:'#991B1B'},
+  {date:'5/26',time:'14:00',name:'나카지마 리쿠',   proc:'쌍꺼풀 상담',   type:'consult',doctor:'김민준 원장',   line:false, status:'대기', sbc:'#F3F4F6',stc:'#374151'},
+  {date:'5/26',time:'16:00',name:'하야시 유카',    proc:'지방흡입',      type:'visit',  doctor:'이수진 전문의',  line:true,  status:'취소', sbc:'#FEF2F2',stc:'#991B1B'},
 ];
 
+/* ZENO v2: 유형 칩 — gray 배경 + blue/navy 텍스트 */
 var TYPE_LABELS = {consult:'상담', online:'비대면', visit:'내원', auto:'시술'};
 var TYPE_COLORS = {
-  consult:{bg:'#EDE9FE',tc:'#4C1D95'},
-  online: {bg:'#DBEAFE',tc:'#1E40AF'},
+  consult:{bg:'#EEF2FF',tc:'#0D1B3E'},
+  online: {bg:'#EFF6FF',tc:'#1E40AF'},
   visit:  {bg:'#D1FAE5',tc:'#065F46'},
-  auto:   {bg:'#FEF3C7',tc:'#92400E'},
+  auto:   {bg:'#F3F4F6',tc:'#374151'},
 };
-var TYPE_BG = {consult:'#CCFBF1',online:'#DBEAFE',visit:'#D1FAE5',auto:'#EDE9FE'};
-var TYPE_TC2= {consult:'#0F766E',online:'#1E40AF',visit:'#065F46',auto:'#4C1D95'};
+var TYPE_BG  = {consult:'#EEF2FF',online:'#EFF6FF',visit:'#D1FAE5',auto:'#F3F4F6'};
+var TYPE_TC2 = {consult:'#0D1B3E',online:'#1E40AF',visit:'#065F46',auto:'#374151'};
 
 function renderBookingTable(filter) {
   var tbody = document.getElementById('booking-tbody');
@@ -203,7 +178,7 @@ function renderBookingTable(filter) {
       ? '<span style="color:#059669;font-size:13px">✓</span>'
       : '<span style="color:#D1D5DB;font-size:13px">—</span>';
     rows += '<tr onclick="alert(\'' + b.name + ' 예약 상세\')">';
-    rows += '<td style="font-weight:500;color:#1A2642">' + b.date + '</td>';
+    rows += '<td style="font-weight:500;color:var(--navy)">' + b.date + '</td>';
     rows += '<td>' + b.time + '</td>';
     rows += '<td style="font-weight:500">' + b.name + '</td>';
     rows += '<td>' + b.proc + '</td>';
@@ -223,7 +198,6 @@ function setBookingFilter(f, btn) {
   renderBookingTable(f);
 }
 
-// 캘린더
 function renderCalendar() {
   var cal = document.getElementById('calendar');
   if (!cal) return;
@@ -231,9 +205,7 @@ function renderCalendar() {
   var dates = ['18','19','20','21','22','23','24'];
   cal.innerHTML = '';
   for (var i = 0; i < days.length; i++) {
-    var d = days[i];
-    var dt = dates[i];
-    var isToday = dt === '22';
+    var d = days[i]; var dt = dates[i]; var isToday = dt === '22';
     var chips = '';
     for (var j = 0; j < ALL_BOOKINGS.length; j++) {
       var b = ALL_BOOKINGS[j];
@@ -246,7 +218,6 @@ function renderCalendar() {
   }
 }
 
-// 오늘 일정
 function renderToday() {
   var el = document.getElementById('today-list');
   if (!el) return;
@@ -255,7 +226,7 @@ function renderToday() {
   for (var k = 0; k < todayBks.length; k++) {
     var tb = todayBks[k];
     html += '<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #F3F4F6">';
-    html += '<div style="font-size:12px;font-weight:600;color:#1A2642;min-width:38px">' + tb.time + '</div>';
+    html += '<div style="font-size:12px;font-weight:600;color:var(--navy);min-width:38px">' + tb.time + '</div>';
     html += '<div style="flex:1"><div style="font-size:13px;font-weight:500">' + tb.name + '</div><div style="font-size:11px;color:#9CA3AF">' + tb.proc + '</div></div>';
     html += '<span class="badge" style="background:' + (TYPE_BG[tb.type]||'#F3F4F6') + ';color:' + (TYPE_TC2[tb.type]||'#374151') + ';font-size:10px">' + (TYPE_LABELS[tb.type]||'') + '</span>';
     html += '</div>';
@@ -264,31 +235,24 @@ function renderToday() {
 }
 
 window.addEventListener('DOMContentLoaded', function() {
-  renderCalendar();
-  renderToday();
-  renderBookingTable('all');
+  renderCalendar(); renderToday(); renderBookingTable('all');
 });
 
 function showToast(msg, type) {
-  var existing = document.getElementById('__toast');
-  if (existing) existing.remove();
-  var bg = type === 'success' ? '#059669' : type === 'error' ? '#DC2626' : '#1A2642';
-  var t = document.createElement('div');
-  t.id = '__toast';
+  var existing = document.getElementById('__toast'); if (existing) existing.remove();
+  var bg = type === 'success' ? '#059669' : type === 'error' ? '#DC2626' : '#0D1B3E';
+  var t = document.createElement('div'); t.id = '__toast';
   t.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:11px 22px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;white-space:nowrap;animation:fadeUp .25s ease';
-  t.textContent = msg;
-  document.body.appendChild(t);
+  t.textContent = msg; document.body.appendChild(t);
   setTimeout(function(){ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(function(){ t.remove(); },300); }, 2500);
 }
 
 function openModal(title, bodyHtml, onConfirm, confirmLabel, confirmClass) {
-  var existing = document.getElementById('__modal');
-  if (existing) existing.remove();
-  var m = document.createElement('div');
-  m.id = '__modal';
+  var existing = document.getElementById('__modal'); if (existing) existing.remove();
+  var m = document.createElement('div'); m.id = '__modal';
   m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center';
   m.innerHTML = '<div style="background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.2)">'
-    + '<div style="font-size:16px;font-weight:700;color:#1A2642;margin-bottom:14px">'+title+'</div>'
+    + '<div style="font-size:16px;font-weight:700;color:var(--navy);margin-bottom:14px">'+title+'</div>'
     + '<div style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:20px">'+bodyHtml+'</div>'
     + '<div style="display:flex;gap:8px;justify-content:flex-end">'
     + '<button class="btn" onclick="closeModal()">취소</button>'
@@ -296,10 +260,7 @@ function openModal(title, bodyHtml, onConfirm, confirmLabel, confirmClass) {
     + '</div></div>';
   m.addEventListener('click', function(e){ if(e.target===m) closeModal(); });
   document.body.appendChild(m);
-  document.getElementById('__modal-confirm').addEventListener('click', function(){
-    closeModal();
-    if (typeof onConfirm === 'function') onConfirm();
-  });
+  document.getElementById('__modal-confirm').addEventListener('click', function(){ closeModal(); if (typeof onConfirm === 'function') onConfirm(); });
 }
 function closeModal(){ var m=document.getElementById('__modal'); if(m) m.remove(); }
 
@@ -319,27 +280,9 @@ function exportCSV(type) {
     showToast('✓ CSV 다운로드 완료', 'success');
   }, 600);
 }
-function showBookingDetail(idx) {
-  var b = ALL_BOOKINGS[idx];
-  if (!b) return;
-  var tc = TYPE_COLORS[b.type]||{bg:'#F3F4F6',tc:'#374151'};
-  var body = '<table style="width:100%;border-collapse:collapse">'
-    + makeRow('환자명', b.name)
-    + makeRow('날짜·시간', b.date + ' ' + b.time)
-    + makeRow('시술', b.proc)
-    + makeRow('유형', '<span style="background:'+tc.bg+';color:'+tc.tc+';padding:2px 8px;border-radius:6px;font-size:12px">'+(TYPE_LABELS[b.type]||b.type)+'</span>')
-    + makeRow('담당 의사', b.doctor)
-    + makeRow('LINE 발송', b.line ? '✓ 발송 완료' : '미발송')
-    + makeRow('상태', '<span style="background:'+b.sbc+';color:'+b.stc+';padding:2px 8px;border-radius:6px;font-size:12px">'+b.status+'</span>')
-    + '</table>';
-  openModal('📋 예약 상세 — ' + b.name, body, null, '닫기', 'btn-primary');
-}
-function makeRow(label, val) {
-  return '<tr><td style="font-size:12px;color:#9CA3AF;padding:6px 0;width:90px">'+label+'</td><td style="font-size:13px;color:#374151;padding:6px 0">'+val+'</td></tr>';
-}
+
 function editBooking(idx) {
-  var b = ALL_BOOKINGS[idx];
-  if (!b) return;
+  var b = ALL_BOOKINGS[idx]; if (!b) return;
   var body = '<div style="margin-bottom:10px"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px">환자명</label>'
     + '<input style="width:100%;padding:8px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;font-family:inherit" value="'+b.name+'" id="edit-name"></div>'
     + '<div style="margin-bottom:10px"><label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px">시술</label>'
@@ -349,12 +292,13 @@ function editBooking(idx) {
     + ['대기','확정','완료','취소'].map(function(s){ return '<option'+(s===b.status?' selected':'')+'>'+s+'</option>'; }).join('')
     + '</select></div>';
   openModal('✏ 예약 편집 — ' + b.name, body, function(){
-    ALL_BOOKINGS[idx].name   = document.getElementById('edit-name')  ? document.getElementById('edit-name').value   : b.name;
-    ALL_BOOKINGS[idx].proc   = document.getElementById('edit-proc')  ? document.getElementById('edit-proc').value   : b.proc;
+    ALL_BOOKINGS[idx].name = document.getElementById('edit-name') ? document.getElementById('edit-name').value : b.name;
+    ALL_BOOKINGS[idx].proc = document.getElementById('edit-proc') ? document.getElementById('edit-proc').value : b.proc;
     var st = document.getElementById('edit-status') ? document.getElementById('edit-status').value : b.status;
     ALL_BOOKINGS[idx].status = st;
-    ALL_BOOKINGS[idx].sbc = st==='확정'?'#D1FAE5':st==='완료'?'#EDE9FE':st==='취소'?'#FEE2E2':'#FEF3C7';
-    ALL_BOOKINGS[idx].stc = st==='확정'?'#065F46':st==='완료'?'#4C1D95':st==='취소'?'#991B1B':'#92400E';
+    /* ZENO v2: 상태 칩 — gray 계열만 */
+    ALL_BOOKINGS[idx].sbc = st==='확정'?'#D1FAE5':st==='완료'?'#EEF2FF':st==='취소'?'#FEF2F2':'#F3F4F6';
+    ALL_BOOKINGS[idx].stc = st==='확정'?'#065F46':st==='완료'?'#0D1B3E':st==='취소'?'#991B1B':'#374151';
     renderBookingTable('all');
     document.querySelectorAll('.filter-pills .pill').forEach(function(p){ p.classList.remove('on'); });
     document.querySelector('.filter-pills .pill').classList.add('on');

@@ -1,36 +1,31 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
+<html lang="ko"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>사이트 관리 — 콘텐츠 편집 — Hospital Site OS</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/common.css">
-<link rel="stylesheet" href="../css/site.css">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../css/common.css"><link rel="stylesheet" href="../css/site.css">
 <script src="../js/gate.js"></script>
-</head>
-<body>
+</head><body>
 <div id="sidebar-mount" data-active="site_content"></div>
-
 <main class="main">
   <div class="topbar">
     <div class="topbar-left">
       <a class="topbar-back" href="../index.html">← 대시보드</a>
-      <span style="color:var(--gray-300)">/</span>
-      <span class="topbar-title">사이트 관리</span>
+      <span style="color:var(--gray-300)">/</span><span class="topbar-title">사이트 관리</span>
       <span style="font-size:12px;color:var(--gray-400)">/</span>
       <span style="font-size:14px;color:var(--gray-600)">콘텐츠 편집</span>
     </div>
     <div class="topbar-right">
-      <a class="btn btn-warning" href="hospital_site_preview.html">👁 미리보기</a>
+      <a class="btn" href="hospital_site_preview.html">👁 미리보기</a>
       <button class="btn btn-primary" onclick="showToast('✓ 임시 저장되었습니다.','success')">💾 임시 저장</button>
-      <button class="btn btn-navy" onclick="openModal('🚀 게시하기','현재 콘텐츠를 일본어 사이트에 배포합니다.<br>게시 전 컴플라이언스 검사를 통과했는지 확인해주세요.',function(){ showToast('✓ 게시가 완료되었습니다. jp.oleps.co.kr에 반영됩니다.','success'); },'게시하기','btn-navy')">🚀 게시하기</button>
+      <button class="btn btn-navy" onclick="openModal('🚀 게시하기','현재 콘텐츠를 일본어 사이트에 배포합니다.',function(){showToast('✓ 게시가 완료되었습니다.','success');},'게시하기','btn-navy')">🚀 게시하기</button>
     </div>
   </div>
   <div class="content">
     <div class="tab-bar">
       <button class="tab active">콘텐츠 편집</button>
       <button class="tab" onclick="location.href='hospital_site_assets.html'">자산 관리</button>
-      <button class="tab" onclick="location.href='hospital_site_preview.html'">미리보기 & 게시</button>
+      <button class="tab" onclick="location.href='hospital_site_preview.html'">미리보기 &amp; 게시</button>
     </div>
     <div class="layout-site">
       <div>
@@ -47,7 +42,7 @@
         <div style="margin-top:12px;background:#fff;border:1px solid var(--gray-200);border-radius:var(--rl);padding:14px 16px">
           <div style="font-size:12px;font-weight:600;color:var(--gray-500);margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em">컴플라이언스</div>
           <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="font-size:12px;color:var(--gray-700)">전체 위반 건</span><span style="font-size:13px;font-weight:600;color:var(--red)">1건</span></div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:12px"><span style="font-size:12px;color:var(--gray-700)">회색지대</span><span style="font-size:13px;font-weight:600;color:var(--amber)">2건</span></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:12px"><span style="font-size:12px;color:var(--gray-700)">회색지대</span><span style="font-size:13px;font-weight:600;color:var(--s500)">2건</span></div>
           <button class="btn" style="width:100%;justify-content:center;font-size:12px" onclick="startComplianceCheck()">🔍 전체 재검사</button>
         </div>
       </div>
@@ -73,68 +68,26 @@
         <div style="padding:12px 20px">
           <div style="font-size:12px;font-weight:600;color:var(--gray-500);margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em">버전 이력</div>
           <div class="ver-item"><span class="ver-time">오늘 14:23</span><span class="ver-by">AI Agent 재집필</span><span class="ver-badge">현재</span></div>
-          <div class="ver-item"><span class="ver-time">어제 10:05</span><span class="ver-by">김지현 수정</span><span class="ver-badge">v2</span><a class="ver-btn" href="#" onclick="openModal('버전 롤백','v2 (어제 10:05 · 김지현 수정) 버전으로 롤백하시겠습니까?<br>현재 버전은 v3으로 저장됩니다.',function(){ showToast('✓ v2로 롤백되었습니다.','success'); },'롤백','btn-warning')">롤백</a></div>
-          <div class="ver-item"><span class="ver-time">5월 18일</span><span class="ver-by">최초 AI 생성</span><span class="ver-badge">v1</span><a class="ver-btn" href="#" onclick="openModal('버전 롤백','v1 (5월 18일 · 최초 AI 생성) 버전으로 롤백하시겠습니까?<br>현재 버전은 v3으로 저장됩니다.',function(){ showToast('✓ v1로 롤백되었습니다.','success'); },'롤백','btn-warning')">롤백</a></div>
+          <div class="ver-item"><span class="ver-time">어제 10:05</span><span class="ver-by">김지현 수정</span><span class="ver-badge">v2</span><a class="ver-btn" href="#" onclick="openModal('버전 롤백','v2로 롤백하시겠습니까?',function(){showToast('✓ v2로 롤백되었습니다.','success');},'롤백','btn-warning')">롤백</a></div>
+          <div class="ver-item"><span class="ver-time">5월 18일</span><span class="ver-by">최초 AI 생성</span><span class="ver-badge">v1</span><a class="ver-btn" href="#" onclick="openModal('버전 롤백','v1로 롤백하시겠습니까?',function(){showToast('✓ v1로 롤백되었습니다.','success');},'롤백','btn-warning')">롤백</a></div>
         </div>
         <div class="save-bar">
           <span class="save-info" id="save-info">마지막 저장: 오늘 14:23</span>
           <div style="display:flex;gap:8px">
-            <button class="btn" onclick="openModal('편집 취소','저장하지 않은 변경사항이 있습니다.<br>편집을 취소하시겠습니까?',function(){ showToast('편집이 취소되었습니다.',''); },'취소','btn-danger')">취소</button>
+            <button class="btn" onclick="openModal('편집 취소','변경사항을 취소하시겠습니까?',function(){showToast('편집이 취소되었습니다.','');},'취소','btn-danger')">취소</button>
             <button class="btn btn-primary" onclick="saveSection()">저장</button>
           </div>
         </div>
       </div>
     </div>
-
     <footer class="site-footer">© 2026 MEDIFLOW. All rights reserved.</footer>
   </div>
 </main>
-
-
-<script src="../js/auth.js"></script>
-<script src="../js/sidebar.js"></script>
-<script src="../js/site_content.js"></script>
+<script src="../js/auth.js"></script><script src="../js/sidebar.js"></script><script src="../js/site_content.js"></script>
 <script>
-function showToast(msg, type) {
-  var existing = document.getElementById('__toast');
-  if (existing) existing.remove();
-  var bg = type === 'success' ? '#059669' : type === 'error' ? '#DC2626' : '#1A2642';
-  var t = document.createElement('div');
-  t.id = '__toast';
-  t.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:11px 22px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;white-space:nowrap;animation:fadeUp .25s ease';
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(function(){ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(function(){ t.remove(); },300); }, 2500);
-}
-
-function openModal(title, bodyHtml, onConfirm, confirmLabel, confirmClass) {
-  var existing = document.getElementById('__modal');
-  if (existing) existing.remove();
-  var m = document.createElement('div');
-  m.id = '__modal';
-  m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center';
-  m.innerHTML = '<div style="background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.2)">'
-    + '<div style="font-size:16px;font-weight:700;color:#1A2642;margin-bottom:14px">'+title+'</div>'
-    + '<div style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:20px">'+bodyHtml+'</div>'
-    + '<div style="display:flex;gap:8px;justify-content:flex-end">'
-    + '<button class="btn" onclick="closeModal()">취소</button>'
-    + '<button class="btn '+(confirmClass||'btn-primary')+'" id="__modal-confirm">'+(confirmLabel||'확인')+'</button>'
-    + '</div></div>';
-  m.addEventListener('click', function(e){ if(e.target===m) closeModal(); });
-  document.body.appendChild(m);
-  document.getElementById('__modal-confirm').addEventListener('click', function(){
-    closeModal();
-    if (typeof onConfirm === 'function') onConfirm();
-  });
-}
-function closeModal(){ var m=document.getElementById('__modal'); if(m) m.remove(); }
-
-function startComplianceCheck() {
-  showToast('🔍 전체 컴플라이언스 검사를 시작합니다...', '');
-  setTimeout(function(){
-    showToast('✓ 검사 완료 — 위반 표현 1건 감지', 'error');
-  }, 2000);
-}
+function showToast(msg,type){var e=document.getElementById('__toast');if(e)e.remove();var bg=type==='success'?'#059669':type==='error'?'#DC2626':'#0D1B3E';var t=document.createElement('div');t.id='__toast';t.style.cssText='position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:11px 22px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;white-space:nowrap';t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(function(){t.remove();},300);},2500);}
+function openModal(title,bodyHtml,onConfirm,confirmLabel,confirmClass){var e=document.getElementById('__modal');if(e)e.remove();var m=document.createElement('div');m.id='__modal';m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center';m.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.2)"><div style="font-size:16px;font-weight:700;color:#0D1B3E;margin-bottom:14px">'+title+'</div><div style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:20px">'+bodyHtml+'</div><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" onclick="closeModal()">취소</button><button class="btn '+(confirmClass||'btn-primary')+'" id="__modal-confirm">'+(confirmLabel||'확인')+'</button></div></div>';m.addEventListener('click',function(e){if(e.target===m)closeModal();});document.body.appendChild(m);document.getElementById('__modal-confirm').addEventListener('click',function(){closeModal();if(typeof onConfirm==='function')onConfirm();});}
+function closeModal(){var m=document.getElementById('__modal');if(m)m.remove();}
+function startComplianceCheck(){showToast('🔍 전체 컴플라이언스 검사를 시작합니다...','');setTimeout(function(){showToast('✓ 검사 완료 — 위반 표현 1건 감지','error');},2000);}
 </script>
-</body>
-</html>
+</body></html>
