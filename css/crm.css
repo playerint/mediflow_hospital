@@ -2,12 +2,15 @@
 .inbox-panel{background:#fff;border:1px solid var(--gray-200);border-radius:var(--rl);display:flex;flex-direction:column;overflow:hidden;}
 .inbox-head{padding:12px 16px;border-bottom:1px solid var(--gray-100);background:var(--gray-50);}
 .inbox-search{width:100%;padding:7px 12px;border-radius:var(--r);border:1px solid var(--gray-200);font-size:13px;font-family:inherit;outline:none;background:#fff;}
-.inbox-search:focus{border-color:var(--teal);}
+/* ZENO v2: focus → blue */
+.inbox-search:focus{border-color:var(--blue);}
 .inbox-list{flex:1;overflow-y:auto;}
 .inq-item{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;border-bottom:1px solid var(--gray-100);cursor:pointer;transition:background .1s;}
 .inq-item:hover{background:var(--gray-50);}
-.inq-item.active{background:var(--teal-l);border-left:3px solid var(--teal);}
-.inq-unread{width:6px;height:6px;border-radius:50%;background:var(--amber);margin-top:6px;flex-shrink:0;}
+/* ZENO v2: active — navy-l + navy left border (teal 제거) */
+.inq-item.active{background:var(--navy-l);border-left:3px solid var(--navy);}
+/* ZENO v2: 미확인 dot — red (amber 제거) */
+.inq-unread{width:6px;height:6px;border-radius:50%;background:var(--red);margin-top:6px;flex-shrink:0;}
 .inq-unread.hidden{background:transparent;}
 .inq-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;}
 .inq-body{flex:1;min-width:0;}
@@ -33,17 +36,23 @@
 .msg-row.out{flex-direction:row-reverse;}
 .msg-bubble{max-width:68%;padding:9px 13px;border-radius:12px;font-size:13px;line-height:1.6;}
 .msg-in{background:var(--gray-100);color:var(--gray-900);border-radius:4px 12px 12px 12px;}
-.msg-out{background:var(--teal-l);color:#065F46;border-radius:12px 4px 12px 12px;}
-.msg-out.ai{background:var(--purple-l);color:#4C1D95;}
+/* ZENO v2: msg-out — navy-l (teal-l 제거) */
+.msg-out{background:var(--navy-l);color:var(--navy);border-radius:12px 4px 12px 12px;}
+/* ZENO v2: AI 메시지 — blue-l (purple-l 제거) */
+.msg-out.ai{background:var(--blue-l);color:var(--blue);}
 .msg-time{font-size:10px;color:var(--gray-400);margin-top:2px;}
 .msg-row.out .msg-time{text-align:right;}
 .msg-av-sm{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;}
 .ai-draft{margin:0 20px 12px;border:1px solid var(--gray-200);border-radius:var(--r);overflow:hidden;}
-.ai-draft-head{background:var(--purple-l);padding:7px 12px;display:flex;align-items:center;justify-content:space-between;}
-.ai-draft-label{font-size:11px;color:#4C1D95;font-weight:500;display:flex;align-items:center;gap:5px;}
+/* ZENO v2: AI 초안 헤더 — navy-l + left border (purple-l 제거) */
+.ai-draft-head{background:var(--navy-l);border-left:3px solid var(--navy);padding:7px 12px;display:flex;align-items:center;justify-content:space-between;}
+.ai-draft-label{font-size:11px;color:var(--navy);font-weight:600;display:flex;align-items:center;gap:5px;}
 .ai-draft-actions{display:flex;gap:5px;}
 .ai-draft-body textarea{width:100%;padding:10px 12px;font-size:13px;border:none;outline:none;resize:none;font-family:inherit;line-height:1.6;color:var(--gray-700);}
 .ai-draft-footer{padding:8px 12px;border-top:1px solid var(--gray-200);display:flex;gap:6px;justify-content:flex-end;background:var(--gray-50);}
+/* send 버튼 */
+.send-btn{background:var(--navy);color:#fff;border:none;border-radius:var(--r);padding:7px 16px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;transition:background .15s;}
+.send-btn:hover{background:var(--navy-h);}
 .week-nav{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
 .week-btn{width:30px;height:30px;border-radius:var(--r);border:1px solid var(--gray-200);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--gray-500);}
 .week-btn:hover{background:var(--gray-50);}
@@ -53,7 +62,8 @@
 .day-head{text-align:center;margin-bottom:6px;}
 .day-name{font-size:10px;color:var(--gray-400);margin-bottom:2px;}
 .day-num{font-size:14px;font-weight:600;color:var(--gray-700);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto;}
-.day-num.today{background:var(--teal);color:#fff;}
+/* ZENO v2: today — navy (teal 제거) */
+.day-num.today{background:var(--navy);color:#fff;}
 .bk-chip{font-size:10px;padding:3px 7px;border-radius:5px;margin-bottom:3px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .15s;}
 .bk-chip:hover{opacity:.8;}
 .bk-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--gray-100);cursor:pointer;}

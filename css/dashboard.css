@@ -50,3 +50,42 @@
 .line-stat{background:var(--gray-50);border-radius:8px;padding:8px 10px;text-align:center;}
 .line-stat-v{font-size:18px;font-weight:600;color:var(--navy);}
 .line-stat-l{font-size:10px;color:var(--gray-400);margin-top:2px;}
+
+/* ==============================================
+   ZENO v2 KPI 카드 — teal/amber/purple 제거
+   ============================================== */
+.kpi-card{
+  border-radius:var(--rl);
+  padding:18px 20px;
+  border:1px solid var(--gray-200);
+  background:#fff;
+  transition:box-shadow .15s;
+}
+.kpi-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.07);}
+.kpi-label{font-size:12px;color:var(--gray-500);margin-bottom:8px;font-weight:500;}
+.kpi-value{font-size:28px;font-weight:700;color:var(--navy);letter-spacing:-.5px;margin-bottom:6px;}
+.kpi-delta{font-size:11px;}
+
+/* navy — 문의 (1번 카드) */
+.kpi-card.navy{border-top:3px solid var(--navy);}
+.kpi-card.navy .kpi-value{color:var(--navy);}
+
+/* blue — LINE 클릭률 / 예약 전환 */
+.kpi-card.blue{border-top:3px solid var(--blue);}
+.kpi-card.blue .kpi-value{color:var(--navy);}
+
+/* gray — 방문자 (amber 대체) */
+.kpi-card.gray{border-top:3px solid var(--gray-300);}
+.kpi-card.gray .kpi-value{color:var(--navy);}
+
+/* red — 노쇼율 등 경고 지표 */
+.kpi-card.red{border-top:3px solid var(--red);}
+.kpi-card.red .kpi-value{color:var(--navy);}
+
+/* 구버전 호환 — 클래스 이름이 남아있을 경우 ZENO v2로 리맵 */
+.kpi-card.teal{border-top:3px solid var(--navy);}
+.kpi-card.teal .kpi-value{color:var(--navy);}
+.kpi-card.purple{border-top:3px solid var(--blue);}
+.kpi-card.purple .kpi-value{color:var(--navy);}
+.kpi-card.amber{border-top:3px solid var(--gray-300);}
+.kpi-card.amber .kpi-value{color:var(--navy);}

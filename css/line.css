@@ -9,10 +9,10 @@
 .tr-item:last-child{border-bottom:none;}
 .tr-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 .tr-text{font-size:12px;color:var(--gray-700);flex:1;}
-/* tr-del 제거 — btn btn-danger 버튼으로 교체 */
 .hrs-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:10px;}
 .hr-cell{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:6px 4px;text-align:center;cursor:pointer;transition:all .15s;}
-.hr-cell.on{background:var(--teal-l);border-color:var(--teal);color:var(--teal-d);}
+/* ZENO v2: 업무시간 ON — navy-l + navy border (teal 제거) */
+.hr-cell.on{background:var(--navy-l);border-color:var(--navy);color:var(--navy);}
 .hr-cell:hover{border-color:var(--gray-300);}
 .hr-day{font-size:10px;color:var(--gray-400);margin-bottom:2px;}
 .hr-range{font-size:10px;font-weight:500;}
