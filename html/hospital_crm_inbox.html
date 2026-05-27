@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>문의·상담 CRM — Hospital Site OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/common.css">
+<link rel="stylesheet" href="../css/crm.css">
+<script src="../js/gate.js"></script>
+
+<style>
+/* 메시지 말풍선 — 한·일 병기 */
+.msg-ja { font-size:13px; line-height:1.7; color:inherit; }
+.msg-ko-badge {
+  margin-top:6px; padding:5px 8px;
+  background:rgba(255,255,255,.5); border-radius:6px;
+  font-size:11px; color:#374151; line-height:1.6;
+  border-left:2px solid rgba(0,0,0,.1);
+}
+.msg-ko-send { font-size:13px; line-height:1.7; color:inherit; }
+.msg-ja-send {
+  margin-top:6px; padding:5px 8px;
+  background:rgba(255,255,255,.25); border-radius:6px;
+  font-size:11px; line-height:1.6;
+  border-left:2px solid rgba(255,255,255,.5);
+}
+</style>
+
+<style>
+/* 하나 이니셜 뱃지 아바타 */
+.msg-av-hana {
+  flex-shrink: 0;
+  display: flex; align-items: flex-start;
+}
+.hana-badge-av {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--teal-l);
+  font-size: 20px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.hana-name {
+  font-size: 11px; font-weight: 600;
+  color: var(--teal-d); margin-bottom: 4px;
+  display: flex; align-items: center; gap: 5px;
+}
+.hana-name::before {
+  content: '';
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--teal);
+}
+.ai-draft-label {
+  display: flex; align-items: center; gap: 8px;
+}
+.hana-badge-mini {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--teal-l);
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+<div id="sidebar-mount" data-active="crm"></div>
+
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <a class="topbar-back" href="../index.html">← 대시보드</a>
+      <span style="color:var(--gray-300)">/</span>
+      <span class="topbar-title">문의·상담 CRM</span>
+    </div>
+    <div class="topbar-right">
+      <button class="btn" onclick="location.href='hospital_crm_booking.html'">📅 예약 관리</button>
+      <button class="btn btn-primary" onclick="location.href='hospital_funnel.html'">⚡ 리타게팅 현황</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="kpi-grid" style="grid-template-columns:repeat(4,minmax(0,1fr))">
+      <div style="background:var(--gray-50);border-radius:var(--r);padding:12px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">전체 문의</div><div style="font-size:20px;font-weight:600;color:var(--navy)">23건</div><div class="up" style="font-size:11px;margin-top:3px">↑ +8 전월</div></div>
+      <div style="background:var(--gray-50);border-radius:var(--r);padding:12px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">미확인</div><div style="font-size:20px;font-weight:600;color:var(--red)">3건</div><div style="font-size:11px;color:var(--amber);margin-top:3px">최대 2시간 경과</div></div>
+      <div style="background:var(--gray-50);border-radius:var(--r);padding:12px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">예약 전환</div><div style="font-size:20px;font-weight:600;color:var(--navy)">8건</div><div class="neu" style="font-size:11px;margin-top:3px">전환율 34.8%</div></div>
+      <div style="background:var(--gray-50);border-radius:var(--r);padding:12px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">AI 자동 해결</div><div style="font-size:20px;font-weight:600;color:var(--navy)">14건</div><div class="neu" style="font-size:11px;margin-top:3px">60.9%</div></div>
+    </div>
+    <div class="layout-crm">
+      <div class="inbox-panel">
+        <div class="inbox-head">
+          <input class="inbox-search" placeholder="환자 이름·시술·채널 검색..." oninput="filterList(this.value)">
+          <div class="filter-pills" style="margin-top:8px">
+            <button class="pill on" onclick="setFilter('all',this)">전체 23</button>
+            <button class="pill" onclick="setFilter('new',this)">신규 3</button>
+            <button class="pill" onclick="setFilter('consulting',this)">상담중 6</button>
+            <button class="pill" onclick="setFilter('booked',this)">예약완료 8</button>
+            <button class="pill" onclick="setFilter('closed',this)">종료 6</button>
+          </div>
+        </div>
+        <div class="inbox-list" id="inbox-list"></div>
+      </div>
+      <div class="detail-panel">
+        <div class="detail-head">
+          <div class="dh-left">
+            <div class="dh-avatar" id="d-avatar" style="background:#EEEDFE;color:#3C3489">야마</div>
+            <div>
+              <div class="dh-name" id="d-name">야마다 사오리 (山田 沙織)</div>
+              <div class="dh-meta" id="d-meta">LINE · 오늘 10:23 · 2시간 경과</div>
+            </div>
+          </div>
+          <div class="dh-actions">
+            <button class="btn" style="font-size:12px" onclick="location.href='hospital_crm_booking.html'">📅 예약 전환</button>
+            <button class="btn btn-primary" style="font-size:12px" id="status-btn" onclick="changeStatus()">상담중으로 변경</button>
+          </div>
+        </div>
+        <div class="profile-bar">
+          <div class="pb-item"><div class="pb-label">관심 시술</div><div class="pb-value" id="pb-proc">쌍꺼풀</div></div>
+          <div class="pb-item"><div class="pb-label">접점 채널</div><div class="pb-value" id="pb-ch">LINE</div></div>
+          <div class="pb-item"><div class="pb-label">문의 시간 (JST)</div><div class="pb-value">오전 11:23</div></div>
+          <div class="pb-item"><div class="pb-label">경과</div><div class="pb-value" id="pb-el" style="color:var(--red)">2시간 12분</div></div>
+        </div>
+        <div class="msg-area" id="msg-area"></div>
+        <div class="ai-draft" id="ai-draft">
+          <div class="ai-draft-head">
+            <div class="ai-draft-label">
+              <div class="hana-badge-mini">🌸</div>
+              <span style="font-size:13px;font-weight:600;color:var(--navy)">🌸 AI はな의 답변 초안</span>
+              <span style="font-size:10px;color:var(--gray-400);font-weight:400">· AI Agent</span>
+            </div>
+            <div class="ai-draft-actions">
+              <button id="translate-toggle" onclick="toggleTranslation()"
+                style="font-size:11px;padding:3px 10px;border-radius:8px;border:1px solid #0D9488;background:#F0FDFA;color:#0F766E;cursor:pointer;font-family:inherit;transition:all .15s">
+                🇰🇷 번역 ON
+              </button>
+              <button class="btn" style="font-size:11px;padding:3px 9px" onclick="regenDraft()">↺ 재생성</button>
+              <button class="btn" style="font-size:11px;padding:3px 9px" onclick="checkAnswerCompliance()">🔍 검사</button>
+            </div>
+          </div>
+          <!-- 한국어 / 일본어 좌우 분할 -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;padding:0 14px 10px">
+            <!-- 왼쪽: 한국어 입력 -->
+            <div style="padding-right:8px;border-right:1px solid #F3F4F6">
+              <div style="font-size:11px;font-weight:600;color:#6B7280;margin-bottom:4px;display:flex;align-items:center;gap:4px">
+                🇰🇷 한국어 입력
+                <span style="font-size:10px;color:#9CA3AF;font-weight:400">→ 자동 번역</span>
+              </div>
+              <textarea id="draft-text-ko" rows="4"
+                oninput="onKoInput()"
+                style="width:100%;padding:8px 10px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;font-family:inherit;resize:none;outline:none;line-height:1.7;transition:border .15s"
+                onfocus="this.style.borderColor='#0D9488'" onblur="this.style.borderColor='#E5E7EB'"
+                placeholder="한국어로 답변을 입력하세요..."></textarea>
+            </div>
+            <!-- 오른쪽: 일본어 번역 -->
+            <div style="padding-left:8px">
+              <div style="font-size:11px;font-weight:600;color:#6B7280;margin-bottom:4px;display:flex;align-items:center;gap:4px">
+                🇯🇵 일본어 발송 내용
+                <span style="font-size:10px;color:#9CA3AF;font-weight:400">직접 수정 가능</span>
+              </div>
+              <textarea id="draft-text-ja" rows="4"
+                style="width:100%;padding:8px 10px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;font-family:inherit;resize:none;outline:none;line-height:1.7;background:#F9FAFB;transition:all .15s"
+                onfocus="this.style.borderColor='#0D9488';this.style.background='#fff'" onblur="this.style.borderColor='#E5E7EB'"
+                placeholder="일본어 번역 결과가 표시됩니다..."></textarea>
+            </div>
+          </div>
+          <div class="ai-draft-footer">
+            <button class="btn" onclick="document.getElementById('ai-draft').style.display='none'">취소</button>
+            <button class="send-btn" onclick="sendMsg()">📤 LINE으로 발송</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">© 2026 MEDIFLOW. All rights reserved.</footer>
+  </div>
+</main>
+
+
+<script src="../js/auth.js"></script>
+<script src="../js/sidebar.js"></script>
+<script>
+function changeStatus() {
+  var btn = document.getElementById('status-btn');
+  var current = btn.textContent.trim();
+
+  if (current === '상담중으로 변경') {
+    btn.textContent = '✓ 상담중';
+    btn.style.background = 'var(--green)';
+    btn.style.borderColor = 'var(--green)';
+    btn.onclick = function() { changeStatusBack(); };
+    showToastInbox('상태가 상담중으로 변경되었습니다.');
+  }
+}
+
+function changeStatusBack() {
+  var btn = document.getElementById('status-btn');
+  btn.textContent = '상담중으로 변경';
+  btn.style.background = '';
+  btn.style.borderColor = '';
+  btn.onclick = function() { changeStatus(); };
+  showToastInbox('상태가 미확인으로 변경되었습니다.');
+}
+
+function showToastInbox(msg) {
+  var existing = document.getElementById('inbox-toast');
+  if (existing) existing.remove();
+  var toast = document.createElement('div');
+  toast.id = 'inbox-toast';
+  toast.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:11px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:2000;white-space:nowrap;';
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(function() {
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity .3s';
+    setTimeout(function() { toast.remove(); }, 300);
+  }, 2500);
+}
+
+function openModal(title, bodyHtml, onConfirm, confirmLabel, confirmClass) {
+  var existing = document.getElementById('__modal');
+  if (existing) existing.remove();
+  var m = document.createElement('div');
+  m.id = '__modal';
+  m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center';
+  m.innerHTML = '<div style="background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.2)">'
+    + '<div style="font-size:16px;font-weight:700;color:#1A2642;margin-bottom:14px">'+title+'</div>'
+    + '<div style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:20px">'+bodyHtml+'</div>'
+    + '<div style="display:flex;gap:8px;justify-content:flex-end">'
+    + '<button class="btn" onclick="closeModal()">취소</button>'
+    + '<button class="btn '+(confirmClass||'btn-primary')+'" id="__modal-confirm">'+(confirmLabel||'확인')+'</button>'
+    + '</div></div>';
+  m.addEventListener('click', function(e){ if(e.target===m) closeModal(); });
+  document.body.appendChild(m);
+  document.getElementById('__modal-confirm').addEventListener('click', function(){
+    closeModal();
+    if (typeof onConfirm === 'function') onConfirm();
+  });
+}
+function closeModal(){ var m=document.getElementById('__modal'); if(m) m.remove(); }
+
+function checkAnswerCompliance() {
+  showToast('🔍 답변 컴플라이언스 검사 중...', '');
+  setTimeout(function(){ showToast('✓ 컴플라이언스 통과 — 위반 표현 없음', 'success'); }, 1500);
+}
+</script>
+<script src="../js/crm_inbox.js"></script>
+</body>
+</html>

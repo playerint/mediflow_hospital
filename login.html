@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>로그인 — MEDIFLOW</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"DM Sans","Noto Sans KR",sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#1A2642 0%,#243452 50%,#1A3060 100%);}
+.wrap{width:100%;max-width:400px;padding:20px;}
+.card{background:#fff;border-radius:20px;padding:40px 36px;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.logo{text-align:center;margin-bottom:28px;}
+.logo-title{font-size:14px;font-weight:700;color:#1A2642;letter-spacing:.06em;}
+.logo-sub{font-size:10px;color:#9CA3AF;margin-top:4px;letter-spacing:.08em;text-transform:uppercase;}
+.hospital-badge{display:inline-flex;align-items:center;gap:6px;background:#F0FDFA;border:1px solid #5EEAD4;border-radius:8px;padding:5px 12px;font-size:12px;color:#0F766E;font-weight:500;margin-top:8px;}
+.title{font-size:18px;font-weight:700;color:#1A2642;margin-bottom:4px;margin-top:20px;}
+.sub{font-size:13px;color:#6B7280;margin-bottom:22px;}
+.f-label{font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;display:block;}
+.f-input{width:100%;padding:10px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;font-family:inherit;outline:none;color:#111827;transition:border .15s;margin-bottom:12px;display:block;}
+.f-input:focus{border-color:#0D9488;box-shadow:0 0 0 3px rgba(13,148,136,.1);}
+.login-btn{width:100%;padding:12px;background:#0D9488;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:background .15s;}
+.login-btn:hover{background:#0F766E;}
+.error{font-size:12px;color:#DC2626;background:#FEE2E2;border:1px solid #FCA5A5;border-radius:8px;padding:8px 12px;margin-bottom:12px;display:none;}
+.demo{margin-top:20px;padding-top:16px;border-top:1px solid #F3F4F6;}
+.demo-title{font-size:11px;color:#9CA3AF;text-align:center;margin-bottom:8px;}
+.demo-item{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#F9FAFB;border-radius:8px;margin-bottom:5px;cursor:pointer;transition:background .1s;border:1px solid transparent;}
+.demo-item:hover{background:#F0FDFA;border-color:#5EEAD4;}
+.demo-item:last-child{margin-bottom:0;}
+.demo-role{font-size:11px;font-weight:600;color:#0F766E;}
+.demo-email{font-size:11px;color:#6B7280;font-family:monospace;}
+.register-area{margin-top:20px;padding-top:18px;border-top:1px solid #F3F4F6;text-align:center;}
+.register-note{font-size:12px;color:#9CA3AF;margin-bottom:12px;}
+.register-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 20px;background:linear-gradient(135deg,#1A2642,#243452);color:#fff;border-radius:10px;font-size:13px;font-weight:600;text-decoration:none;transition:all .2s;box-shadow:0 2px 12px rgba(26,38,66,.25);}
+.register-btn:hover{transform:translateY(-1px);box-shadow:0 4px 18px rgba(26,38,66,.35);}
+.register-sub{font-size:11px;color:#B0B8C1;margin-top:20px;}
+</style>
+<script src="js/gate.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="logo">
+      <div class="logo-title">MEDIFLOW</div>
+      <div class="logo-sub">글로벌 메디컬 플로우</div>
+      <div class="hospital-badge">🏥 올래성형외과</div>
+    </div>
+    <div class="title">로그인</div>
+    <div class="sub">병원 관리자 전용 시스템입니다.</div>
+    <div class="error" id="err-msg"></div>
+    <label class="f-label">이메일</label>
+    <input class="f-input" type="email" id="inp-email" placeholder="admin@oleps.co.kr">
+    <label class="f-label">비밀번호</label>
+    <input class="f-input" type="password" id="inp-pw" placeholder="••••••••">
+    <button class="login-btn" id="login-btn">로그인</button>
+    <div class="demo">
+      <div class="demo-title">데모 계정으로 시작</div>
+      <div class="demo-item" id="demo-admin">
+        <span class="demo-role">👑 관리자</span>
+        <span class="demo-email">admin@oleps.co.kr</span>
+        <span style="font-size:12px;color:#9CA3AF">→</span>
+      </div>
+      <div class="demo-item" id="demo-staff">
+        <span class="demo-role">👤 스탭</span>
+        <span class="demo-email">staff@oleps.co.kr</span>
+        <span style="font-size:12px;color:#9CA3AF">→</span>
+      </div>
+    </div>
+    <div class="register-area">
+      <div class="register-note">아직 MEDIFLOW 계정이 없으신가요?</div>
+      <a href="register.html" class="register-btn">
+        🏥 병원 입점 신청하기
+        <span style="font-size:10px;background:rgba(13,148,136,.3);color:#5EEAD4;padding:2px 7px;border-radius:5px;font-weight:500">무료 상담</span>
+      </a>
+      <div class="register-sub">반나절에 일본어 글로벌 홈페이지 완성<br>Global Medical <span style="color:#0D9488;font-weight:700">OS</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var ACCOUNTS = [
+  { email:'admin@oleps.co.kr', password:'admin1234', name:'김지현', role:'admin', hospital:'올래성형외과' },
+  { email:'staff@oleps.co.kr', password:'staff1234', name:'이수진', role:'staff', hospital:'올래성형외과' },
+];
+
+// auth.js와 동일한 키·방식으로 저장
+var STORAGE_KEY = 'hospital_user';
+
+function saveSession(user) {
+  var val = JSON.stringify(user);
+  // sessionStorage 먼저 시도
+  try { sessionStorage.setItem(STORAGE_KEY, val); } catch(e) {}
+  // localStorage도 함께 저장 (파일 프로토콜 대비)
+  // localStorage 저장 안함 — sessionStorage만 사용
+}
+
+function alreadyLoggedIn() {
+  try {
+    var s = sessionStorage.getItem(STORAGE_KEY) || localStorage.getItem(STORAGE_KEY);
+    return s ? JSON.parse(s) : null;
+  } catch(e) { return null; }
+}
+
+// 로그인 화면 진입 시 기존 세션 완전 초기화
+try { sessionStorage.removeItem('hospital_user'); } catch(e) {}
+try { localStorage.removeItem('hospital_user'); } catch(e) {}
+
+function doLogin() {
+  var email = document.getElementById('inp-email').value.trim();
+  var pw    = document.getElementById('inp-pw').value;
+  var err   = document.getElementById('err-msg');
+  err.style.display = 'none';
+
+  if (!email || !pw) {
+    err.textContent = '이메일과 비밀번호를 입력해주세요.';
+    err.style.display = 'block';
+    return;
+  }
+
+  var found = null;
+  for (var i = 0; i < ACCOUNTS.length; i++) {
+    if (ACCOUNTS[i].email === email && ACCOUNTS[i].password === pw) {
+      found = ACCOUNTS[i]; break;
+    }
+  }
+
+  if (!found) {
+    err.textContent = '이메일 또는 비밀번호가 올바르지 않습니다.';
+    err.style.display = 'block';
+    return;
+  }
+
+  saveSession({ name: found.name, email: found.email, role: found.role, hospital: found.hospital });
+  window.location.replace('index.html');
+}
+
+document.getElementById('demo-admin').addEventListener('click', function() {
+  document.getElementById('inp-email').value = 'admin@oleps.co.kr';
+  document.getElementById('inp-pw').value    = 'admin1234';
+  doLogin();
+});
+document.getElementById('demo-staff').addEventListener('click', function() {
+  document.getElementById('inp-email').value = 'staff@oleps.co.kr';
+  document.getElementById('inp-pw').value    = 'staff1234';
+  doLogin();
+});
+document.getElementById('login-btn').addEventListener('click', doLogin);
+document.getElementById('inp-email').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
+document.getElementById('inp-pw').addEventListener('keydown',   function(e) { if (e.key === 'Enter') doLogin(); });
+</script>
+</body>
+</html>

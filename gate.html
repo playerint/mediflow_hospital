@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>접근 인증 — MEDIFLOW</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans','Noto Sans KR',sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#0F1E3C 0%,#1A2642 50%,#0D2035 100%);}
+
+/* 배경 패턴 */
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle at 20% 30%,rgba(13,148,136,.08) 0%,transparent 50%),radial-gradient(circle at 80% 70%,rgba(37,99,235,.06) 0%,transparent 50%);pointer-events:none;}
+
+.wrap{width:100%;max-width:420px;padding:20px;position:relative;z-index:1;}
+
+.card{background:rgba(255,255,255,.97);border-radius:24px;padding:44px 40px;box-shadow:0 24px 80px rgba(0,0,0,.35);}
+
+.logo-area{text-align:center;margin-bottom:32px;}
+.logo-icon{width:56px;height:56px;background:linear-gradient(135deg,#1A2642,#243452);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 4px 16px rgba(26,38,66,.3);}
+.logo-icon span{font-size:24px;}
+.logo-title{font-size:15px;font-weight:700;color:#1A2642;letter-spacing:.04em;}
+.logo-sub{font-size:11px;color:#9CA3AF;margin-top:3px;letter-spacing:.06em;text-transform:uppercase;}
+
+.lock-badge{display:inline-flex;align-items:center;gap:5px;background:#FEF3C7;border:1px solid #FCD34D;border-radius:8px;padding:4px 12px;font-size:11px;color:#92400E;font-weight:500;margin-top:8px;}
+
+.title{font-size:20px;font-weight:700;color:#1A2642;margin-bottom:6px;text-align:center;}
+.sub{font-size:13px;color:#6B7280;text-align:center;margin-bottom:28px;line-height:1.6;}
+
+.f-label{font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;display:block;}
+.pw-wrap{position:relative;margin-bottom:8px;}
+.f-input{width:100%;padding:12px 44px 12px 16px;border:1.5px solid #E5E7EB;border-radius:12px;font-size:15px;font-family:inherit;outline:none;color:#111827;transition:all .2s;letter-spacing:.1em;}
+.f-input:focus{border-color:#0D9488;box-shadow:0 0 0 3px rgba(13,148,136,.1);}
+.f-input.shake{animation:shake .4s ease;}
+.toggle-pw{position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;color:#9CA3AF;font-size:16px;user-select:none;}
+.toggle-pw:hover{color:#6B7280;}
+
+.error{font-size:12px;color:#DC2626;margin-bottom:12px;display:none;padding:8px 12px;background:#FEE2E2;border-radius:8px;border:1px solid #FCA5A5;text-align:center;}
+
+.btn{width:100%;padding:13px;background:linear-gradient(135deg,#0D9488,#0F766E);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .2s;letter-spacing:.02em;box-shadow:0 4px 16px rgba(13,148,136,.3);}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(13,148,136,.4);}
+.btn:active{transform:translateY(0);}
+.btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+
+.footer-note{text-align:center;font-size:11px;color:#9CA3AF;margin-top:20px;line-height:1.6;}
+
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.card{animation:fadeIn .3s ease both;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="logo-area">
+      <div class="logo-icon"><span>🏥</span></div>
+      <div class="logo-title">MEDIFLOW</div>
+      <div class="logo-sub">Prototype · Global Medical <span style="color:#0D9488;font-weight:700">OS</span></div>
+      <div class="lock-badge">🔒 비공개 프로토타입</div>
+    </div>
+
+    <div class="title">접근 인증</div>
+    <div class="sub">이 페이지는 초대된 분만 열람할 수 있습니다.<br>공유받은 비밀번호를 입력해 주세요.</div>
+
+    <label class="f-label">비밀번호</label>
+    <div class="pw-wrap">
+      <input class="f-input" type="password" id="pw-input" placeholder="비밀번호 입력" autocomplete="off">
+      <span class="toggle-pw" id="toggle-pw" title="비밀번호 표시">👁</span>
+    </div>
+    <div class="error" id="pw-error">비밀번호가 올바르지 않습니다. 다시 시도해 주세요.</div>
+    <button class="btn" id="enter-btn">입장하기</button>
+
+    <div class="footer-note">
+      비밀번호를 모르시면 공유자에게 문의해 주세요.<br>
+      <span style="color:#CBD5E1">MEDIFLOW</span>
+    </div>
+  </div>
+</div>
+
+<script>
+var GATE_KEY = 'proto_gate_2026';
+var GATE_PW  = '0102';
+
+// 이미 인증된 경우 → redirect 또는 index.html로 이동
+(function() {
+  function isOpen() {
+    try { return sessionStorage.getItem(GATE_KEY) === GATE_PW; }
+    catch(e) { return false; }
+  }
+  if (isOpen()) {
+    window.location.replace('login.html');
+  }
+})();
+
+// 비밀번호 표시 토글
+var showPw = false;
+document.getElementById('toggle-pw').addEventListener('click', function() {
+  showPw = !showPw;
+  var inp = document.getElementById('pw-input');
+  inp.type = showPw ? 'text' : 'password';
+  this.textContent = showPw ? '🙈' : '👁';
+  inp.focus();
+});
+
+function tryEnter() {
+  var pw  = document.getElementById('pw-input').value;
+  var err = document.getElementById('pw-error');
+  var btn = document.getElementById('enter-btn');
+  var inp = document.getElementById('pw-input');
+
+  if (!pw) {
+    err.textContent = '비밀번호를 입력해 주세요.';
+    err.style.display = 'block';
+    inp.focus();
+    return;
+  }
+
+  if (pw === GATE_PW) {
+    btn.disabled = true;
+    btn.textContent = '✓ 인증 완료...';
+    try { sessionStorage.setItem(GATE_KEY, GATE_PW); } catch(e) {}
+    setTimeout(function() {
+      window.location.replace('login.html');
+    }, 600);
+  } else {
+    err.textContent = '비밀번호가 올바르지 않습니다. 다시 시도해 주세요.';
+    err.style.display = 'block';
+    inp.classList.add('shake');
+    inp.value = '';
+    setTimeout(function() { inp.classList.remove('shake'); }, 400);
+    inp.focus();
+  }
+}
+
+document.getElementById('enter-btn').addEventListener('click', tryEnter);
+document.getElementById('pw-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') tryEnter();
+});
+</script>
+</body>
+</html>

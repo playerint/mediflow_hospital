@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>문의 채널별 상세 — Hospital Site OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/common.css">
+<link rel="stylesheet" href="../css/crm.css">
+<script src="../js/gate.js"></script>
+</head>
+<body>
+<div id="sidebar-mount" data-active="crm_inquiry"></div>
+
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <a class="topbar-back" href="../index.html">← 대시보드</a>
+      <span style="color:var(--gray-300)">/</span>
+      <span class="topbar-title">문의 채널별 상세</span>
+      <span class="topbar-period">2026년 5월</span>
+    </div>
+    <button class="btn" onclick="exportCSV('inquiry')">📥 CSV</button>
+  </div>
+  <div class="content">
+    <div class="kpi-grid">
+      <div style="background:var(--gray-50);border-radius:var(--r);padding:12px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">전체 문의</div><div style="font-size:22px;font-weight:600;color:var(--navy)">23건</div><div class="up" style="font-size:11px">↑ +8 전월</div></div>
+      <div style="background:var(--gray-50);border-radius:var(--r);padding:12px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">평균 응답</div><div style="font-size:22px;font-weight:600;color:var(--navy)">38분</div><div class="up" style="font-size:11px">↓ 2시간 단축</div></div>
+      <div style="background:var(--gray-50);border-radius:var(--r);padding:12px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">예약 전환</div><div style="font-size:22px;font-weight:600;color:var(--navy)">8건</div><div class="neu" style="font-size:11px">34.8%</div></div>
+      <div style="background:var(--gray-50);border-radius:var(--r);padding:12px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">AI 자동 해결</div><div style="font-size:22px;font-weight:600;color:var(--navy)">14건</div><div class="neu" style="font-size:11px">60.9%</div></div>
+    </div>
+    <div class="grid2">
+      <div class="card"><div class="card-head"><div class="card-title">채널별 문의</div></div><div id="ch-rows"></div></div>
+      <div class="card"><div class="card-head"><div class="card-title">시간대별 분포 (JST)</div></div><div style="position:relative;width:100%;height:160px"><canvas id="timeChart" role="img" aria-label="시간대별 문의 분포">시간대별 분포.</canvas></div><div style="font-size:11px;color:var(--gray-400);margin-top:8px">20~23시 집중 (52%) — AI はな 자동상담 가동 중</div></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">전체 문의 목록</div><div class="filter-pills" id="pills" style="margin:0"></div></div>
+      <div id="inq-list"></div>
+    </div>
+
+    <footer class="site-footer">© 2026 MEDIFLOW. All rights reserved.</footer>
+  </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/sidebar.js"></script>
+<script src="../js/crm_inquiry.js"></script>
+<script>
+function showToast(msg, type) {
+  var existing = document.getElementById('__toast');
+  if (existing) existing.remove();
+  var bg = type === 'success' ? '#059669' : type === 'error' ? '#DC2626' : '#1A2642';
+  var t = document.createElement('div');
+  t.id = '__toast';
+  t.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:11px 22px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;white-space:nowrap;animation:fadeUp .25s ease';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function(){ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(function(){ t.remove(); },300); }, 2500);
+}
+
+function openModal(title, bodyHtml, onConfirm, confirmLabel, confirmClass) {
+  var existing = document.getElementById('__modal');
+  if (existing) existing.remove();
+  var m = document.createElement('div');
+  m.id = '__modal';
+  m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center';
+  m.innerHTML = '<div style="background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.2)">'
+    + '<div style="font-size:16px;font-weight:700;color:#1A2642;margin-bottom:14px">'+title+'</div>'
+    + '<div style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:20px">'+bodyHtml+'</div>'
+    + '<div style="display:flex;gap:8px;justify-content:flex-end">'
+    + '<button class="btn" onclick="closeModal()">취소</button>'
+    + '<button class="btn '+(confirmClass||'btn-primary')+'" id="__modal-confirm">'+(confirmLabel||'확인')+'</button>'
+    + '</div></div>';
+  m.addEventListener('click', function(e){ if(e.target===m) closeModal(); });
+  document.body.appendChild(m);
+  document.getElementById('__modal-confirm').addEventListener('click', function(){
+    closeModal();
+    if (typeof onConfirm === 'function') onConfirm();
+  });
+}
+function closeModal(){ var m=document.getElementById('__modal'); if(m) m.remove(); }
+
+function exportCSV(type) {
+  showToast('📥 CSV 파일을 다운로드합니다...', '');
+  setTimeout(function(){
+    var a = document.createElement('a');
+    a.href = 'data:text/csv;charset=utf-8,%EF%BB%BF날짜,채널,환자명,내용,상태\n5/22,LINE,야마다 사오리,二重整形について,완료\n5/22,LINE,스즈키 미카,料金を教えてください,대기';
+    a.download = 'inquiry_export.csv';
+    a.click();
+    showToast('✓ CSV 다운로드 완료', 'success');
+  }, 800);
+}
+</script>
+</body>
+</html>

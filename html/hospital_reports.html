@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>리포트 — Hospital Site OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/common.css">
+<link rel="stylesheet" href="../css/reports.css">
+<script src="../js/gate.js"></script>
+</head>
+<body>
+<div id="sidebar-mount" data-active="reports"></div>
+
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left"><a class="topbar-back" href="../index.html">← 대시보드</a><span style="color:var(--gray-300)">/</span><span class="topbar-title">리포트</span></div>
+    <div class="topbar-right" style="display:flex;align-items:center;gap:8px"><select style="font-size:12px;padding:7px 10px;border-radius:var(--r);border:1px solid var(--gray-200);background:#fff;color:var(--gray-700);"><option>2026년 5월</option><option>2026년 4월</option><option>2026년 3월</option></select><button class="btn btn-primary" onclick="generatePDF()" style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap">💾 PDF 생성</button></div>
+  </div>
+  <div class="content">
+    <div class="kpi-grid">
+      <div style="background:var(--gray-50);border-radius:var(--r);padding:12px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">사이트 방문자</div><div style="font-size:22px;font-weight:600;color:var(--navy)">1,847</div><div class="up" style="font-size:11px">↑ +23%</div></div>
+      <div style="background:var(--gray-50);border-radius:var(--r);padding:12px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">전체 문의</div><div style="font-size:22px;font-weight:600;color:var(--navy)">23건</div><div class="up" style="font-size:11px">↑ +53%</div></div>
+      <div style="background:var(--gray-50);border-radius:var(--r);padding:12px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">예약 전환</div><div style="font-size:22px;font-weight:600;color:var(--navy)">8건</div><div class="up" style="font-size:11px">34.8%</div></div>
+      <div style="background:var(--gray-50);border-radius:var(--r);padding:12px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">AEO 인용</div><div style="font-size:22px;font-weight:600;color:var(--navy)">19회</div><div class="up" style="font-size:11px">↑ +7회</div></div>
+    </div>
+    <div class="grid2">
+      <div class="card"><div class="card-head"><div class="card-title">⬇ 월간 퍼널 전환율</div></div><div class="fc-cols" id="fc-cols"></div><div style="font-size:11px;color:var(--gray-400)">방문→내원 <span style="color:var(--green);font-weight:600">0.76%</span> · 업계 평균 0.41%</div></div>
+      <div class="card"><div class="card-head"><div class="card-title">📈 월별 방문자 추이</div></div><div style="position:relative;width:100%;height:160px"><canvas id="trendChart" role="img" aria-label="월별 방문자 추이">월별 방문자 추이.</canvas></div></div>
+    </div>
+    <div class="grid2">
+      <div class="card"><div class="card-head"><div class="card-title">🔍 SEO 키워드 순위</div><span style="font-size:11px;color:var(--gray-400)">Yahoo Japan</span></div><div style="display:flex;justify-content:flex-end;gap:14px;margin-bottom:6px;font-size:10px;color:var(--gray-400)"><span>검색량</span><span>순위</span><span>변동</span></div><div id="kw-list"></div></div>
+      <div class="card"><div class="card-head"><div class="card-title">🧠 AEO · LLM 인용 추적</div><span style="font-size:11px;color:var(--amber);font-weight:500">★ 차별화 KPI</span></div><div id="aeo-list"></div><div style="margin-top:10px;padding:10px 12px;background:var(--purple-l);border-radius:var(--r);font-size:12px;color:#4C1D95"><strong>이번 달 총 19회 인용</strong> — 전월 12회 대비 +58.3%<br><span style="font-size:11px">다음 측정: 6월 1일 자동 실행</span></div><div style="position:relative;width:100%;height:80px;margin-top:10px"><canvas id="aeoTrend" role="img" aria-label="AEO 추이">AEO 월별 추이.</canvas></div></div>
+    </div>
+    <div class="grid2">
+      <div class="card"><div class="card-head"><div class="card-title">🤖 LINE 자동상담 성과</div></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px"><div style="background:var(--gray-50);border-radius:var(--r);padding:10px;text-align:center"><div style="font-size:18px;font-weight:600;color:var(--navy)">94%</div><div style="font-size:10px;color:var(--gray-400);margin-top:2px">AI 해결률</div></div><div style="background:var(--gray-50);border-radius:var(--r);padding:10px;text-align:center"><div style="font-size:18px;font-weight:600;color:var(--navy)">142</div><div style="font-size:10px;color:var(--gray-400);margin-top:2px">처리 건수</div></div><div style="background:var(--gray-50);border-radius:var(--r);padding:10px;text-align:center"><div style="font-size:18px;font-weight:600;color:var(--navy)">41%</div><div style="font-size:10px;color:var(--gray-400);margin-top:2px">예약 전환</div></div></div><div style="position:relative;width:100%;height:100px"><canvas id="lineAuto" role="img" aria-label="시나리오별 처리 비율">시나리오별 비율.</canvas></div></div>
+      <div class="card"><div class="card-head"><div class="card-title">📡 채널별 문의</div></div><div style="position:relative;width:100%;height:160px"><canvas id="channelChart" role="img" aria-label="채널별 문의 건수">채널별 문의.</canvas></div><div style="font-size:11px;color:var(--gray-400);margin-top:8px;text-align:center">LINE 52% 1위 · 20~23시 집중</div></div>
+    </div>
+
+    <footer class="site-footer">© 2026 MEDIFLOW. All rights reserved.</footer>
+  </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/sidebar.js"></script>
+<script src="../js/reports.js"></script>
+<script>
+function showToast(msg, type) {
+  var existing = document.getElementById('__toast');
+  if (existing) existing.remove();
+  var bg = type === 'success' ? '#059669' : type === 'error' ? '#DC2626' : '#1A2642';
+  var t = document.createElement('div');
+  t.id = '__toast';
+  t.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:11px 22px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;white-space:nowrap;animation:fadeUp .25s ease';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function(){ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(function(){ t.remove(); },300); }, 2500);
+}
+
+function openModal(title, bodyHtml, onConfirm, confirmLabel, confirmClass) {
+  var existing = document.getElementById('__modal');
+  if (existing) existing.remove();
+  var m = document.createElement('div');
+  m.id = '__modal';
+  m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center';
+  m.innerHTML = '<div style="background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.2)">'
+    + '<div style="font-size:16px;font-weight:700;color:#1A2642;margin-bottom:14px">'+title+'</div>'
+    + '<div style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:20px">'+bodyHtml+'</div>'
+    + '<div style="display:flex;gap:8px;justify-content:flex-end">'
+    + '<button class="btn" onclick="closeModal()">취소</button>'
+    + '<button class="btn '+(confirmClass||'btn-primary')+'" id="__modal-confirm">'+(confirmLabel||'확인')+'</button>'
+    + '</div></div>';
+  m.addEventListener('click', function(e){ if(e.target===m) closeModal(); });
+  document.body.appendChild(m);
+  document.getElementById('__modal-confirm').addEventListener('click', function(){
+    closeModal();
+    if (typeof onConfirm === 'function') onConfirm();
+  });
+}
+function closeModal(){ var m=document.getElementById('__modal'); if(m) m.remove(); }
+
+function generatePDF() {
+  showToast('📄 PDF를 생성하는 중...', '');
+  setTimeout(function(){
+    showToast('✓ 월간 리포트 PDF가 생성되었습니다.', 'success');
+  }, 2000);
+}
+</script>
+</body>
+</html>

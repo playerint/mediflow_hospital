@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>사이트 관리 — 자산 관리 — Hospital Site OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/common.css">
+<link rel="stylesheet" href="../css/site.css">
+<script src="../js/gate.js"></script>
+</head>
+<body>
+<div id="sidebar-mount" data-active="site_assets"></div>
+
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <a class="topbar-back" href="../index.html">← 대시보드</a>
+      <span style="color:var(--gray-300)">/</span>
+      <span class="topbar-title">사이트 관리</span>
+      <span style="font-size:12px;color:var(--gray-400)">/</span>
+      <span style="font-size:14px;color:var(--gray-600)">자산 관리</span>
+    </div>
+    <div class="topbar-right">
+      <span style="font-size:12px;color:var(--gray-400)">총 107개 · 234MB</span>
+      <button class="btn btn-primary" onclick="document.getElementById('file-input').click()">+ 업로드</button>
+      <input type="file" id="file-input" multiple accept="image/*" style="display:none" onchange="handleUpload(this)">
+    </div>
+  </div>
+  <div class="content">
+    <div class="tab-bar">
+      <button class="tab" onclick="location.href='hospital_site_content.html'">콘텐츠 편집</button>
+      <button class="tab active">자산 관리</button>
+      <button class="tab" onclick="location.href='hospital_site_preview.html'">미리보기 & 게시</button>
+    </div>
+    <div class="upload-zone" id="drop-zone" ondragover="event.preventDefault();this.classList.add('dragging')" ondragleave="this.classList.remove('dragging')" ondrop="handleDrop(event)" onclick="document.getElementById('file-input').click()">
+      <div class="uz-icon">📁</div>
+      <div class="uz-title">사진을 드래그하거나 클릭하여 업로드</div>
+      <div class="uz-sub">PNG, JPG, WebP · 최대 10MB · AI Agent가 자동 분류</div>
+    </div>
+    <div class="gating-panel">
+      <div class="gp-left"><div class="gp-icon" style="font-size:20px;margin-top:2px">🔒</div><div><div class="gp-title">B/A 사진 노출 정책</div><div class="gp-desc">현재: 로그인 없이 공개 — 분쟁 발생 시 토글로 즉시 게이팅 적용 가능</div></div></div>
+      <div class="gp-right"><span class="gp-status" id="gate-status">공개 중</span><label class="toggle-wrap" style="width:36px;height:20px"><input type="checkbox" id="ba-gate" onchange="toggleGate(this)"><div class="toggle-track"></div><div class="toggle-thumb" style="width:14px;height:14px"></div></label></div>
+    </div>
+    <div class="cat-section">
+      <div class="cat-head"><div class="cat-title">✦ B/A 사진 <span class="cat-count">87장</span></div><button class="btn" style="font-size:12px" onclick="startAIClassify()">🤖 AI 재분류</button></div>
+      <div class="img-grid" id="ba-grid"></div>
+    </div>
+    <div class="cat-section">
+      <div class="cat-head"><div class="cat-title">👨‍⚕️ 의료진 사진 <span class="cat-count">5장</span></div></div>
+      <div class="img-grid" id="doctor-grid"></div>
+    </div>
+    <div class="cat-section">
+      <div class="cat-head"><div class="cat-title">🏥 시설 사진 <span class="cat-count">10장</span></div></div>
+      <div class="img-grid" id="facility-grid"></div>
+    </div>
+
+    <footer class="site-footer">© 2026 MEDIFLOW. All rights reserved.</footer>
+  </div>
+</main>
+
+
+<script src="../js/auth.js"></script>
+<script src="../js/sidebar.js"></script>
+<script src="../js/site_assets.js"></script>
+<script>
+function showToast(msg, type) {
+  var existing = document.getElementById('__toast');
+  if (existing) existing.remove();
+  var bg = type === 'success' ? '#059669' : type === 'error' ? '#DC2626' : '#1A2642';
+  var t = document.createElement('div');
+  t.id = '__toast';
+  t.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:11px 22px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;white-space:nowrap;animation:fadeUp .25s ease';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function(){ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(function(){ t.remove(); },300); }, 2500);
+}
+
+function openModal(title, bodyHtml, onConfirm, confirmLabel, confirmClass) {
+  var existing = document.getElementById('__modal');
+  if (existing) existing.remove();
+  var m = document.createElement('div');
+  m.id = '__modal';
+  m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center';
+  m.innerHTML = '<div style="background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.2)">'
+    + '<div style="font-size:16px;font-weight:700;color:#1A2642;margin-bottom:14px">'+title+'</div>'
+    + '<div style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:20px">'+bodyHtml+'</div>'
+    + '<div style="display:flex;gap:8px;justify-content:flex-end">'
+    + '<button class="btn" onclick="closeModal()">취소</button>'
+    + '<button class="btn '+(confirmClass||'btn-primary')+'" id="__modal-confirm">'+(confirmLabel||'확인')+'</button>'
+    + '</div></div>';
+  m.addEventListener('click', function(e){ if(e.target===m) closeModal(); });
+  document.body.appendChild(m);
+  document.getElementById('__modal-confirm').addEventListener('click', function(){
+    closeModal();
+    if (typeof onConfirm === 'function') onConfirm();
+  });
+}
+function closeModal(){ var m=document.getElementById('__modal'); if(m) m.remove(); }
+
+function startAIClassify() {
+  showToast('🤖 AI Agent가 이미지를 분류하는 중...', '');
+  setTimeout(function(){ showToast('✓ 87장 분류 완료 — B/A 42장·의료진 18장·시설 27장', 'success'); }, 2200);
+}
+</script>
+</body>
+</html>

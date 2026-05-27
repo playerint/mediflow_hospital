@@ -1,0 +1,21 @@
+.fc-cols{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:10px;}
+.fc{text-align:center;}
+.fc-num{font-size:18px;font-weight:600;color:var(--navy);}
+.fc-lbl{font-size:10px;color:var(--gray-400);margin-top:2px;}
+.fc-bar{height:4px;border-radius:2px;margin-top:6px;}
+.fc-rate{font-size:10px;color:var(--green);margin-top:3px;font-weight:500;}
+.kw-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--gray-100);cursor:pointer;}
+.kw-row:last-child{border-bottom:none;}
+.kw-row:hover{background:var(--gray-50);margin:0 -4px;padding:6px 4px;border-radius:4px;}
+.kw-rank{font-size:11px;color:var(--gray-400);min-width:18px;text-align:center;}
+.kw-name{font-size:12px;color:var(--gray-900);flex:1;}
+.kw-vol{font-size:11px;color:var(--gray-400);min-width:44px;text-align:right;}
+.kw-pos{font-size:11px;font-weight:600;min-width:24px;text-align:right;}
+.kw-delta{font-size:10px;min-width:28px;text-align:right;}
+.aeo-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--gray-100);}
+.aeo-row:last-child{border-bottom:none;}
+.aeo-engine{font-size:12px;color:var(--gray-600);min-width:100px;}
+.aeo-bw{flex:1;height:5px;background:var(--gray-100);border-radius:3px;overflow:hidden;}
+.aeo-bar{height:100%;border-radius:3px;}
+.aeo-cnt{font-size:12px;font-weight:500;color:var(--navy);min-width:28px;text-align:right;}
+.aeo-d{font-size:10px;color:var(--green);min-width:28px;text-align:right;}
