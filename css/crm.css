@@ -82,8 +82,9 @@
   justify-content:center;
   font-size:11px;
   font-weight:500;
-  padding:2px 8px;
+  padding:3px 8px 4px;
   border-radius:6px;
-  line-height:1;
+  line-height:1.2;
   white-space:nowrap;
+  vertical-align:middle;
 }
