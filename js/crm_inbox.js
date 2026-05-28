@@ -101,6 +101,7 @@ function selectPatient(id) {
   document.getElementById('pb-el').style.color = p.elapsed ? 'var(--red)' : 'var(--gray-700)';
 
   renderMessages(p);
+  if(typeof updateRightPanel === 'function') updateRightPanel(p);
   p.unread = false;
   renderList(curFilter, document.querySelector('.inbox-search') ? document.querySelector('.inbox-search').value : '');
 
