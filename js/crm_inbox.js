@@ -130,7 +130,7 @@ function selectPatient(id) {
 
   // AI 초안 — 상태 기준: 신규/상담중만 표시
   const da = document.getElementById('ai-draft');
-  const showDraft = ['new', 'consulting'].indexOf(p.status) !== -1;
+  const showDraft = p.status !== 'closed'; // 종료만 숨김
   if (showDraft) {
     var koEl = document.getElementById('draft-text-ko');
     var jaEl = document.getElementById('draft-text-ja');
