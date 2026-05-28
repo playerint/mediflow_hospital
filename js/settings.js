@@ -79,88 +79,105 @@ function saveRoles() {
 
 const sections = {
   hospital: `
-    <div class="s-section">
-      <div class="s-section-title">🏥 병원 기본 정보</div>
-      <div class="s-row"><div class="s-label">병원명 (한국어)</div><input class="s-input" value="올래성형외과"></div>
-      <div class="s-row"><div class="s-label">병원명 (일본어)</div><input class="s-input" value="オーレ整形外科"></div>
-      <div class="s-row"><div class="s-label">대표 전화</div><input class="s-input" value="+82-2-1234-5678"></div>
-      <div class="s-row"><div class="s-label">주소</div><input class="s-input" value="서울 강남구 테헤란로 123"></div>
-      <div class="s-row"><div class="s-label">사이트 URL</div><input class="s-input" value="jp.oleps.co.kr"></div>
-    </div>
-    <div class="s-section">
-      <div class="s-section-title">🌐 일본어 사이트 설정</div>
-      <div class="s-row"><div class="s-label">시간대</div>
-        <select class="s-input" style="appearance:auto">
-          <option selected>Asia/Tokyo (JST)</option>
-          <option>Asia/Seoul (KST)</option>
-        </select>
+    <div class="card fade">
+      <div style="font-size:15px;font-weight:600;color:var(--navy);margin-bottom:16px">🏥 병원 기본 정보</div>
+      <div style="display:flex;gap:20px;margin-bottom:16px">
+        <div class="av-upload" title="로고 업로드">🏥</div>
+        <div style="flex:1">
+          <div class="field-group"><div class="f-label">병원명 (한국어)</div><input type="text" value="올래성형외과"></div>
+          <div class="field-group"><div class="f-label">병원명 (일본어)</div><input type="text" value="オーレ整形外科"></div>
+        </div>
       </div>
-      <div class="s-row"><div class="s-label">통화</div>
-        <select class="s-input" style="appearance:auto">
-          <option selected>JPY (¥)</option>
-          <option>KRW (₩)</option>
-        </select>
-      </div>
+      <div class="field-group"><div class="f-label">주소</div><input type="text" value="서울시 강남구 역삼동 123-45"></div>
+      <div class="field-group"><div class="f-label">전화번호</div><input type="text" value="+82-2-1234-5678"></div>
+      <div class="field-group"><div class="f-label">대표 이메일</div><input type="email" value="info@oleps.co.kr"></div>
+      <div class="field-group"><div class="f-label">운영 시간</div><input type="text" value="월~금 09:00-18:00 · 토 09:00-13:00"></div>
     </div>`,
-
   account: `
-    <div class="s-section">
-      <div class="s-section-title">👤 내 계정</div>
-      <div class="s-row"><div class="s-label">이름</div><input class="s-input" value="김지현"></div>
-      <div class="s-row"><div class="s-label">이메일</div><input class="s-input" value="admin@oleps.co.kr"></div>
-      <div class="s-row"><div class="s-label">역할</div><input class="s-input" value="관리자" readonly style="background:var(--gray-50);color:var(--gray-400)"></div>
-    </div>
-    <div class="s-section">
-      <div class="s-section-title">🔒 비밀번호 변경</div>
-      <div class="s-row"><div class="s-label">현재 비밀번호</div><input class="s-input" type="password" placeholder="현재 비밀번호 입력"></div>
-      <div class="s-row"><div class="s-label">새 비밀번호</div><input class="s-input" type="password" placeholder="새 비밀번호 입력"></div>
-      <div class="s-row"><div class="s-label">비밀번호 확인</div><input class="s-input" type="password" placeholder="새 비밀번호 재입력"></div>
-      <button class="btn btn-primary" style="margin-top:8px" onclick="showToast('✓ 비밀번호가 변경되었습니다.','success')">변경</button>
-    </div>`,
-
-  team: `
-    <div class="s-section">
-      <div class="s-section-title" style="display:flex;align-items:center;justify-content:space-between">
-        👥 팀 멤버
-        <button class="btn btn-primary" style="font-size:12px" onclick="showToast('✉ 초대 메일을 발송했습니다.','success')">+ 멤버 초대</button>
+    <div class="card fade">
+      <div style="font-size:15px;font-weight:600;color:var(--navy);margin-bottom:16px">👤 계정 설정</div>
+      <div style="display:flex;gap:16px;align-items:center;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--gray-100)">
+        <div class="av-upload">김</div>
+        <div><div style="font-size:14px;font-weight:600;color:var(--navy)">김지현</div><div style="font-size:12px;color:var(--gray-400)">oleps@hospital.co.kr · 관리자</div></div>
       </div>
-      <div id="member-role-list"></div>
-    </div>
-    <div class="s-section">
-      <div class="s-section-title">🔐 권한 설정</div>
-      <table style="width:100%;border-collapse:collapse">
-        <thead>
-          <tr>
-            <th style="font-size:11px;color:var(--gray-400);text-align:left;padding:8px 14px;border-bottom:2px solid var(--gray-100)">메뉴</th>
-            <th style="font-size:11px;color:var(--gray-400);text-align:center;padding:8px 14px;border-bottom:2px solid var(--gray-100)">관리자</th>
-            <th style="font-size:11px;color:var(--gray-400);text-align:center;padding:8px 14px;border-bottom:2px solid var(--gray-100)">편집자</th>
-            <th style="font-size:11px;color:var(--gray-400);text-align:center;padding:8px 14px;border-bottom:2px solid var(--gray-100)">뷰어</th>
-          </tr>
-        </thead>
-        <tbody id="role-table-body"></tbody>
-      </table>
+      <div class="field-group"><div class="f-label">이름</div><input type="text" value="김지현"></div>
+      <div class="field-group"><div class="f-label">이메일</div><input type="email" value="oleps@hospital.co.kr"></div>
+      <div class="field-group"><div class="f-label">비밀번호</div><input type="text" value="••••••••" readonly></div>
     </div>`,
+  team: `
+    <div class="card fade">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="font-size:15px;font-weight:600;color:var(--navy)">👥 팀 멤버</div>
+        <button class="btn btn-primary" style="font-size:12px" onclick="openInviteModal()">+ 멤버 초대</button>
+      </div>
 
+      <!-- 김지현 — 관리자 (변경 불가) -->
+      <div class="m-item">
+        <div class="m-av" style="background:#EEEDFE;color:#3C3489">김</div>
+        <div style="flex:1">
+          <div class="m-name">김지현</div>
+          <div class="m-email">oleps@hospital.co.kr</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="background:var(--teal-l);color:var(--teal-d);font-size:11px;padding:3px 10px;border-radius:6px;font-weight:600">관리자</span>
+          <span style="font-size:10px;color:var(--gray-300);background:var(--gray-50);padding:3px 8px;border-radius:6px;border:1px solid var(--gray-200)">🔒 변경 불가</span>
+        </div>
+      </div>
+
+      <!-- 이수진 — 드롭다운 -->
+      <div class="m-item" style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--gray-100)">
+        <div class="m-av" style="background:#D1FAE5;color:#065F46">이</div>
+        <div style="flex:1">
+          <div class="m-name">이수진</div>
+          <div class="m-email">lee@hospital.co.kr</div>
+        </div>
+        <select id="role-1" onchange="updateRoleBadge(1)" style="padding:6px 10px;border:1.5px solid var(--gray-200);border-radius:var(--r);font-size:13px;font-family:inherit;outline:none;color:var(--gray-700);background:#fff;cursor:pointer;width:100px;flex:none">
+          <option value="admin">관리자</option>
+          <option value="editor">편집자</option>
+          <option value="viewer" selected>뷰어</option>
+        </select>
+        <button onclick="deleteMember('이수진')" style="width:28px;height:28px;border-radius:6px;border:1px solid #FCA5A5;background:var(--red-l);color:var(--red);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex:none" title="멤버 삭제">✕</button>
+      </div>
+
+      <!-- 박민호 — 드롭다운 -->
+      <div class="m-item" style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--gray-100)">
+        <div class="m-av" style="background:#DBEAFE;color:#1E40AF">박</div>
+        <div style="flex:1">
+          <div class="m-name">박민호</div>
+          <div class="m-email">park@hospital.co.kr</div>
+        </div>
+        <select id="role-2" onchange="updateRoleBadge(2)" style="padding:6px 10px;border:1.5px solid var(--gray-200);border-radius:var(--r);font-size:13px;font-family:inherit;outline:none;color:var(--gray-700);background:#fff;cursor:pointer;width:100px;flex:none">
+          <option value="admin">관리자</option>
+          <option value="editor">편집자</option>
+          <option value="viewer" selected>뷰어</option>
+        </select>
+        <button onclick="deleteMember('박민호')" style="width:28px;height:28px;border-radius:6px;border:1px solid #FCA5A5;background:var(--red-l);color:var(--red);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex:none" title="멤버 삭제">✕</button>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;margin-top:16px;padding-top:14px;border-top:1px solid var(--gray-100)">
+        <button class="btn btn-primary" onclick="saveTeamRoles()">💾 변경 저장</button>
+      </div>
+    </div>`,
   notification: `
-    <div class="s-section">
-      <div class="s-section-title">🔔 알림 설정</div>
-      <div class="s-row"><div class="s-label">미확인 문의 알림</div><label class="toggle-wrap"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
-      <div class="s-row"><div class="s-label">예약 확정 알림</div><label class="toggle-wrap"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
-      <div class="s-row"><div class="s-label">컴플라이언스 경고</div><label class="toggle-wrap"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
-      <div class="s-row"><div class="s-label">리타게팅 발송 완료</div><label class="toggle-wrap"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
-      <div class="s-row"><div class="s-label">SLA 초과 경보 (2시간)</div><label class="toggle-wrap"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+    <div class="card fade">
+      <div style="font-size:15px;font-weight:600;color:var(--navy);margin-bottom:16px">🔔 알림 설정</div>
+      <div class="f-row"><div class="f-row-l"><div class="f-row-label">컴플라이언스 위반 감지</div><div class="f-row-sub">즉시 알림</div></div><label class="toggle-wrap"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+      <div class="f-row"><div class="f-row-l"><div class="f-row-label">신규 LINE 문의</div><div class="f-row-sub">미확인 시 30분 후 알림</div></div><label class="toggle-wrap"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+      <div class="f-row"><div class="f-row-l"><div class="f-row-label">리타게팅 발송 완료</div><div class="f-row-sub">발송 후 결과 알림</div></div><label class="toggle-wrap"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+      <div class="f-row"><div class="f-row-l"><div class="f-row-label">AEO 신규 인용</div><div class="f-row-sub">LLM 신규 인용 감지 시</div></div><label class="toggle-wrap"><input type="checkbox"><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+      <div class="f-row"><div class="f-row-l"><div class="f-row-label">주간 리포트</div><div class="f-row-sub">매주 월요일 오전 9시</div></div><label class="toggle-wrap"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
     </div>`,
-
   line: `
-    <div class="s-section">
-      <div class="s-section-title">💬 LINE Official Account 연동</div>
-      <div class="s-row"><div class="s-label">채널 ID</div><input class="s-input" value="1234567890"></div>
-      <div class="s-row"><div class="s-label">채널 시크릿</div><input class="s-input" type="password" value="abc123secret"></div>
-      <div class="s-row"><div class="s-label">채널 액세스 토큰</div><input class="s-input" type="password" value="token_example_xxxx"></div>
-      <div class="s-row"><div class="s-label">연결 상태</div><span style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--green)"><span style="width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block"></span>정상 연결</span></div>
-      <button class="btn" style="margin-top:8px" onclick="showToast('✓ 연결 테스트 성공','success')">연결 테스트</button>
+    <div class="card fade">
+      <div style="font-size:15px;font-weight:600;color:var(--navy);margin-bottom:16px">💬 LINE 연동</div>
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--green-l);border:1px solid #6EE7B7;border-radius:var(--r);margin-bottom:16px">
+        <span style="font-size:20px">✅</span><div><div style="font-size:13px;font-weight:500;color:#065F46">LINE Official Account 연결됨</div><div style="font-size:11px;color:#065F46">@oleps_official · 팔로워 1,247명</div></div>
+      </div>
+      <div class="field-group"><div class="f-label">Channel ID</div><input type="text" value="2006xxxxxxxx" readonly></div>
+      <div class="field-group"><div class="f-label">Channel Secret</div><input type="text" value="••••••••••••••••" readonly></div>
+      <div class="field-group"><div class="f-label">Webhook URL</div><input type="text" value="https://api.hospital-site-os.com/webhook/line/oleps" readonly></div>
+      <div style="display:flex;gap:8px;margin-top:8px"><button class="btn" style="flex:1;justify-content:center;font-size:12px" onclick="alert('연결 테스트 성공!')">연결 테스트</button><button class="btn btn-danger" style="font-size:12px" onclick="alert('연결 해제')">연결 해제</button></div>
     </div>`,
-
   instagram: `
     <div class="s-section">
       <div class="s-section-title">📸 Instagram 연동</div>
@@ -174,28 +191,43 @@ const sections = {
     </div>`,
 
   domain: `
-    <div class="s-section">
-      <div class="s-section-title">🌐 도메인 설정</div>
-      <div class="s-row"><div class="s-label">현재 도메인</div><input class="s-input" value="jp.oleps.co.kr"></div>
-      <div class="s-row"><div class="s-label">커스텀 도메인</div><input class="s-input" placeholder="예) oleps.jp"></div>
-      <div class="s-row"><div class="s-label">SSL 인증서</div><span style="font-size:13px;color:var(--green)">✓ 유효 (만료: 2027-05-01)</span></div>
-      <button class="btn btn-primary" style="margin-top:8px" onclick="showToast('✓ 도메인 설정이 저장되었습니다.','success')">저장</button>
+    <div class="card fade">
+      <div style="font-size:15px;font-weight:600;color:var(--navy);margin-bottom:16px">🌐 도메인 설정</div>
+      <div style="padding:12px 14px;background:var(--green-l);border:1px solid #6EE7B7;border-radius:var(--r);margin-bottom:16px;font-size:12px;color:#065F46">✅ jp.oleps.co.kr 연결됨 · SSL 유효 · Core Web Vitals 98점</div>
+      <div class="field-group"><div class="f-label">현재 도메인</div><input type="text" value="jp.oleps.co.kr"></div>
+      <div class="field-group"><div class="f-label">CDN 설정</div><select><option>Cloudflare (활성)</option><option>AWS CloudFront</option><option>없음</option></select></div>
+      <div class="field-group"><div class="f-label">리디렉션</div><input type="text" value="oleps.co.kr → jp.oleps.co.kr (301)"></div>
     </div>`,
 
-  plan: `
-    <div class="s-section">
-      <div class="s-section-title">💳 현재 플랜</div>
-      <div style="background:var(--navy-l);border:1px solid var(--blue);border-radius:var(--rl);padding:16px 20px;margin-bottom:14px">
-        <div style="font-size:16px;font-weight:700;color:var(--navy);margin-bottom:4px">Pro 플랜</div>
-        <div style="font-size:13px;color:var(--gray-600);margin-bottom:8px">월 ₩150,000 · 다음 갱신: 2026년 6월 1일</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <span style="font-size:11px;background:#D1FAE5;color:#065F46;padding:2px 8px;border-radius:6px">AI 자동상담 무제한</span>
-          <span style="font-size:11px;background:#D1FAE5;color:#065F46;padding:2px 8px;border-radius:6px">팀 멤버 5명</span>
-          <span style="font-size:11px;background:#D1FAE5;color:#065F46;padding:2px 8px;border-radius:6px">리포트 PDF</span>
-        </div>
+  roles: `
+    <div class="card fade">
+      <div style="font-size:15px;font-weight:600;color:var(--navy);margin-bottom:6px">🔐 권한 설정</div>
+      <div style="font-size:12px;color:var(--gray-400);margin-bottom:20px">역할별 접근 가능한 메뉴와 기능을 설정합니다.</div>
+
+      <!-- 권한 표 -->
+      <div style="overflow-x:auto;margin-bottom:24px">
+        <table style="width:100%;border-collapse:collapse">
+          <thead>
+            <tr style="background:var(--gray-50)">
+              <th style="font-size:11px;font-weight:600;color:var(--gray-400);text-align:left;padding:10px 14px;border-bottom:2px solid var(--gray-100)">메뉴 / 기능</th>
+              <th style="font-size:11px;font-weight:600;padding:10px 14px;border-bottom:2px solid var(--gray-100);text-align:center"><span style="background:var(--teal-l);color:var(--teal-d);padding:2px 10px;border-radius:6px">관리자</span></th>
+              <th style="font-size:11px;font-weight:600;padding:10px 14px;border-bottom:2px solid var(--gray-100);text-align:center"><span style="background:var(--purple-l);color:var(--purple);padding:2px 10px;border-radius:6px">편집자</span></th>
+              <th style="font-size:11px;font-weight:600;padding:10px 14px;border-bottom:2px solid var(--gray-100);text-align:center"><span style="background:var(--gray-100);color:var(--gray-500);padding:2px 10px;border-radius:6px">뷰어</span></th>
+            </tr>
+          </thead>
+          <tbody id="role-table-body"></tbody>
+        </table>
       </div>
-      <button class="btn" onclick="showToast('플랜 변경 페이지로 이동합니다.','')">플랜 변경</button>
+
+      <!-- 멤버별 역할 변경 -->
+      <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:12px">멤버별 역할 변경</div>
+      <div id="member-role-list"></div>
+
+      <div style="margin-top:16px;display:flex;justify-content:flex-end">
+        <button class="btn btn-primary" onclick="saveRoles()">💾 변경 저장</button>
+      </div>
     </div>`,
+  plan: '__PLAN__',
 };
 
 
@@ -227,7 +259,7 @@ function saveTeamRoles() {
 
 function updateRoleBadge(idx) {
   var el = document.getElementById('role-' + idx);
-  if (el) el.style.borderColor = 'var(--blue)';
+  if (el) el.style.borderColor = 'var(--teal)';
 }
 
 
@@ -251,28 +283,28 @@ function openInviteModal() {
         <div style="font-size:12px;font-weight:600;color:var(--gray-700);margin-bottom:5px">초대할 이메일 <span style="color:var(--red)">*</span></div>
         <input id="invite-email" type="email" placeholder="예) staff@oleps.co.kr"
           style="width:100%;padding:9px 12px;border:1.5px solid var(--gray-200);border-radius:var(--r);font-size:13px;font-family:inherit;outline:none;color:var(--gray-700)"
-          onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--gray-200)'">
+          onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--gray-200)'">
       </div>
 
       <div style="margin-bottom:14px">
         <div style="font-size:12px;font-weight:600;color:var(--gray-700);margin-bottom:8px">권한 선택 <span style="color:var(--red)">*</span></div>
         <div style="display:flex;flex-direction:column;gap:8px" id="role-options">
           <label style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:var(--r);cursor:pointer;transition:all .15s" id="opt-admin">
-            <input type="radio" name="invite-role" value="admin" style="margin-top:2px;accent-color:var(--blue)">
+            <input type="radio" name="invite-role" value="admin" style="margin-top:2px;accent-color:var(--teal)">
             <div>
               <div style="font-size:13px;font-weight:600;color:var(--navy)">👑 관리자</div>
               <div style="font-size:11px;color:var(--gray-400);margin-top:2px">모든 메뉴 접근 · 설정 변경 · 팀 관리</div>
             </div>
           </label>
           <label style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:var(--r);cursor:pointer;background:#fff;transition:all .15s" id="opt-editor">
-            <input type="radio" name="invite-role" value="editor" style="margin-top:2px;accent-color:var(--blue)">
+            <input type="radio" name="invite-role" value="editor" style="margin-top:2px;accent-color:var(--teal)">
             <div>
               <div style="font-size:13px;font-weight:600;color:var(--navy)">✏ 편집자</div>
               <div style="font-size:11px;color:var(--gray-400);margin-top:2px">콘텐츠 편집 · CRM · 리포트 조회</div>
             </div>
           </label>
-          <label style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border:1.5px solid var(--blue);border-radius:var(--r);cursor:pointer;background:var(--navy-l);transition:all .15s" id="opt-viewer">
-            <input type="radio" name="invite-role" value="viewer" checked style="margin-top:2px;accent-color:var(--blue)">
+          <label style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border:1.5px solid var(--teal);border-radius:var(--r);cursor:pointer;background:var(--teal-l);transition:all .15s" id="opt-viewer">
+            <input type="radio" name="invite-role" value="viewer" checked style="margin-top:2px;accent-color:var(--teal)">
             <div>
               <div style="font-size:13px;font-weight:600;color:var(--navy)">👁 뷰어</div>
               <div style="font-size:11px;color:var(--gray-400);margin-top:2px">대시보드 · 리포트 조회만 가능</div>
@@ -299,8 +331,8 @@ function openInviteModal() {
       ['admin','editor','viewer'].forEach(function(r) {
         var el = document.getElementById('opt-' + r);
         if (r === radio.value) {
-          el.style.borderColor = 'var(--blue)';
-          el.style.background  = 'var(--navy-l)';
+          el.style.borderColor = 'var(--teal)';
+          el.style.background  = 'var(--teal-l)';
         } else {
           el.style.borderColor = 'var(--gray-200)';
           el.style.background  = '#fff';
@@ -360,7 +392,6 @@ function sendInvite() {
   }, 1500);
 }
 
-
 function openModal(title, bodyHtml, onConfirm, confirmLabel, confirmClass) {
   var e = document.getElementById('__modal'); if(e) e.remove();
   var m = document.createElement('div'); m.id='__modal';
@@ -377,10 +408,10 @@ function openModal(title, bodyHtml, onConfirm, confirmLabel, confirmClass) {
   document.getElementById('__modal-confirm').addEventListener('click',function(){ closeModal(); if(typeof onConfirm==='function') onConfirm(); });
 }
 function closeModal(){ var m=document.getElementById('__modal'); if(m) m.remove(); }
-function showToast(msg, type) {
-  var bg = type==='success'?'#059669':type==='error'?'#DC2626':'var(--navy)';
+
+function showToast(msg) {
   var toast = document.createElement('div');
-  toast.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:2000;animation:slideUp .25s ease;white-space:nowrap';
+  toast.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:2000;animation:slideUp .25s ease;white-space:nowrap';
   toast.textContent = msg;
   document.body.appendChild(toast);
   setTimeout(function() {
@@ -400,7 +431,7 @@ function planFeature(enabled, text) {
 function changePlan(planId, planName, price) {
   var isUpgrade = planId === 'enterprise' || (planId === 'pro' && currentPlan === 'basic');
   var actionLabel = isUpgrade ? '업그레이드' : '다운그레이드';
-  var color = isUpgrade ? 'var(--navy)' : 'var(--red)';
+  var color = isUpgrade ? 'var(--purple)' : 'var(--red)';
   var planLabels = {basic:'Basic', pro:'Pro', enterprise:'Enterprise'};
   var currentLabel = planLabels[currentPlan] || 'Pro';
 
@@ -540,11 +571,9 @@ function showSec(key, btn) {
   } else {
     document.getElementById('sec-content').innerHTML = sections[key] || '';
   }
-  if (key === 'team') {
-    setTimeout(function(){
-      renderRoleTable();
-      renderMemberRoles();
-    }, 0);
+  if (key === 'roles') {
+    renderRoleTable();
+    renderMemberRoles();
   }
 }
 
@@ -553,9 +582,9 @@ function renderPlanSection() {
     return '<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:'+(ok?'var(--gray-700)':'var(--gray-300)')+'"><span style="color:'+(ok?'var(--green)':'var(--gray-300)')+';font-weight:700">'+(ok?'✓':'✕')+'</span>'+txt+'</div>';
   }
   function planCard(id, name, price, desc, features, btnHtml, highlight) {
-    var borderColor = highlight ? 'var(--blue)' : 'var(--gray-200)';
-    var bg = highlight ? 'background:var(--navy-l);' : '';
-    var badge = highlight ? '<div style="position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;font-size:10px;font-weight:700;padding:3px 12px;border-radius:0 0 8px 8px;white-space:nowrap;letter-spacing:.04em">현재 플랜</div>' : '';
+    var borderColor = highlight ? 'var(--teal)' : 'var(--gray-200)';
+    var bg = highlight ? 'background:var(--teal-l);' : '';
+    var badge = highlight ? '<div style="position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--teal);color:#fff;font-size:10px;font-weight:700;padding:3px 12px;border-radius:0 0 8px 8px;white-space:nowrap;letter-spacing:.04em">현재 플랜</div>' : '';
     var mt = highlight ? 'margin-top:8px;' : '';
     var html = '<div style="border:2px solid '+borderColor+';border-radius:var(--rl);padding:20px 18px;'+bg+'position:relative;transition:all .2s">';
     html += badge;
@@ -594,16 +623,16 @@ function renderPlanSection() {
 
   // 버튼은 planCard 내부에서 currentPlan 기준으로 동적 생성
   var basicBtn = currentPlan === 'basic'
-    ? '<button disabled style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--blue);background:var(--navy);color:#fff;font-size:12px;font-weight:600;font-family:inherit;cursor:not-allowed;opacity:.6">✓ 현재 플랜</button>'
+    ? '<button disabled style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--teal);background:var(--teal);color:#fff;font-size:12px;font-weight:600;font-family:inherit;cursor:not-allowed;opacity:.6">✓ 현재 플랜</button>'
     : '<button onclick="changePlan(\'basic\',\'Basic\',\'390,000\')" style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--gray-200);background:#fff;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--gray-500);">다운그레이드</button>';
   var proBtn = currentPlan === 'pro'
-    ? '<button disabled style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--blue);background:var(--navy);color:#fff;font-size:12px;font-weight:600;font-family:inherit;cursor:not-allowed;opacity:.6">✓ 현재 플랜</button>'
+    ? '<button disabled style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--teal);background:var(--teal);color:#fff;font-size:12px;font-weight:600;font-family:inherit;cursor:not-allowed;opacity:.6">✓ 현재 플랜</button>'
     : (currentPlan === 'basic'
-      ? '<button onclick="changePlan(\'pro\',\'Pro\',\'890,000\')" style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--blue);background:var(--navy-l);font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--navy);">업그레이드</button>'
+      ? '<button onclick="changePlan(\'pro\',\'Pro\',\'890,000\')" style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--teal);background:var(--teal-l);font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--teal-d);">업그레이드</button>'
       : '<button onclick="changePlan(\'pro\',\'Pro\',\'890,000\')" style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--gray-200);background:#fff;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--gray-500);">다운그레이드</button>');
   var entBtn = currentPlan === 'enterprise'
-    ? '<button disabled style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--blue);background:var(--navy);color:#fff;font-size:12px;font-weight:600;font-family:inherit;cursor:not-allowed;opacity:.6">✓ 현재 플랜</button>'
-    : '<button onclick="changePlan(\'enterprise\',\'Enterprise\',\'1,490,000\')" style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--navy);background:var(--navy-l);font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--navy);">업그레이드</button>';
+    ? '<button disabled style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--teal);background:var(--teal);color:#fff;font-size:12px;font-weight:600;font-family:inherit;cursor:not-allowed;opacity:.6">✓ 현재 플랜</button>'
+    : '<button onclick="changePlan(\'enterprise\',\'Enterprise\',\'1,490,000\')" style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--purple);background:var(--purple-l);font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--purple);">업그레이드</button>';
 
   var html = '<div class="card fade">';
   html += '<div style="font-size:15px;font-weight:600;color:var(--navy);margin-bottom:4px">💳 플랜 및 결제</div>';
