@@ -353,26 +353,34 @@ function goToBooking() {
 
 /* ── 버튼 상태 통합 함수 ── */
 function applyStatusBtn(p) {
-  var isClosed = p.status === 'closed';
+  var isClosed = p.status === "closed";
   var cfg = {
-    new:        { label:'상담중으로 변경',  cls:'btn btn-primary', color:'',              opacity:'' },
-    consulting: { label:'예약완료로 변경',  cls:'btn btn-success', color:'var(--green)',   opacity:'', textColor:'#fff' },
-    booked:     { label:'종료로 변경',      cls:'btn btn-primary', color:'',              opacity:'' },
-    closed:     { label:'종료됨',           cls:'btn',             color:'var(--gray-300)', opacity:'0.55' },
+    new:        { label:"상담중으로 변경", cls:"btn btn-primary", color:"", opacity:"", textColor:"" },
+    consulting: { label:"예약완료로 변경", cls:"btn btn-success", color:"var(--green)", opacity:"", textColor:"#fff" },
+    booked:     { label:"종료로 변경",     cls:"btn btn-primary", color:"", opacity:"", textColor:"" },
+    closed:     { label:"종료됨",          cls:"btn", color:"var(--gray-300)", opacity:"0.55", textColor:"#fff" },
   };
   var c = cfg[p.status] || cfg.new;
-  ['status-btn', 'rp-status-btn'].forEach(function(id) {
+  ["status-btn", "rp-status-btn"].forEach(function(id) {
     var btn = document.getElementById(id);
     if (!btn) return;
-    btn.textContent      = c.label;
-    btn.className        = c.cls;
-    btn.disabled         = isClosed;
-    btn.style.cursor     = isClosed ? 'not-allowed' : '';
-    btn.style.opacity    = c.opacity;
-    btn.style.background = c.color;
-    btn.style.borderColor= c.color;
-    btn.style.color      = c.textColor || '';
+    btn.textContent       = c.label;
+    btn.className         = c.cls;
+    btn.disabled          = isClosed;
+    btn.style.cursor      = isClosed ? "not-allowed" : "";
+    btn.style.opacity     = c.opacity;
+    btn.style.background  = c.color;
+    btn.style.borderColor = c.color;
+    btn.style.color       = c.textColor || "";
   });
+  var bookingLabels = {
+    new:        "📅 예약 전환",
+    consulting: "📅 예약 전환",
+    booked:     "📅 예약 변경",
+    closed:     "📅 예약 내역",
+  };
+  var bookingBtn = document.getElementById("rp-booking-btn");
+  if (bookingBtn) bookingBtn.textContent = bookingLabels[p.status] || "📅 예약 전환";
 }
 function changeStatus() {
   var p = patients[curId];
