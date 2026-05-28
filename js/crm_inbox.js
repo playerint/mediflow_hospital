@@ -168,56 +168,62 @@ function renderMessages(p) {
     var isPatient = m.from === 'patient';
     var isAI      = m.from === 'ai';
     var isStaff   = m.from === 'staff';
-    var bubbleClass = isPatient ? 'msg-in' : (isAI ? 'msg-out ai' : 'msg-out');
 
     // 아바타
     var avatarHtml;
     if (isAI) {
-      avatarHtml = '<div class="msg-av-hana" title="AI はな"><div class="hana-badge-av">🌸</div></div>';
+      avatarHtml = '<div style="width:34px;height:34px;border-radius:50%;background:var(--navy-l);font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0">🌸</div>';
     } else if (isPatient) {
-      avatarHtml = '<div class="msg-av-sm" style="background:' + p.bg + ';color:' + p.tc + '">' + p.init[0] + '</div>';
+      avatarHtml = '<div style="width:28px;height:28px;border-radius:50%;background:' + p.bg + ';color:' + p.tc + ';font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">' + p.init[0] + '</div>';
     } else {
-      // 담당자 발송 — 채널 아이콘으로 표시 (환자에게는 병원 공식 계정으로 보임)
       var chIcon = p.ch === 'Instagram' ? '📸' : '💬';
       var chBg   = p.ch === 'Instagram' ? '#FDF2F8' : '#EFF6FF';
       var chTc   = p.ch === 'Instagram' ? '#BE185D' : '#2563EB';
-      avatarHtml = '<div class="msg-av-sm" style="background:' + chBg + ';color:' + chTc + ';font-size:14px">' + chIcon + '</div>';
+      avatarHtml = '<div style="width:28px;height:28px;border-radius:50%;background:' + chBg + ';color:' + chTc + ';font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0">' + chIcon + '</div>';
     }
 
-    // 발신자 이름 레이블
+    // 발신자 레이블
     var senderLabel = '';
     if (isAI) {
-      senderLabel = '<div class="hana-name">AI はな <span style="font-size:9px;background:#EEF2FF;color:var(--navy);padding:1px 5px;border-radius:4px;font-weight:400">자동응답</span></div>';
+      senderLabel = '<div style="font-size:11px;font-weight:600;color:var(--navy);margin-bottom:3px;display:flex;align-items:center;gap:4px">AI はな <span style="font-size:9px;background:#EEF2FF;color:var(--navy);padding:1px 5px;border-radius:4px;font-weight:400">자동응답</span></div>';
     } else if (isStaff) {
       var chName = p.ch === 'Instagram' ? 'Instagram' : 'LINE';
-      senderLabel = '<div class="hana-name" style="color:var(--gray-500)">' + chName + ' <span style="font-size:9px;background:#D1FAE5;color:#065F46;padding:1px 5px;border-radius:4px;font-weight:400">발송</span></div>';
+      senderLabel = '<div style="font-size:11px;font-weight:600;color:var(--gray-500);margin-bottom:3px;display:flex;align-items:center;gap:4px">' + chName + ' <span style="font-size:9px;background:#D1FAE5;color:#065F46;padding:1px 5px;border-radius:4px;font-weight:400">발송</span></div>';
     }
 
-    // 말풍선 내용
+    // 말풍선
     var bubbleContent = '';
+    var bubbleBg, bubbleTc;
     if (isPatient) {
-      bubbleContent = '<div class="msg-ja">' + m.ja + '</div>';
-      if (m.ko) bubbleContent += '<div class="msg-ko-badge">KR ' + m.ko + '</div>';
+      bubbleBg = '#F3F4F6'; bubbleTc = '#111827';
+      bubbleContent += '<div style="font-size:13px;line-height:1.7">' + m.ja + '</div>';
+      if (m.ko) bubbleContent += '<div style="margin-top:5px;padding:5px 8px;background:rgba(0,0,0,.05);border-radius:6px;font-size:11px;color:#374151;line-height:1.6">KR ' + m.ko + '</div>';
     } else {
-      if (m.ko) bubbleContent += '<div class="msg-ko-send">' + m.ko + '</div>';
-      if (m.ja) bubbleContent += '<div class="msg-ja-send">JP ' + m.ja + '</div>';
+      bubbleBg = isAI ? '#0D1B3E' : (p.ch === 'Instagram' ? '#E1306C' : '#06C755');
+      bubbleTc = '#fff';
+      if (m.ko) bubbleContent += '<div style="font-size:13px;line-height:1.7">' + m.ko + '</div>';
+      if (m.ja) bubbleContent += '<div style="margin-top:5px;padding:5px 8px;background:rgba(255,255,255,.2);border-radius:6px;font-size:11px;line-height:1.6">JP ' + m.ja + '</div>';
     }
 
-    var alignClass = isPatient ? 'msg-row-in' : 'msg-row-out';
-    var rowStyle = isPatient ? 'display:flex;align-items:flex-start;gap:8px;margin-bottom:14px' : 'display:flex;align-items:flex-start;gap:8px;margin-bottom:14px;flex-direction:row-reverse';
+    var isOut = !isPatient;
+    var rowStyle   = 'display:flex;align-items:flex-start;gap:8px;margin-bottom:14px' + (isOut ? ';flex-direction:row-reverse' : '');
+    var bdrRadius  = isPatient ? '4px 14px 14px 14px' : '14px 4px 14px 14px';
+    var bubbleStyle = 'padding:10px 13px;border-radius:' + bdrRadius + ';background:' + bubbleBg + ';color:' + bubbleTc + ';max-width:260px;word-break:break-word';
+    var timeStyle  = 'font-size:10px;color:var(--gray-400);margin-top:4px;text-align:' + (isOut ? 'left' : 'right');
+
     return '<div style="' + rowStyle + '">'
       + avatarHtml
-      + '<div>'
+      + '<div style="max-width:280px">'
       + senderLabel
-      + '<div class="msg-bubble ' + bubbleClass + '">' + bubbleContent + '</div>'
-      + '<div class="msg-time">' + m.time + '</div>'
+      + '<div style="' + bubbleStyle + '">' + bubbleContent + '</div>'
+      + '<div style="' + timeStyle + '">' + m.time + '</div>'
       + '</div>'
       + '</div>';
   }).join('');
   ma.scrollTop = ma.scrollHeight;
 }
 
-// ── 번역 토글 ────────────────────────────────────────────────────
+
 function toggleTranslation() {
   showKo = !showKo;
   const btn = document.getElementById('translate-toggle');
