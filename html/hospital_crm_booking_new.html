@@ -105,6 +105,61 @@
     <footer class="site-footer">© 2026 MEDIFLOW. All rights reserved.</footer>
   </div>
 </main>
+
+// ── URL 파라미터 자동 입력 (CRM 인박스에서 넘어온 경우) ──
+(function() {
+  var params = new URLSearchParams(location.search);
+  var name   = params.get('name');
+  var nameJa = params.get('nameJa');
+  var proc   = params.get('proc');
+  var ch     = params.get('ch');
+  if (!name) return;
+
+  // 환자 정보 자동 입력
+  var nameKoEl = document.getElementById('name-ko');
+  var nameJaEl = document.getElementById('name-ja');
+  var chEl     = document.getElementById('channel');
+  var procEl   = document.getElementById('procedure');
+  if (nameKoEl) nameKoEl.value = name;
+  if (nameJaEl) nameJaEl.value = nameJa || '';
+  if (chEl && ch) {
+    var chMap = {'LINE':'LINE','상담폼':'form','전화':'phone','워크인':'walkin'};
+    chEl.value = chMap[ch] || 'LINE';
+  }
+  if (procEl && proc) {
+    // 관심 시술 매칭
+    var options = procEl.options;
+    for (var i = 0; i < options.length; i++) {
+      if (options[i].text.includes(proc) || proc.includes(options[i].text.replace(/\s*\(.*\)/,''))) {
+        procEl.selectedIndex = i;
+        break;
+      }
+    }
+  }
+
+  // 선택된 환자 카드 표시
+  var sp = document.getElementById('selected-patient');
+  var selAvatar = document.getElementById('sel-avatar');
+  var selName   = document.getElementById('sel-name');
+  var selMeta   = document.getElementById('sel-meta');
+  if (sp && selAvatar && selName && selMeta) {
+    selAvatar.textContent = name.slice(0,2);
+    selName.textContent   = name + (nameJa ? ' (' + nameJa + ')' : '');
+    selMeta.textContent   = (ch || 'LINE') + ' · CRM 인박스에서 연결됨';
+    sp.style.display = 'flex';
+  }
+
+  // 검색창에도 이름 표시
+  var searchEl = document.getElementById('patient-search');
+  if (searchEl) searchEl.value = name;
+
+  // 상단에 연결 배너 표시
+  var banner = document.createElement('div');
+  banner.style.cssText = 'display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--navy-l);border:1px solid var(--blue);border-radius:var(--r);margin-bottom:14px;font-size:12px;color:var(--navy)';
+  banner.innerHTML = '<span style="font-size:16px">💬</span><span><strong>' + name + '</strong>님의 CRM 상담에서 연결되었습니다. 아래 정보를 확인하고 예약을 등록해주세요.</span>';
+  var formWrap = document.querySelector('.form-wrap');
+  if (formWrap) formWrap.insertBefore(banner, formWrap.firstChild);
+})();
 <script src="../js/auth.js"></script><script src="../js/sidebar.js"></script>
 <script>
 const patients=[
