@@ -293,7 +293,7 @@ body{
         </div>
         <div class="field">
           <div class="f-label">연락처 <span class="req">*</span></div>
-          <input class="f-input" id="contact-phone" placeholder="예) 010-1234-5678" type="tel">
+          <input class="f-input" id="contact-" placeholder="예) 010-1234-5678" type="tel">
         </div>
       </div>
       <div class="field" style="margin-top:14px">
@@ -361,14 +361,14 @@ function submitForm() {
   const url    = document.getElementById('hospital-url').value.trim();
   const cname  = document.getElementById('contact-name').value.trim();
   const cemail = document.getElementById('contact-email').value.trim();
-  const cphone = document.getElementById('contact-phone').value.trim();
+  const c = document.getElementById('contact-').value.trim();
   const spec   = document.getElementById('specialty').value;
   if (!name)   { alert('병원명을 입력해주세요.'); return; }
   if (!spec)   { alert('진료 분야를 선택해주세요.'); return; }
   if (!url)    { alert('병원 홈페이지 URL을 입력해주세요.'); return; }
   if (!cname)  { alert('담당자 성명을 입력해주세요.'); return; }
   if (!cemail) { alert('이메일을 입력해주세요.'); return; }
-  if (!cphone) { alert('연락처를 입력해주세요.'); return; }
+  if (!c) { alert('연락처를 입력해주세요.'); return; }
   if (!agrees.agree1 || !agrees.agree2) { alert('필수 약관에 동의해주세요.'); return; }
   const btn = document.getElementById('submit-btn');
   btn.disabled = true; btn.innerHTML = '⏳ 신청 중...';
