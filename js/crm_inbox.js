@@ -370,6 +370,19 @@ function changeStatus() {
 
 /* ── 메모 ── */
 var memoStore = {};
+
+/* ── 메모 저장/불러오기 ── */
+function saveMemo() {
+  var el = document.getElementById('rp-memo-input');
+  if (!el || curId === undefined) return;
+  memoStore[curId] = el.value;
+}
+
+function loadMemo(id) {
+  var el = document.getElementById('rp-memo-input');
+  if (!el) return;
+  el.value = memoStore[id] || '';
+}
 function openMemo() {
   var p = patients[curId];
   if(!p) return;
