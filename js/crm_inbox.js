@@ -153,6 +153,12 @@ function selectPatient(id) {
       da.style.display = 'none';
     }
   }
+
+  // ── 발송 버튼 텍스트 채널별 변경 ──
+  var sendBtn = document.getElementById('send-btn');
+  if (sendBtn) {
+    sendBtn.textContent = p.ch === 'Instagram' ? '📤 Instagram으로 발송' : '📤 LINE으로 발송';
+  }
 }
 
 // ── 메시지 렌더링 (한국어 병기) ──────────────────────────────────
