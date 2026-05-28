@@ -522,9 +522,11 @@ function showSec(key, btn) {
   } else {
     document.getElementById('sec-content').innerHTML = sections[key] || '';
   }
-  if (key === 'roles') {
-    renderRoleTable();
-    renderMemberRoles();
+  if (key === 'team') {
+    setTimeout(function(){
+      renderRoleTable();
+      renderMemberRoles();
+    }, 0);
   }
 }
 
