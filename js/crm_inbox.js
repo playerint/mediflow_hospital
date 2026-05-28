@@ -389,7 +389,7 @@ function loadMemo(id) {
 function setRpTab(tab, btn) {
   document.querySelectorAll('.rp-tab').forEach(function(b){ b.classList.remove('active'); });
   btn.classList.add('active');
-  ['ai','manual','trans'].forEach(function(t){
+  ['ai','manual'].forEach(function(t){
     var el = document.getElementById('rp-tab-'+t);
     if(el) el.style.display = t===tab ? '' : 'none';
   });
