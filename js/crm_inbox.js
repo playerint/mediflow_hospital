@@ -97,10 +97,9 @@ function selectPatient(id) {
   document.getElementById('d-avatar').textContent = p.init;
   document.getElementById('d-name').textContent = p.name + ' (' + p.nameJa + ')';
   document.getElementById('d-meta').textContent = p.ch + ' · ' + p.msgs[0].time + (p.elapsed ? ' · ' + p.elapsed + ' 경과' : '');
-  document.getElementById('pb-proc').textContent = p.proc;
-  document.getElementById('pb-ch').textContent = p.ch;
-  document.getElementById('pb-el').textContent = p.elapsed || '—';
-  document.getElementById('pb-el').style.color = p.elapsed ? 'var(--red)' : 'var(--gray-700)';
+  var pbProc = document.getElementById('pb-proc'); if(pbProc) pbProc.textContent = p.proc;
+  var pbCh = document.getElementById('pb-ch'); if(pbCh) pbCh.textContent = p.ch;
+  var pbEl = document.getElementById('pb-el'); if(pbEl){ pbEl.textContent = p.elapsed || '—'; pbEl.style.color = p.elapsed ? 'var(--red)' : 'var(--gray-700)'; }
 
   renderMessages(p);
   if(typeof updateRightPanel === 'function') updateRightPanel(p);
