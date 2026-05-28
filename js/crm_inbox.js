@@ -113,32 +113,52 @@ function renderList(filter, search) {
 // ── 환자 선택 ────────────────────────────────────────────────────
 function selectPatient(id) {
   curId = id;
-  const p = patients[id];
+  var p = patients[id];
+
+  // ── 채팅 헤더 업데이트 ──
   document.getElementById('d-avatar').style.background = p.bg;
   document.getElementById('d-avatar').style.color = p.tc;
   document.getElementById('d-avatar').textContent = p.init;
   document.getElementById('d-name').textContent = p.name + ' (' + p.nameJa + ')';
   document.getElementById('d-meta').textContent = p.ch + ' · ' + p.msgs[0].time + (p.elapsed ? ' · ' + p.elapsed + ' 경과' : '');
   var pbProc = document.getElementById('pb-proc'); if(pbProc) pbProc.textContent = p.proc;
-  var pbCh = document.getElementById('pb-ch'); if(pbCh) pbCh.textContent = p.ch;
-  var pbEl = document.getElementById('pb-el'); if(pbEl){ pbEl.textContent = p.elapsed || '—'; pbEl.style.color = p.elapsed ? 'var(--red)' : 'var(--gray-700)'; }
+  var pbCh   = document.getElementById('pb-ch');   if(pbCh)   pbCh.textContent = p.ch;
+  var pbEl   = document.getElementById('pb-el');
+  if(pbEl){ pbEl.textContent = p.elapsed || '—'; pbEl.style.color = p.elapsed ? 'var(--red)' : 'var(--gray-700)'; }
 
+  // ── 상태 버튼 완전 초기화 (매번 새로 세팅) ──
+  var isClosed = p.status === 'closed';
+  var nextLabels = {new:'상담중으로 변경', consulting:'예약완료로 변경', booked:'종료로 변경', closed:'종료됨'};
+  var statusBtn  = document.getElementById('status-btn');
+  var rpStatusBtn = document.getElementById('rp-status-btn');
+  [statusBtn, rpStatusBtn].forEach(function(btn) {
+    if (!btn) return;
+    btn.textContent  = nextLabels[p.status] || '상태 변경';
+    btn.disabled     = isClosed;
+    btn.className    = isClosed ? 'btn' : 'btn btn-primary';
+    btn.style.cssText = isClosed
+      ? 'opacity:0.5;cursor:not-allowed;'
+      : '';
+  });
+
+  // ── 메시지 렌더링 ──
   renderMessages(p);
   if(typeof updateRightPanel === 'function') updateRightPanel(p);
   p.unread = false;
   renderList(curFilter, document.querySelector('.inbox-search') ? document.querySelector('.inbox-search').value : '');
 
-  // AI 초안 — 상태 기준: 신규/상담중만 표시
-  const da = document.getElementById('ai-draft');
-  const showDraft = p.status !== 'closed'; // 종료만 숨김
-  if (showDraft) {
-    var koEl = document.getElementById('draft-text-ko');
-    var jaEl = document.getElementById('draft-text-ja');
-    if (koEl) koEl.value = (p.draft && p.draft.ko) ? p.draft.ko : '';
-    if (jaEl) jaEl.value = (p.draft && p.draft.ja) ? p.draft.ja : '';
-    da.style.display = '';
-  } else {
-    da.style.display = 'none';
+  // ── 발송폼 — 종료만 숨김 ──
+  var da = document.getElementById('ai-draft');
+  if (da) {
+    if (p.status !== 'closed') {
+      var koEl = document.getElementById('draft-text-ko');
+      var jaEl = document.getElementById('draft-text-ja');
+      if (koEl) koEl.value = (p.draft && p.draft.ko) ? p.draft.ko : '';
+      if (jaEl) jaEl.value = (p.draft && p.draft.ja) ? p.draft.ja : '';
+      da.style.display = '';
+    } else {
+      da.style.display = 'none';
+    }
   }
 }
 
