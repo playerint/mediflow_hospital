@@ -77,7 +77,15 @@ function saveRoles() {
 }
 
 
-const sections =;
+const sections = {
+  hospital: 'hospital',
+  account:  'account',
+  team:     'team',
+  notification: 'notification',
+  line:     'line',
+  domain:   'domain',
+  plan:     'plan',
+};
 
 
 function deleteMember(name) {
