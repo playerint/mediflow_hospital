@@ -124,7 +124,12 @@ function selectPatient(id) {
   var pbProc = document.getElementById('pb-proc'); if(pbProc) pbProc.textContent = p.proc;
   var pbCh   = document.getElementById('pb-ch');   if(pbCh)   pbCh.textContent = p.ch;
   var pbEl   = document.getElementById('pb-el');
-  if(pbEl){ pbEl.textContent = p.elapsed || '—'; pbEl.style.color = p.elapsed ? 'var(--red)' : 'var(--gray-700)'; }
+  if(pbEl){
+    var elapsedLabels = {new: p.elapsed || '—', consulting:'응대 중', booked:'예약 완료', closed:'종료'};
+    var elapsedColors = {new: p.elapsed ? 'var(--red)' : 'var(--gray-400)', consulting:'var(--green)', booked:'var(--blue)', closed:'var(--gray-400)'};
+    pbEl.textContent = elapsedLabels[p.status] || '—';
+    pbEl.style.color = elapsedColors[p.status] || 'var(--gray-400)';
+  }
 
   // ── 상태 버튼 초기화 ──
   applyStatusBtn(p);
