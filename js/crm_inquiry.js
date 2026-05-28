@@ -1,5 +1,5 @@
 
-const channels=[{name:'LINE',cnt:12,pct:52,color:'#0D9488',delta:'+4'},{name:'상담 폼',cnt:7,pct:30,color:'#2563EB',delta:'+3'},{name:'전화',cnt:4,pct:18,color:'#7F77DD',delta:'+1'}];
+const channels=[{name:'LINE',cnt:12,pct:52,color:'#0D9488',delta:'+4'},{name:'상담 폼',cnt:7,pct:30,color:'#2563EB',delta:'+3'},];
 const cr=document.getElementById('ch-rows');
 channels.forEach(c=>{
   cr.innerHTML+=`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--gray-100);cursor:pointer" onclick="setFilter('${c.name}',null)">
@@ -12,7 +12,7 @@ channels.forEach(c=>{
 });
 new Chart(document.getElementById('timeChart'),{type:'bar',data:{
   labels:['9','10','11','12','13','14','15','16','17','18','19','20','21','22','23'],
-  datasets:[{label:'LINE',data:[0,0,1,0,0,0,1,0,0,1,2,4,3,3,2],backgroundColor:'#0D9488',borderRadius:2},{label:'폼',data:[0,1,0,0,1,1,0,1,0,0,1,1,1,0,0],backgroundColor:'#2563EB',borderRadius:2},{label:'전화',data:[0,0,0,1,0,1,0,0,1,1,0,0,0,0,0],backgroundColor:'#7F77DD',borderRadius:2}]},
+  datasets:[{label:'LINE',data:[0,0,1,0,0,0,1,0,0,1,2,4,3,3,2],backgroundColor:'#0D9488',borderRadius:2},{label:'폼',data:[0,1,0,0,1,1,0,1,0,0,1,1,1,0,0],backgroundColor:'#2563EB',borderRadius:2},]},
   options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:9},color:'#9CA3AF'}},y:{stacked:true,display:false,beginAtZero:true}}}
 });
 const inquiries=[
@@ -21,13 +21,12 @@ const inquiries=[
   {name:'다나카 유키',init:'다',bg:'#FAEEDA',tc:'#412402',proc:'첫 방문',pbc:'#FAEEDA',ptc:'#412402',ch:'LINE',chColor:'#0D9488',status:'신규',sbc:'#FEE2E2',stc:'#991B1B',time:'오늘 11:37'},
   {name:'사토 하루카',init:'사',bg:'#E6F1FB',tc:'#0C447C',proc:'윤곽',pbc:'#E6F1FB',ptc:'#0C447C',ch:'상담 폼',chColor:'#2563EB',status:'상담 중',sbc:'#FEF3C7',stc:'#92400E',time:'5/18'},
   {name:'이토 나나미',init:'이',bg:'#FBEAF0',tc:'#4B1528',proc:'쌍꺼풀',pbc:'#EEEDFE',ptc:'#3C3489',ch:'LINE',chColor:'#0D9488',status:'예약 완료',sbc:'#D1FAE5',stc:'#065F46',time:'5/17'},
-  {name:'와타나베 아오이',init:'와',bg:'#F1EFE8',tc:'#2C2C2A',proc:'피부레이저',pbc:'#FAECE7',ptc:'#4A1B0C',ch:'전화',chColor:'#7F77DD',status:'예약 완료',sbc:'#D1FAE5',stc:'#065F46',time:'5/16'},
   {name:'나카무라 리나',init:'나',bg:'#EEEDFE',tc:'#3C3489',proc:'코 성형',pbc:'#E1F5EE',ptc:'#085041',ch:'LINE',chColor:'#0D9488',status:'종료',sbc:'#F3F4F6',stc:'#6B7280',time:'5/15'},
 ];
 let activeFilter='all';
 function renderPills(){
   const el=document.getElementById('pills');
-  el.innerHTML=[{id:'all',lb:'전체 23'},{id:'LINE',lb:'LINE 12'},{id:'상담 폼',lb:'폼 7'},{id:'전화',lb:'전화 4'}].map(p=>`<button class="pill${activeFilter===p.id?' on':''}" onclick="setFilter('${p.id}',this)">${p.lb}</button>`).join('');
+  el.innerHTML=[{id:'all',lb:'전체 23'},{id:'LINE',lb:'LINE 12'},{id:'상담 폼',lb:'폼 7'},].map(p=>`<button class="pill${activeFilter===p.id?' on':''}" onclick="setFilter('${p.id}',this)">${p.lb}</button>`).join('');
 }
 function renderList(){
   const el=document.getElementById('inq-list');
