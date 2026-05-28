@@ -251,8 +251,13 @@ function updateRightPanel(p) {
   document.getElementById('rp-name-ja').textContent = p.nameJa;
   document.getElementById('rp-proc').textContent = p.proc;
   document.getElementById('rp-ch').textContent = p.ch;
-  document.getElementById('rp-el').textContent = p.elapsed || '—';
-  document.getElementById('rp-el').style.color = p.elapsed ? 'var(--red)' : 'var(--gray-700)';
+  var rpElEl = document.getElementById('rp-el');
+  if(rpElEl){
+    var elLabels = {new: p.elapsed || '—', consulting:'응대 중', booked:'예약 완료', closed:'종료'};
+    var elColors = {new: p.elapsed ? 'var(--red)' : 'var(--gray-400)', consulting:'var(--green)', booked:'var(--blue)', closed:'var(--gray-400)'};
+    rpElEl.textContent = elLabels[p.status] || '—';
+    rpElEl.style.color = elColors[p.status] || 'var(--gray-400)';
+  }
 
   // 방문 이력
   var historyMap = {new:'첫 방문', consulting:'상담 이력 있음', booked:'예약 완료', closed:'시술 완료'};
