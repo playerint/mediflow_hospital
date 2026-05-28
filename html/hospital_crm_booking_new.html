@@ -75,7 +75,7 @@
           <div class="field"><div class="f-label">성명 (일본어)<span class="req">*</span></div><input class="f-input" id="name-ja" placeholder="山田 沙織"></div>
           <div class="field"><div class="f-label">성명 (한국어)</div><input class="f-input" id="name-ko" placeholder="야마다 사오리"></div>
           <div class="field"><div class="f-label">연락처 (LINE ID / 전화)</div><input class="f-input" id="contact" placeholder="@yamada_saori"></div>
-          <div class="field"><div class="f-label">접점 채널</div><select class="f-select" id="channel"><option value="">선택</option><option value="LINE">LINE</option><option value="form">상담 폼</option><option value="walkin">워크인</option></select></div>
+          <div class="field"><div class="f-label">접점 채널</div><select class="f-select" id="channel"><option value="">선택</option><option value="LINE">LINE</option><option value="walkin">워크인</option></select></div>
         </div>
       </div>
       <div class="form-section">
@@ -125,7 +125,7 @@ window.addEventListener('DOMContentLoaded', function() {
   if (nameKoEl) nameKoEl.value = name;
   if (nameJaEl) nameJaEl.value = nameJa || '';
   if (chEl && ch) {
-    var chMap = {'LINE':'LINE','상담폼':'form','워크인':'walkin'};
+    var chMap = {'LINE':'LINE','워크인':'walkin'};
     chEl.value = chMap[ch] || 'LINE';
   }
   if (procEl && proc) {
