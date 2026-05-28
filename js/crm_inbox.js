@@ -171,10 +171,11 @@ function renderMessages(p) {
     } else if (isPatient) {
       avatarHtml = '<div class="msg-av-sm" style="background:' + p.bg + ';color:' + p.tc + '">' + p.init[0] + '</div>';
     } else {
-      // 담당자 — 로그인 사용자 이니셜
-      var user = (typeof getSession === 'function' && getSession()) ? getSession() : null;
-      var initials = user ? user.name.slice(0,1) : '나';
-      avatarHtml = '<div class="msg-av-sm" style="background:var(--navy-l);color:var(--navy);font-weight:700">' + initials + '</div>';
+      // 담당자 발송 — 채널 아이콘으로 표시 (환자에게는 병원 공식 계정으로 보임)
+      var chIcon = p.ch === 'Instagram' ? '📸' : '💬';
+      var chBg   = p.ch === 'Instagram' ? '#FDF2F8' : '#EFF6FF';
+      var chTc   = p.ch === 'Instagram' ? '#BE185D' : '#2563EB';
+      avatarHtml = '<div class="msg-av-sm" style="background:' + chBg + ';color:' + chTc + ';font-size:14px">' + chIcon + '</div>';
     }
 
     // 발신자 이름 레이블
@@ -182,9 +183,8 @@ function renderMessages(p) {
     if (isAI) {
       senderLabel = '<div class="hana-name">AI はな <span style="font-size:9px;background:#EEF2FF;color:var(--navy);padding:1px 5px;border-radius:4px;font-weight:400">자동응답</span></div>';
     } else if (isStaff) {
-      var user2 = (typeof getSession === 'function' && getSession()) ? getSession() : null;
-      var staffName = user2 ? user2.name : '담당자';
-      senderLabel = '<div class="hana-name" style="color:var(--navy)">' + staffName + ' <span style="font-size:9px;background:#D1FAE5;color:#065F46;padding:1px 5px;border-radius:4px;font-weight:400">직접 발송</span></div>';
+      var chName = p.ch === 'Instagram' ? 'Instagram' : 'LINE';
+      senderLabel = '<div class="hana-name" style="color:var(--gray-500)">' + chName + ' <span style="font-size:9px;background:#D1FAE5;color:#065F46;padding:1px 5px;border-radius:4px;font-weight:400">발송</span></div>';
     }
 
     // 말풍선 내용
