@@ -481,6 +481,135 @@ function regenSuggests() {
 }
 
 /* ── 번역 복사 ── */
+
+function updateRightPanel(p) {
+  var av = document.getElementById('rp-avatar');
+  if(av){ av.textContent = p.init; av.style.background = p.bg; av.style.color = p.tc; }
+  var rn = document.getElementById('rp-name'); if(rn) rn.textContent = p.name;
+  var rj = document.getElementById('rp-name-ja'); if(rj) rj.textContent = p.nameJa;
+  var rp2 = document.getElementById('rp-proc'); if(rp2) rp2.textContent = p.proc;
+  var rc = document.getElementById('rp-ch'); if(rc) rc.textContent = p.ch;
+  var rpEl = document.getElementById('rp-el');
+  if(rpEl){
+    var elL = {new: p.elapsed || '-', consulting:'응대 중', booked:'예약 완료', closed:'종료'};
+    var elC = {new: p.elapsed ? 'var(--red)' : 'var(--gray-400)', consulting:'var(--green)', booked:'var(--blue)', closed:'var(--gray-400)'};
+    rpEl.textContent = elL[p.status] || '-';
+    rpEl.style.color = elC[p.status] || 'var(--gray-400)';
+  }
+  var hm = {new:'첫 방문', consulting:'상담 이력 있음', booked:'예약 완료', closed:'시술 완료'};
+  var rv = document.getElementById('rp-visit'); if(rv) rv.textContent = hm[p.status] || '첫 방문';
+  var sc = {new:{bg:'#FEF2F2',tc:'#991B1B',label:'신규'}, consulting:{bg:'#F3F4F6',tc:'#374151',label:'상담중'}, booked:{bg:'#D1FAE5',tc:'#065F46',label:'예약완료'}, closed:{bg:'#F3F4F6',tc:'#6B7280',label:'종료'}};
+  var s = sc[p.status] || sc.new;
+  var rb = document.getElementById('rp-status-badge');
+  if(rb) rb.innerHTML = '<span class="pc-badge" style="background:'+s.bg+';color:'+s.tc+'">'+s.label+'</span>';
+  var hw = document.getElementById('rp-history-wrap'); if(hw) hw.innerHTML = '';
+  renderAISuggests(p);
+  renderManual(p);
+}
+
+function renderAISuggests(p) {
+  var el = document.getElementById('ai-suggests');
+  if (!el) return;
+  var lastMsg = null;
+  for (var i = p.msgs.length - 1; i >= 0; i--) {
+    if (p.msgs[i].from === 'patient') { lastMsg = p.msgs[i]; break; }
+  }
+  var coaching = {
+    '쌍꺼풀': [
+      {tone:'친절',toneBg:'#D1FAE5',toneTc:'#065F46',ko:'상담은 무료예요! 매몰법 ₩400,000~, 절개법 ₩800,000~입니다.',ja:'カウンセリングは無料です! 埋没法は₩400,000~、切開法は₩800,000~です。'},
+      {tone:'전문적',toneBg:'#EEF2FF',toneTc:'#0D1B3E',ko:'상담은 무료로 진행합니다. 매몰법과 절개법을 눈 상태에 따라 안내드립니다.',ja:'カウンセリングは無料です。埋没法と切開法を目の状態に応じてご提案します。'},
+      {tone:'간결',toneBg:'#F3F4F6',toneTc:'#374151',ko:'상담 무료. 매몰법 ₩400,000~, 절개법 ₩800,000~.',ja:'カウンセリング無料。埋没法₩400,000~、切開法₩800,000~。'},
+    ],
+    '코 성형': [
+      {tone:'친절',toneBg:'#D1FAE5',toneTc:'#065F46',ko:'코 필러 다운타임은 1~3일 정도예요! 출근하면서도 시술 가능해요!',ja:'鼻フィラーのダウンタイムは1~3日程度です！お仕事しながら施術できますよ！'},
+      {tone:'전문적',toneBg:'#EEF2FF',toneTc:'#0D1B3E',ko:'히알루론산 코 필러는 다운타임 1~3일, 효과 6~12개월 지속됩니다.',ja:'ヒアルロン酸鼻フィラーはダウンタイム1~3日、効果6~12ヶ月持続します。'},
+      {tone:'간결',toneBg:'#F3F4F6',toneTc:'#374151',ko:'다운타임 1~3일. 효과 6~12개월. 무료 상담 예약 가능.',ja:'ダウンタイム1~3日。効果6~12ヶ月。無料カウンセリング予約可能。'},
+    ],
+  };
+  var suggests = coaching[p.proc] || [
+    {tone:'친절',toneBg:'#D1FAE5',toneTc:'#065F46',ko:'어떤 시술이든 편하게 상담해 주세요! 무료 상담 진행 중입니다.',ja:'どんな施術でもお気軽にご相談ください！無料カウンセリングございます。'},
+    {tone:'전문적',toneBg:'#EEF2FF',toneTc:'#0D1B3E',ko:'관심 시술을 알려주시면 자세한 안내를 드리겠습니다.',ja:'ご関心の施術をお知らせいただければ詳しくご案内します。'},
+    {tone:'간결',toneBg:'#F3F4F6',toneTc:'#374151',ko:'무료 상담 예약 가능합니다.',ja:'無料カウンセリング予約可能です。'},
+  ];
+  var html = '';
+  if (lastMsg) {
+    html += '<div style="background:var(--gray-50);border-radius:8px;padding:8px 10px;margin-bottom:10px">'
+      + '<div style="font-size:10px;font-weight:600;color:var(--gray-400);margin-bottom:4px">환자 마지막 질문</div>'
+      + '<div style="font-size:11px;color:var(--navy);line-height:1.6">' + lastMsg.ja + '</div>'
+      + '<div style="font-size:10px;color:var(--gray-500);margin-top:2px">' + lastMsg.ko + '</div>'
+      + '</div>';
+  }
+  html += '<div style="font-size:10px;font-weight:600;color:var(--gray-400);margin-bottom:6px">추천 답변 ' + suggests.length + '개</div>';
+  suggests.forEach(function(s, i) {
+    html += '<div class="ai-suggest-item" id="sug-'+i+'" onclick="selectSuggest('+i+',this)">'
+      + '<div class="ai-suggest-tone" style="background:'+s.toneBg+';color:'+s.toneTc+'">'+s.tone+'</div>'
+      + '<div class="ai-suggest-text">'+s.ko+'</div>'
+      + '<div class="ai-suggest-ja">JP '+s.ja+'</div>'
+      + '</div>';
+  });
+  el.innerHTML = html;
+  el._suggests = suggests;
+}
+
+function selectSuggest(idx, el) {
+  document.querySelectorAll('.ai-suggest-item').forEach(function(e){ e.classList.remove('selected'); });
+  el.classList.add('selected');
+  var container = document.getElementById('ai-suggests');
+  var s = container._suggests && container._suggests[idx];
+  if (!s) return;
+  var jaEl = document.getElementById('draft-text-ja');
+  var koEl = document.getElementById('draft-text-ko');
+  if (jaEl) jaEl.value = s.ja;
+  if (koEl) koEl.value = s.ko;
+  var draft = document.getElementById('ai-draft');
+  if (draft && draft.style.display === 'none') draft.style.display = '';
+  showToastInbox('✓ 답변이 발송폼에 적용되었습니다.', 'success');
+}
+
+function regenSuggests() {
+  var el = document.getElementById('ai-suggests');
+  if (!el) return;
+  el.style.opacity = '0.4';
+  showToastInbox('🤖 AI 코칭 재생성 중...');
+  setTimeout(function(){
+    el.style.opacity = '1';
+    if (patients[curId]) renderAISuggests(patients[curId]);
+    showToastInbox('✓ AI 코칭이 업데이트되었습니다.', 'success');
+  }, 800);
+}
+
+function renderManual(p) {
+  var el = document.getElementById('manual-content');
+  if (!el) return;
+  var data = {
+    '쌍꺼풀': [
+      {title:'매몰법',badge:'비절개',bg:'#D1FAE5',tc:'#065F46',body:'절개 없이 실로 고정. 다운타임 1~3일. ₩400,000~'},
+      {title:'절개법',badge:'영구적',bg:'#EEF2FF',tc:'#0D1B3E',body:'피부 절개 후 지방·근육 조정. 다운타임 7~14일. ₩800,000~'},
+      {title:'컴플라이언스',badge:'⚠ 주의',bg:'#FEF2F2',tc:'#991B1B',body:'효과 보장 표현 금지. 회복 기간 개인차 명시.'},
+    ],
+    '코 성형': [
+      {title:'코 필러',badge:'비수술',bg:'#D1FAE5',tc:'#065F46',body:'히알루론산 주입. 다운타임 1~3일. 효과 6~12개월. ₩300,000~'},
+      {title:'코 수술',badge:'수술',bg:'#EEF2FF',tc:'#0D1B3E',body:'실리콘 보형물. 반영구. 다운타임 7~14일. ₩2,500,000~'},
+      {title:'컴플라이언스',badge:'⚠ 주의',bg:'#FEF2F2',tc:'#991B1B',body:'수술 결과 보장 표현 금지. 부작용 안내 필수.'},
+    ],
+  };
+  var key = null;
+  var keys = Object.keys(data);
+  for (var i = 0; i < keys.length; i++) {
+    if (p.proc && p.proc.includes(keys[i])) { key = keys[i]; break; }
+  }
+  var points = key ? data[key] : [
+    {title:'무료 카운슬링',badge:'기본',bg:'#EEF2FF',tc:'#0D1B3E',body:'모든 시술 전 무료 카운슬링. 일본어 스탭 상주.'},
+    {title:'컴플라이언스',badge:'⚠ 주의',bg:'#FEF2F2',tc:'#991B1B',body:'효과 보장 표현 금지. 부작용 안내 필수.'},
+  ];
+  el.innerHTML = '<div style="font-size:11px;font-weight:600;color:var(--gray-400);margin-bottom:8px">' + (p.proc || '기본') + ' 핵심 정보</div>'
+    + points.map(function(m){
+      return '<div class="manual-item"><div class="manual-item-title">'+m.title
+        +' <span class="manual-badge" style="background:'+m.bg+';color:'+m.tc+'">'+m.badge+'</span></div>'
+        +'<div class="manual-item-body">'+m.body+'</div></div>';
+    }).join('');
+}
+
 function copyText(text) {
   if(navigator.clipboard){
     navigator.clipboard.writeText(text).then(function(){ showToastInbox('✓ 복사되었습니다.', 'success'); });
