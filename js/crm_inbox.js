@@ -328,7 +328,7 @@ function applyStatusBtn(p) {
   var isClosed = p.status === 'closed';
   var cfg = {
     new:        { label:'상담중으로 변경',  cls:'btn btn-primary', color:'',              opacity:'' },
-    consulting: { label:'예약완료로 변경',  cls:'btn btn-success', color:'var(--green)',   opacity:'' },
+    consulting: { label:'예약완료로 변경',  cls:'btn btn-success', color:'var(--green)',   opacity:'', textColor:'#fff' },
     booked:     { label:'종료로 변경',      cls:'btn btn-primary', color:'',              opacity:'' },
     closed:     { label:'종료됨',           cls:'btn',             color:'var(--gray-300)', opacity:'0.55' },
   };
@@ -343,6 +343,7 @@ function applyStatusBtn(p) {
     btn.style.opacity    = c.opacity;
     btn.style.background = c.color;
     btn.style.borderColor= c.color;
+    btn.style.color      = c.textColor || '';
   });
 }
 function changeStatus() {
