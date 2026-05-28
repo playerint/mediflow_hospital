@@ -260,7 +260,8 @@ function sendMsg() {
   // AI 코칭 추천 답변 선택 해제
   document.querySelectorAll('.ai-suggest-item').forEach(function(e){ e.classList.remove('selected'); });
 
-  showToastInbox('✓ LINE으로 발송되었습니다.', 'success');
+  var chLabel = patients[curId] && patients[curId].ch === 'Instagram' ? 'Instagram' : 'LINE';
+  showToastInbox('✓ ' + chLabel + '으로 발송되었습니다.', 'success');
   renderList(curFilter, '');
 }
 
