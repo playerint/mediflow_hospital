@@ -1,5 +1,5 @@
 
-const channels=[{name:'LINE',cnt:19,pct:100,color:'#2563EB',delta:'+7'},];
+const channels=[{name:'LINE',cnt:12,pct:63,color:'#2563EB',delta:'+4'},{name:'Instagram',cnt:7,pct:37,color:'#E1306C',delta:'+7'},];
 const cr=document.getElementById('ch-rows');
 channels.forEach(c=>{
   cr.innerHTML+=`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--gray-100);cursor:pointer" onclick="setFilter('${c.name}',null)">
