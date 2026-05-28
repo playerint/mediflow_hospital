@@ -157,7 +157,7 @@ function selectPatient(id) {
   // ── 발송 버튼 텍스트 채널별 변경 ──
   var sendBtn = document.getElementById('send-btn');
   if (sendBtn) {
-    sendBtn.textContent = p.ch === 'Instagram' ? '📤 Instagram으로 발송' : '📤 LINE으로 발송';
+    sendBtn.innerHTML = p.ch === 'Instagram' ? '📤 Instagram으로 발송' : '📤 LINE으로 발송';
   }
 }
 
@@ -172,7 +172,7 @@ function renderMessages(p) {
     // 아바타
     var avatarHtml;
     if (isAI) {
-      avatarHtml = '<div style="width:34px;height:34px;border-radius:50%;background:var(--navy-l);font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0">🌸</div>';
+      avatarHtml = '<div style="width:28px;height:28px;border-radius:50%;background:var(--navy-l);font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0">🌸</div>';
     } else if (isPatient) {
       avatarHtml = '<div style="width:28px;height:28px;border-radius:50%;background:' + p.bg + ';color:' + p.tc + ';font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">' + p.init[0] + '</div>';
     } else {
