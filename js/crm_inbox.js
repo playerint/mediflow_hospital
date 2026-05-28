@@ -503,8 +503,22 @@ function updateRightPanel(p) {
   var rb = document.getElementById('rp-status-badge');
   if(rb) rb.innerHTML = '<span class="pc-badge" style="background:'+s.bg+';color:'+s.tc+'">'+s.label+'</span>';
   var hw = document.getElementById('rp-history-wrap'); if(hw) hw.innerHTML = '';
-  renderAISuggests(p);
-  renderManual(p);
+
+  // 종료 상태면 코칭 대신 종료 메시지
+  if (p.status === 'closed') {
+    var aiEl = document.getElementById('ai-suggests');
+    var manEl = document.getElementById('manual-content');
+    var closedHtml = '<div style="text-align:center;padding:24px 16px;color:var(--gray-400)">'
+      + '<div style="font-size:24px;margin-bottom:8px">✓</div>'
+      + '<div style="font-size:13px;font-weight:600;color:var(--gray-500)">상담 종료</div>'
+      + '<div style="font-size:11px;margin-top:4px;line-height:1.6">이 상담은 종료되었습니다.</div>'
+      + '</div>';
+    if (aiEl) aiEl.innerHTML = closedHtml;
+    if (manEl) manEl.innerHTML = closedHtml;
+  } else {
+    renderAISuggests(p);
+    renderManual(p);
+  }
 }
 
 function renderAISuggests(p) {
