@@ -78,13 +78,124 @@ function saveRoles() {
 
 
 const sections = {
-  hospital: 'hospital',
-  account:  'account',
-  team:     'team',
-  notification: 'notification',
-  line:     'line',
-  domain:   'domain',
-  plan:     'plan',
+  hospital: `
+    <div class="s-section">
+      <div class="s-section-title">🏥 병원 기본 정보</div>
+      <div class="s-row"><div class="s-label">병원명 (한국어)</div><input class="s-input" value="올래성형외과"></div>
+      <div class="s-row"><div class="s-label">병원명 (일본어)</div><input class="s-input" value="オーレ整形外科"></div>
+      <div class="s-row"><div class="s-label">대표 전화</div><input class="s-input" value="+82-2-1234-5678"></div>
+      <div class="s-row"><div class="s-label">주소</div><input class="s-input" value="서울 강남구 테헤란로 123"></div>
+      <div class="s-row"><div class="s-label">사이트 URL</div><input class="s-input" value="jp.oleps.co.kr"></div>
+    </div>
+    <div class="s-section">
+      <div class="s-section-title">🌐 일본어 사이트 설정</div>
+      <div class="s-row"><div class="s-label">시간대</div>
+        <select class="s-input" style="appearance:auto">
+          <option selected>Asia/Tokyo (JST)</option>
+          <option>Asia/Seoul (KST)</option>
+        </select>
+      </div>
+      <div class="s-row"><div class="s-label">통화</div>
+        <select class="s-input" style="appearance:auto">
+          <option selected>JPY (¥)</option>
+          <option>KRW (₩)</option>
+        </select>
+      </div>
+    </div>`,
+
+  account: `
+    <div class="s-section">
+      <div class="s-section-title">👤 내 계정</div>
+      <div class="s-row"><div class="s-label">이름</div><input class="s-input" value="김지현"></div>
+      <div class="s-row"><div class="s-label">이메일</div><input class="s-input" value="admin@oleps.co.kr"></div>
+      <div class="s-row"><div class="s-label">역할</div><input class="s-input" value="관리자" readonly style="background:var(--gray-50);color:var(--gray-400)"></div>
+    </div>
+    <div class="s-section">
+      <div class="s-section-title">🔒 비밀번호 변경</div>
+      <div class="s-row"><div class="s-label">현재 비밀번호</div><input class="s-input" type="password" placeholder="현재 비밀번호 입력"></div>
+      <div class="s-row"><div class="s-label">새 비밀번호</div><input class="s-input" type="password" placeholder="새 비밀번호 입력"></div>
+      <div class="s-row"><div class="s-label">비밀번호 확인</div><input class="s-input" type="password" placeholder="새 비밀번호 재입력"></div>
+      <button class="btn btn-primary" style="margin-top:8px" onclick="showToast('✓ 비밀번호가 변경되었습니다.','success')">변경</button>
+    </div>`,
+
+  team: `
+    <div class="s-section">
+      <div class="s-section-title" style="display:flex;align-items:center;justify-content:space-between">
+        👥 팀 멤버
+        <button class="btn btn-primary" style="font-size:12px" onclick="showToast('✉ 초대 메일을 발송했습니다.','success')">+ 멤버 초대</button>
+      </div>
+      <div id="member-role-list"></div>
+    </div>
+    <div class="s-section">
+      <div class="s-section-title">🔐 권한 설정</div>
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr>
+            <th style="font-size:11px;color:var(--gray-400);text-align:left;padding:8px 14px;border-bottom:2px solid var(--gray-100)">메뉴</th>
+            <th style="font-size:11px;color:var(--gray-400);text-align:center;padding:8px 14px;border-bottom:2px solid var(--gray-100)">관리자</th>
+            <th style="font-size:11px;color:var(--gray-400);text-align:center;padding:8px 14px;border-bottom:2px solid var(--gray-100)">편집자</th>
+            <th style="font-size:11px;color:var(--gray-400);text-align:center;padding:8px 14px;border-bottom:2px solid var(--gray-100)">뷰어</th>
+          </tr>
+        </thead>
+        <tbody id="role-table-body"></tbody>
+      </table>
+    </div>`,
+
+  notification: `
+    <div class="s-section">
+      <div class="s-section-title">🔔 알림 설정</div>
+      <div class="s-row"><div class="s-label">미확인 문의 알림</div><label class="toggle-wrap"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+      <div class="s-row"><div class="s-label">예약 확정 알림</div><label class="toggle-wrap"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+      <div class="s-row"><div class="s-label">컴플라이언스 경고</div><label class="toggle-wrap"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+      <div class="s-row"><div class="s-label">리타게팅 발송 완료</div><label class="toggle-wrap"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+      <div class="s-row"><div class="s-label">SLA 초과 경보 (2시간)</div><label class="toggle-wrap"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+    </div>`,
+
+  line: `
+    <div class="s-section">
+      <div class="s-section-title">💬 LINE Official Account 연동</div>
+      <div class="s-row"><div class="s-label">채널 ID</div><input class="s-input" value="1234567890"></div>
+      <div class="s-row"><div class="s-label">채널 시크릿</div><input class="s-input" type="password" value="abc123secret"></div>
+      <div class="s-row"><div class="s-label">채널 액세스 토큰</div><input class="s-input" type="password" value="token_example_xxxx"></div>
+      <div class="s-row"><div class="s-label">연결 상태</div><span style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--green)"><span style="width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block"></span>정상 연결</span></div>
+      <button class="btn" style="margin-top:8px" onclick="showToast('✓ 연결 테스트 성공','success')">연결 테스트</button>
+    </div>`,
+
+  instagram: `
+    <div class="s-section">
+      <div class="s-section-title">📸 Instagram 연동</div>
+      <div class="s-row"><div class="s-label">Instagram 계정</div><input class="s-input" value="@oleps_plastic"></div>
+      <div class="s-row"><div class="s-label">DM 자동 응답</div><label class="toggle-wrap"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+      <div class="s-row"><div class="s-label">연결 상태</div><span style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--gray-400)"><span style="width:8px;height:8px;border-radius:50%;background:var(--gray-300);display:inline-block"></span>미연결 (MVP 단계)</span></div>
+      <div style="margin-top:10px;padding:10px 12px;background:var(--navy-l);border-left:3px solid var(--navy);border-radius:var(--r);font-size:12px;color:var(--navy)">
+        Instagram Graph API 연동은 MVP 개발 단계에서 구현 예정입니다.<br>
+        <span style="font-size:11px;color:var(--gray-400)">DM 수신 → MEDIFLOW CRM 자동 연동</span>
+      </div>
+    </div>`,
+
+  domain: `
+    <div class="s-section">
+      <div class="s-section-title">🌐 도메인 설정</div>
+      <div class="s-row"><div class="s-label">현재 도메인</div><input class="s-input" value="jp.oleps.co.kr"></div>
+      <div class="s-row"><div class="s-label">커스텀 도메인</div><input class="s-input" placeholder="예) oleps.jp"></div>
+      <div class="s-row"><div class="s-label">SSL 인증서</div><span style="font-size:13px;color:var(--green)">✓ 유효 (만료: 2027-05-01)</span></div>
+      <button class="btn btn-primary" style="margin-top:8px" onclick="showToast('✓ 도메인 설정이 저장되었습니다.','success')">저장</button>
+    </div>`,
+
+  plan: `
+    <div class="s-section">
+      <div class="s-section-title">💳 현재 플랜</div>
+      <div style="background:var(--navy-l);border:1px solid var(--blue);border-radius:var(--rl);padding:16px 20px;margin-bottom:14px">
+        <div style="font-size:16px;font-weight:700;color:var(--navy);margin-bottom:4px">Pro 플랜</div>
+        <div style="font-size:13px;color:var(--gray-600);margin-bottom:8px">월 ₩150,000 · 다음 갱신: 2026년 6월 1일</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <span style="font-size:11px;background:#D1FAE5;color:#065F46;padding:2px 8px;border-radius:6px">AI 자동상담 무제한</span>
+          <span style="font-size:11px;background:#D1FAE5;color:#065F46;padding:2px 8px;border-radius:6px">팀 멤버 5명</span>
+          <span style="font-size:11px;background:#D1FAE5;color:#065F46;padding:2px 8px;border-radius:6px">리포트 PDF</span>
+        </div>
+      </div>
+      <button class="btn" onclick="showToast('플랜 변경 페이지로 이동합니다.','')">플랜 변경</button>
+    </div>`,
 };
 
 
