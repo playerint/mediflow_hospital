@@ -21,6 +21,7 @@
         <div class="sn-item" onclick="showSec('team',this)"><span>👥</span> 팀 멤버</div>
         <div class="sn-item" onclick="showSec('notification',this)"><span>🔔</span> 알림</div>
         <div class="sn-item" onclick="showSec('line',this)"><span>💬</span> LINE 연동</div>
+        <div class="sn-item" onclick="showSec('instagram',this)"><span>📸</span> Instagram 연동</div>
         <div class="sn-item" onclick="showSec('domain',this)"><span>🌐</span> 도메인</div>
         <div class="sn-item" onclick="showSec('plan',this)"><span>💳</span> 플랜</div>
       </div>
@@ -36,6 +37,7 @@ function showToast(msg,type){var e=document.getElementById('__toast');if(e)e.rem
 function openModal(title,bodyHtml,onConfirm,confirmLabel,confirmClass){var e=document.getElementById('__modal');if(e)e.remove();var m=document.createElement('div');m.id='__modal';m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center';m.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.2)"><div style="font-size:16px;font-weight:700;color:#0D1B3E;margin-bottom:14px">'+title+'</div><div style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:20px">'+bodyHtml+'</div><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" onclick="closeModal()">취소</button><button class="btn '+(confirmClass||'btn-primary')+'" id="__modal-confirm">'+(confirmLabel||'확인')+'</button></div></div>';m.addEventListener('click',function(e){if(e.target===m)closeModal();});document.body.appendChild(m);document.getElementById('__modal-confirm').addEventListener('click',function(){closeModal();if(typeof onConfirm==='function')onConfirm();});}
 function closeModal(){var m=document.getElementById('__modal');if(m)m.remove();}
 function saveSettings(){showToast('✓ 설정이 저장되었습니다.','success');}
+window.addEventListener('DOMContentLoaded',function(){ showSec('hospital', document.querySelector('.sn-item')); });
 </script>
 <script src="../js/settings.js"></script>
 </body></html>
