@@ -317,7 +317,8 @@ function goToBooking() {
 function changeStatus() {
   var p = patients[curId];
   if(!p) return;
-  var flow   = {new:'consulting', consulting:'booked', booked:'closed', closed:'new'};
+  if(p.status === 'closed') return; // 종료는 변경 불가
+  var flow   = {new:'consulting', consulting:'booked', booked:'closed'};
   var labels = {new:'신규', consulting:'상담중', booked:'예약완료', closed:'종료'};
   var colors = {new:'var(--gray-400)', consulting:'var(--green)', booked:'var(--blue)', closed:'var(--gray-500)'};
   p.status = flow[p.status] || 'consulting';
@@ -325,8 +326,22 @@ function changeStatus() {
 
   var btn   = document.getElementById('status-btn');
   var rpBtn = document.getElementById('rp-status-btn');
-  if(btn){   btn.textContent=labels[p.status]+' ✓'; btn.style.background=colors[p.status]; btn.style.borderColor=colors[p.status]; }
-  if(rpBtn){ rpBtn.textContent=labels[p.status];    rpBtn.style.background=colors[p.status]; rpBtn.style.borderColor=colors[p.status]; }
+  var nextLabels = {new:'상담중으로 변경', consulting:'예약완료로 변경', booked:'종료로 변경', closed:'종료됨'};
+  var isClosed = p.status === 'closed';
+  if(btn){
+    btn.textContent = nextLabels[p.status] || '상태 변경';
+    btn.style.background = isClosed ? 'var(--gray-300)' : colors[p.status];
+    btn.style.borderColor = isClosed ? 'var(--gray-300)' : colors[p.status];
+    btn.style.cursor = isClosed ? 'not-allowed' : 'pointer';
+    btn.disabled = isClosed;
+  }
+  if(rpBtn){
+    rpBtn.textContent = nextLabels[p.status] || '상태 변경';
+    rpBtn.style.background = isClosed ? 'var(--gray-300)' : colors[p.status];
+    rpBtn.style.borderColor = isClosed ? 'var(--gray-300)' : colors[p.status];
+    rpBtn.style.cursor = isClosed ? 'not-allowed' : 'pointer';
+    rpBtn.disabled = isClosed;
+  }
 
   if(typeof updateRightPanel === 'function') updateRightPanel(p);
   renderList(curFilter, '');
