@@ -2,7 +2,7 @@
 // ── 환자 데이터 ──────────────────────────────────────────────────
 const patients = [
   {id:0, name:'야마다 사오리', nameJa:'山田 沙織', init:'야마', bg:'#EEEDFE', tc:'#3C3489',
-   proc:'쌍꺼풀', ch:'LINE', chColor:'#0D9488', status:'new', statusLabel:'신규', elapsed:'2시간', unread:true,
+   proc:'쌍꺼풀', ch:'LINE', chColor:'#2563EB', status:'new', statusLabel:'신규', elapsed:'2시간', unread:true,
    msgs:[
      {from:'patient', ja:'はじめまして！二重整形について聞きたいのですが、カウンセリングは無料ですか？', ko:'안녕하세요! 쌍꺼풀 성형에 대해 궁금한데요, 상담은 무료인가요?', time:'10:23'},
      {from:'ai',      ja:'はじめまして！カウンセリングは無料です。埋没法は₩400,000〜が目安です。', ko:'안녕하세요! 상담은 무료입니다. 매몰법은 ₩400,000~이 기준입니다.', time:'10:23 (AI はな)'},
@@ -10,14 +10,14 @@ const patients = [
    draft:{ja:'はじめまして、オーレ整形外科です。\nカウンセリングは無料で承っております。\nご来院のご希望日時をお聞かせください。', ko:'안녕하세요, 올래성형외과입니다.\n상담은 무료로 진행하고 있습니다.\n방문 희망 일시를 알려주세요.'}},
 
   {id:1, name:'스즈키 미카', nameJa:'鈴木 美花', init:'스즈', bg:'#E1F5EE', tc:'#085041',
-   proc:'코 성형', ch:'LINE', chColor:'#0D9488', status:'new', statusLabel:'신규', elapsed:'1시간', unread:true,
+   proc:'코 성형', ch:'LINE', chColor:'#2563EB', status:'new', statusLabel:'신규', elapsed:'1시간', unread:true,
    msgs:[
      {from:'patient', ja:'鼻のプチ整形を考えています。ダウンタイムはどのくらいですか？', ko:'코 프티 성형을 고려 중입니다. 다운타임은 어느 정도인가요?', time:'11:14'},
    ],
    draft:{ja:'こんにちは、オーレ整形外科です。\nヒアルロン酸注入のダウンタイムは1〜3日程度です。', ko:'안녕하세요, 올래성형외과입니다.\n히알루론산 주입의 다운타임은 1~3일 정도입니다.'}},
 
   {id:2, name:'다나카 유키', nameJa:'田中 雪', init:'다나', bg:'#FAEEDA', tc:'#412402',
-   proc:'첫 방문', ch:'LINE', chColor:'#0D9488', status:'new', statusLabel:'신규', elapsed:'40분', unread:true,
+   proc:'첫 방문', ch:'LINE', chColor:'#2563EB', status:'new', statusLabel:'신규', elapsed:'40분', unread:true,
    msgs:[
      {from:'patient', ja:'韓国の病院は初めてで不安です。日本語対応はしていますか？', ko:'한국 병원은 처음이라 걱정됩니다. 일본어 대응이 되나요?', time:'11:37'},
    ],
@@ -32,7 +32,7 @@ const patients = [
    draft:{ja:'', ko:''}},
 
   {id:4, name:'이토 나나미', nameJa:'伊藤 七海', init:'이토', bg:'#FBEAF0', tc:'#4B1528',
-   proc:'쌍꺼풀', ch:'LINE', chColor:'#0D9488', status:'booked', statusLabel:'예약완료', elapsed:'', unread:false,
+   proc:'쌍꺼풀', ch:'LINE', chColor:'#2563EB', status:'booked', statusLabel:'예약완료', elapsed:'', unread:false,
    msgs:[
      {from:'patient', ja:'二重整形を予約したいです。', ko:'쌍꺼풀 성형을 예약하고 싶습니다.', time:'5/17'},
      {from:'staff',   ja:'6月5日14:00はいかがでしょうか？', ko:'6월 5일 14:00은 어떠신가요?', time:'5/17'},
@@ -41,7 +41,7 @@ const patients = [
    draft:{ja:'', ko:''}},
 
   {id:5, name:'나카무라 리나', nameJa:'中村 里奈', init:'나카', bg:'#EEEDFE', tc:'#3C3489',
-   proc:'코 성형', ch:'LINE', chColor:'#0D9488', status:'closed', statusLabel:'종료', elapsed:'', unread:false,
+   proc:'코 성형', ch:'LINE', chColor:'#2563EB', status:'closed', statusLabel:'종료', elapsed:'', unread:false,
    msgs:[
      {from:'patient', ja:'鼻整形で内院しました。ありがとうございました！', ko:'코 성형으로 내원했습니다. 감사했습니다!', time:'5/10'},
    ],
@@ -50,7 +50,7 @@ const patients = [
 
 const statusColors = {
   new:       {bg:'#FEE2E2', tc:'#991B1B'},
-  consulting:{bg:'#FEF3C7', tc:'#92400E'},
+  consulting:{bg:'#F3F4F6', tc:'#374151'},
   booked:    {bg:'#D1FAE5', tc:'#065F46'},
   closed:    {bg:'#F3F4F6', tc:'#6B7280'},
 };
@@ -78,9 +78,9 @@ function renderList(filter, search) {
         </div>
         <div class="inq-preview">${p.msgs[p.msgs.length - 1].ko}</div>
         <div class="inq-tags">
-          <span class="tag" style="background:${p.bg};color:${p.tc}">${p.proc}</span>
-          <span class="tag" style="background:${statusColors[p.status].bg};color:${statusColors[p.status].tc}">${p.statusLabel}</span>
-          <span class="tag" style="background:var(--gray-100);color:var(--gray-500)">${p.ch}</span>
+          <span class="tag" style="display:inline-flex;align-items:center;justify-content:center;background:${p.bg};color:${p.tc}">${p.proc}</span>
+          <span class="tag" style="display:inline-flex;align-items:center;justify-content:center;background:${statusColors[p.status].bg};color:${statusColors[p.status].tc}">${p.statusLabel}</span>
+          <span class="tag" style="display:inline-flex;align-items:center;justify-content:center;background:var(--gray-100);color:var(--gray-500)">${p.ch}</span>
         </div>
       </div>
     </div>`).join('');
@@ -163,9 +163,9 @@ function toggleTranslation() {
   const btn = document.getElementById('translate-toggle');
   if (btn) {
     btn.textContent = showKo ? '🇰🇷 번역 ON' : '🇯🇵 번역 OFF';
-    btn.style.background = showKo ? '#F0FDFA' : '#F3F4F6';
-    btn.style.borderColor = showKo ? '#0D9488' : '#E5E7EB';
-    btn.style.color = showKo ? '#0F766E' : '#6B7280';
+    btn.style.background = showKo ? 'var(--blue-l)' : '#F3F4F6';
+    btn.style.borderColor = showKo ? 'var(--blue)' : '#E5E7EB';
+    btn.style.color = showKo ? 'var(--blue)' : '#6B7280';
   }
   renderMessages(patients[curId]);
 }
