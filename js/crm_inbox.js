@@ -383,27 +383,6 @@ function loadMemo(id) {
   if (!el) return;
   el.value = memoStore[id] || '';
 }
-function openMemo() {
-  var p = patients[curId];
-  if(!p) return;
-  var saved = memoStore[p.id] || '';
-  openModal(
-    '📝 메모 — ' + p.name,
-    '<textarea id=\"memo-input\" rows=\"5\" style=\"width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:13px;font-family:inherit;resize:none;outline:none;line-height:1.7\">' + saved + '</textarea>',
-    function(){
-      var val = document.getElementById('memo-input');
-      if(val) {
-        memoStore[p.id] = val.value;
-        // 우측 패널 textarea에도 반영
-        var rpMemo = document.getElementById('rp-memo-input');
-        if(rpMemo) rpMemo.value = val.value;
-      }
-      showToastInbox('✓ 메모가 저장되었습니다.', 'success');
-    },
-    '저장', 'btn-primary'
-  );
-  setTimeout(function(){ var el=document.getElementById('memo-input'); if(el){el.focus();el.setSelectionRange(el.value.length,el.value.length);} },100);
-}
 
 
 /* ── 탭 전환 ── */
