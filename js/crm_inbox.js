@@ -330,17 +330,23 @@ function changeStatus() {
   var isClosed = p.status === 'closed';
   if(btn){
     btn.textContent = nextLabels[p.status] || '상태 변경';
-    btn.style.background = isClosed ? 'var(--gray-300)' : colors[p.status];
-    btn.style.borderColor = isClosed ? 'var(--gray-300)' : colors[p.status];
-    btn.style.cursor = isClosed ? 'not-allowed' : 'pointer';
+    btn.style.background = isClosed ? 'var(--gray-300)' : '';
+    btn.style.borderColor = isClosed ? 'var(--gray-300)' : '';
+    btn.style.color = isClosed ? '#fff' : '';
+    btn.style.cursor = isClosed ? 'not-allowed' : '';
+    btn.style.opacity = isClosed ? '0.6' : '';
     btn.disabled = isClosed;
+    btn.className = isClosed ? 'btn' : 'btn btn-primary';
   }
   if(rpBtn){
     rpBtn.textContent = nextLabels[p.status] || '상태 변경';
-    rpBtn.style.background = isClosed ? 'var(--gray-300)' : colors[p.status];
-    rpBtn.style.borderColor = isClosed ? 'var(--gray-300)' : colors[p.status];
-    rpBtn.style.cursor = isClosed ? 'not-allowed' : 'pointer';
+    rpBtn.style.background = isClosed ? 'var(--gray-300)' : '';
+    rpBtn.style.borderColor = isClosed ? 'var(--gray-300)' : '';
+    rpBtn.style.color = isClosed ? '#fff' : '';
+    rpBtn.style.cursor = isClosed ? 'not-allowed' : '';
+    rpBtn.style.opacity = isClosed ? '0.6' : '';
     rpBtn.disabled = isClosed;
+    rpBtn.className = isClosed ? 'btn' : 'btn btn-primary';
   }
 
   if(typeof updateRightPanel === 'function') updateRightPanel(p);
