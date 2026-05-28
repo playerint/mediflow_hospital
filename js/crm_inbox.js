@@ -408,6 +408,10 @@ function applyStatusBtn(p) {
   };
   var bookingBtn = document.getElementById("rp-booking-btn");
   if (bookingBtn) bookingBtn.textContent = bookingLabels[p.status] || "📅 예약 전환";
+
+  // 발송 버튼 텍스트 채널별 동기화
+  var sendBtn = document.getElementById('send-btn');
+  if (sendBtn) sendBtn.innerHTML = p.ch === 'Instagram' ? '📤 Instagram으로 발송' : '📤 LINE으로 발송';
 }
 function changeStatus() {
   var p = patients[curId];
