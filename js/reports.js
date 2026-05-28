@@ -50,8 +50,8 @@ new Chart(document.getElementById('lineAuto'),{type:'doughnut',
 new Chart(document.getElementById('channelChart'),{
   type:'bar',
   data:{
-    labels:['LINE'],
-    datasets:[{data:[19],backgroundColor:['#2563EB'],borderRadius:6,borderSkipped:false}]
+    labels:['LINE','Instagram'],
+    datasets:[{data:[12,7],backgroundColor:['#2563EB','#E1306C'],borderRadius:6,borderSkipped:false}]
   },
   options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:11},color:'#9CA3AF'}},y:{display:false,beginAtZero:true}}}
 });
