@@ -82,7 +82,7 @@ function renderList(filter, search) {
         <div class="inq-tags">
           <span class="tag" style="display:inline-flex;align-items:center;justify-content:center;background:${p.bg};color:${p.tc}">${p.proc}</span>
           <span class="tag" style="display:inline-flex;align-items:center;justify-content:center;background:${statusColors[p.status].bg};color:${statusColors[p.status].tc}">${p.statusLabel}</span>
-          <span class="tag" style="display:inline-flex;align-items:center;justify-content:center;background:var(--gray-100);color:var(--gray-500)">${p.ch}</span>
+          <span class="tag" style="display:inline-flex;align-items:center;justify-content:center;background:${p.ch==='Instagram'?'#FDF2F8':'#EFF6FF'};color:${p.ch==='Instagram'?'#BE185D':'#2563EB'}">${p.ch==='Instagram'?'📸 Instagram':'💬 '+p.ch}</span>
         </div>
       </div>
     </div>`).join('');
