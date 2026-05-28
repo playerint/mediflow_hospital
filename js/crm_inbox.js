@@ -367,33 +367,6 @@ function openMemo() {
   setTimeout(function(){ var el=document.getElementById('memo-input'); if(el){el.focus();el.setSelectionRange(el.value.length,el.value.length);} },100);
 }
 
-/* ── 즐겨찾기 ── */
-var favorites = [];
-try { favorites = JSON.parse(localStorage.getItem('crm_favorites') || '[]'); } catch(e){}
-function toggleFavorite() {
-  var p = patients[curId];
-  if(!p) return;
-  var idx = favorites.indexOf(p.id);
-  if(idx === -1){
-    favorites.push(p.id);
-    showToastInbox('⭐ ' + p.name + '님을 즐겨찾기에 추가했습니다.', 'success');
-  } else {
-    favorites.splice(idx,1);
-    showToastInbox('★ ' + p.name + '님을 즐겨찾기에서 제거했습니다.', '');
-  }
-  try { localStorage.setItem('crm_favorites', JSON.stringify(favorites)); } catch(e){}
-  updateFavBtn();
-  renderList(curFilter, '');
-}
-function updateFavBtn() {
-  var btn = document.getElementById('fav-btn');
-  if(!btn || !patients[curId]) return;
-  var isFav = favorites.indexOf(patients[curId].id) !== -1;
-  btn.innerHTML = (isFav ? '⭐' : '☆') + ' 즐겨찾기';
-  btn.style.background   = isFav ? '#FEF9C3' : '';
-  btn.style.borderColor  = isFav ? '#EAB308' : '';
-  btn.style.color        = isFav ? '#92400E' : '';
-}
 
 /* ── 탭 전환 ── */
 function setRpTab(tab, btn) {
