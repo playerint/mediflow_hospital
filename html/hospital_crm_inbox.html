@@ -131,7 +131,7 @@
             </div>
             <div style="display:flex;gap:5px">
               <button id="translate-toggle" onclick="toggleTranslation()" style="font-size:11px;padding:3px 10px;border-radius:8px;border:1px solid var(--blue);background:var(--blue-l);color:var(--blue);cursor:pointer;font-family:inherit">🇰🇷 번역 ON</button>
-              <button class="btn" style="font-size:11px;padding:3px 9px" onclick="regenDraft()">↺ 재생성</button>
+              <button class="btn" style="font-size:11px;padding:3px 9px" onclick="regenSuggests()">↺ 재생성</button>
             </div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;padding:0 14px 10px;gap:8px">
@@ -174,8 +174,8 @@
             </div>
             <div id="rp-history-wrap"></div>
             <div class="pc-action-row">
-              <button class="btn" style="flex:1;justify-content:center;font-size:11px" onclick="showToastInbox('📝 메모가 저장되었습니다.')">📝 메모</button>
-              <button class="btn" style="flex:1;justify-content:center;font-size:11px" onclick="showToastInbox('⭐ 즐겨찾기에 추가되었습니다.')">⭐ 즐겨찾기</button>
+              <button class="btn" style="flex:1;justify-content:center;font-size:11px" onclick="openMemo()">📝 메모</button>
+              <button class="btn" style="flex:1;justify-content:center;font-size:11px" id="fav-btn" onclick="toggleFavorite()">⭐ 즐겨찾기</button>
               <button class="btn btn-primary" style="flex:1;justify-content:center;font-size:11px" id="rp-status-btn" onclick="changeStatus()">상담중으로</button>
             </div>
           </div>
@@ -394,9 +394,128 @@ function goToBooking() {
   });
   location.href = 'hospital_crm_booking_new.html?' + params.toString();
 }
+/* ────────────────────────────────────────────────
+   공통 유틸
+──────────────────────────────────────────────── */
+function showToastInbox(msg, type) {
+  var e = document.getElementById('inbox-toast'); if(e) e.remove();
+  var bg = type==='success' ? '#059669' : type==='error' ? '#DC2626' : '#0D1B3E';
+  var t = document.createElement('div'); t.id='inbox-toast';
+  t.style.cssText='position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:11px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:2000;white-space:nowrap;animation:fadeUp .2s ease';
+  t.textContent=msg; document.body.appendChild(t);
+  setTimeout(function(){ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(function(){ t.remove(); },300); },2500);
+}
+
+function openModal(title, bodyHtml, onConfirm, confirmLabel, confirmClass) {
+  var e = document.getElementById('__modal'); if(e) e.remove();
+  var m = document.createElement('div'); m.id='__modal';
+  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center';
+  m.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.2)">'
+    +'<div style="font-size:16px;font-weight:700;color:#0D1B3E;margin-bottom:14px">'+title+'</div>'
+    +'<div style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:20px">'+bodyHtml+'</div>'
+    +'<div style="display:flex;gap:8px;justify-content:flex-end">'
+    +'<button class="btn" onclick="closeModal()">취소</button>'
+    +'<button class="btn '+(confirmClass||'btn-primary')+'" id="__modal-confirm">'+(confirmLabel||'확인')+'</button>'
+    +'</div></div>';
+  m.addEventListener('click',function(e){ if(e.target===m) closeModal(); });
+  document.body.appendChild(m);
+  document.getElementById('__modal-confirm').addEventListener('click',function(){ closeModal(); if(typeof onConfirm==='function') onConfirm(); });
+}
+function closeModal(){ var m=document.getElementById('__modal'); if(m) m.remove(); }
+
+/* ────────────────────────────────────────────────
+   상태 변경
+──────────────────────────────────────────────── */
+function changeStatus() {
+  var p = patients[curId];
+  var statusFlow = {new:'consulting', consulting:'booked', booked:'closed', closed:'new'};
+  var statusLabels = {new:'신규', consulting:'상담중', booked:'예약완료', closed:'종료'};
+  var next = statusFlow[p.status] || 'consulting';
+  p.status = next;
+  p.statusLabel = statusLabels[next];
+
+  var btn = document.getElementById('status-btn');
+  var rpBtn = document.getElementById('rp-status-btn');
+  var labels = {new:'신규로 변경', consulting:'상담중 ✓', booked:'예약완료 ✓', closed:'종료 ✓'};
+  var colors = {new:'var(--gray-400)', consulting:'var(--green)', booked:'var(--blue)', closed:'var(--gray-500)'};
+  if(btn){ btn.textContent=labels[next]; btn.style.background=colors[next]; btn.style.borderColor=colors[next]; }
+  if(rpBtn){ rpBtn.textContent=labels[next]; rpBtn.style.background=colors[next]; rpBtn.style.borderColor=colors[next]; }
+
+  updateRightPanel(p);
+  renderList(curFilter, '');
+  showToastInbox('✓ 상태가 ' + statusLabels[next] + '(으)로 변경되었습니다.', 'success');
+}
+
+/* ────────────────────────────────────────────────
+   메모
+──────────────────────────────────────────────── */
+var memoStore = {};
+function openMemo() {
+  var p = patients[curId];
+  var saved = memoStore[p.id] || '';
+  openModal(
+    '📝 메모 — ' + p.name,
+    '<textarea id="memo-input" rows="5" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:13px;font-family:inherit;resize:none;outline:none;line-height:1.7" onfocus="this.style.borderColor='#2563EB'" onblur="this.style.borderColor='#E5E7EB'">'+ saved +'</textarea>',
+    function(){
+      var val = document.getElementById('memo-input') ? document.getElementById('memo-input').value : '';
+      memoStore[p.id] = val;
+      showToastInbox('✓ 메모가 저장되었습니다.', 'success');
+      updateRightPanel(patients[curId]);
+    },
+    '저장', 'btn-primary'
+  );
+  setTimeout(function(){ var el=document.getElementById('memo-input'); if(el){el.focus();el.setSelectionRange(el.value.length,el.value.length);} },100);
+}
+
+/* ────────────────────────────────────────────────
+   즐겨찾기 (localStorage)
+──────────────────────────────────────────────── */
+var favorites = JSON.parse(localStorage.getItem('crm_favorites') || '[]');
+function toggleFavorite() {
+  var p = patients[curId];
+  var idx = favorites.indexOf(p.id);
+  if(idx === -1){
+    favorites.push(p.id);
+    showToastInbox('⭐ ' + p.name + '님을 즐겨찾기에 추가했습니다.', 'success');
+  } else {
+    favorites.splice(idx, 1);
+    showToastInbox('★ ' + p.name + '님을 즐겨찾기에서 제거했습니다.', '');
+  }
+  localStorage.setItem('crm_favorites', JSON.stringify(favorites));
+  updateFavBtn();
+  renderList(curFilter, '');
+}
+function updateFavBtn() {
+  var btn = document.getElementById('fav-btn');
+  if(!btn) return;
+  var isFav = favorites.indexOf(patients[curId].id) !== -1;
+  btn.textContent = isFav ? '⭐ 즐겨찾기' : '☆ 즐겨찾기';
+  btn.style.background = isFav ? '#FEF9C3' : '';
+  btn.style.borderColor = isFav ? '#EAB308' : '';
+  btn.style.color = isFav ? '#92400E' : '';
+}
+
+/* ────────────────────────────────────────────────
+   예약으로 이동 (환자 정보 파라미터 전달)
+──────────────────────────────────────────────── */
+function goToBooking() {
+  var p = patients[curId];
+  var params = new URLSearchParams({
+    name:   p.name,
+    nameJa: p.nameJa || '',
+    proc:   p.proc   || '',
+    ch:     p.ch     || 'LINE',
+    id:     p.id
+  });
+  location.href = 'hospital_crm_booking_new.html?' + params.toString();
+}
+
+/* ────────────────────────────────────────────────
+   컴플라이언스 검사
+──────────────────────────────────────────────── */
 function checkAnswerCompliance(){
   showToastInbox('🔍 컴플라이언스 검사 중...');
-  setTimeout(function(){ showToastInbox('✓ 통과 — 위반 표현 없음'); },1500);
+  setTimeout(function(){ showToastInbox('✓ 통과 — 위반 표현 없음', 'success'); },1500);
 }
 </script>
 <script src="../js/crm_inbox.js"></script>
