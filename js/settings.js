@@ -227,7 +227,7 @@ function saveTeamRoles() {
 
 function updateRoleBadge(idx) {
   var el = document.getElementById('role-' + idx);
-  if (el) el.style.borderColor = 'var(--teal)';
+  if (el) el.style.borderColor = 'var(--blue)';
 }
 
 
@@ -251,28 +251,28 @@ function openInviteModal() {
         <div style="font-size:12px;font-weight:600;color:var(--gray-700);margin-bottom:5px">초대할 이메일 <span style="color:var(--red)">*</span></div>
         <input id="invite-email" type="email" placeholder="예) staff@oleps.co.kr"
           style="width:100%;padding:9px 12px;border:1.5px solid var(--gray-200);border-radius:var(--r);font-size:13px;font-family:inherit;outline:none;color:var(--gray-700)"
-          onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--gray-200)'">
+          onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--gray-200)'">
       </div>
 
       <div style="margin-bottom:14px">
         <div style="font-size:12px;font-weight:600;color:var(--gray-700);margin-bottom:8px">권한 선택 <span style="color:var(--red)">*</span></div>
         <div style="display:flex;flex-direction:column;gap:8px" id="role-options">
           <label style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:var(--r);cursor:pointer;transition:all .15s" id="opt-admin">
-            <input type="radio" name="invite-role" value="admin" style="margin-top:2px;accent-color:var(--teal)">
+            <input type="radio" name="invite-role" value="admin" style="margin-top:2px;accent-color:var(--blue)">
             <div>
               <div style="font-size:13px;font-weight:600;color:var(--navy)">👑 관리자</div>
               <div style="font-size:11px;color:var(--gray-400);margin-top:2px">모든 메뉴 접근 · 설정 변경 · 팀 관리</div>
             </div>
           </label>
           <label style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:var(--r);cursor:pointer;background:#fff;transition:all .15s" id="opt-editor">
-            <input type="radio" name="invite-role" value="editor" style="margin-top:2px;accent-color:var(--teal)">
+            <input type="radio" name="invite-role" value="editor" style="margin-top:2px;accent-color:var(--blue)">
             <div>
               <div style="font-size:13px;font-weight:600;color:var(--navy)">✏ 편집자</div>
               <div style="font-size:11px;color:var(--gray-400);margin-top:2px">콘텐츠 편집 · CRM · 리포트 조회</div>
             </div>
           </label>
-          <label style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border:1.5px solid var(--teal);border-radius:var(--r);cursor:pointer;background:var(--teal-l);transition:all .15s" id="opt-viewer">
-            <input type="radio" name="invite-role" value="viewer" checked style="margin-top:2px;accent-color:var(--teal)">
+          <label style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border:1.5px solid var(--blue);border-radius:var(--r);cursor:pointer;background:var(--navy-l);transition:all .15s" id="opt-viewer">
+            <input type="radio" name="invite-role" value="viewer" checked style="margin-top:2px;accent-color:var(--blue)">
             <div>
               <div style="font-size:13px;font-weight:600;color:var(--navy)">👁 뷰어</div>
               <div style="font-size:11px;color:var(--gray-400);margin-top:2px">대시보드 · 리포트 조회만 가능</div>
@@ -299,8 +299,8 @@ function openInviteModal() {
       ['admin','editor','viewer'].forEach(function(r) {
         var el = document.getElementById('opt-' + r);
         if (r === radio.value) {
-          el.style.borderColor = 'var(--teal)';
-          el.style.background  = 'var(--teal-l)';
+          el.style.borderColor = 'var(--blue)';
+          el.style.background  = 'var(--navy-l)';
         } else {
           el.style.borderColor = 'var(--gray-200)';
           el.style.background  = '#fff';
@@ -360,9 +360,27 @@ function sendInvite() {
   }, 1500);
 }
 
-function showToast(msg) {
+
+function openModal(title, bodyHtml, onConfirm, confirmLabel, confirmClass) {
+  var e = document.getElementById('__modal'); if(e) e.remove();
+  var m = document.createElement('div'); m.id='__modal';
+  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center';
+  m.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:520px;box-shadow:0 20px 60px rgba(0,0,0,.2);max-height:90vh;overflow-y:auto">'
+    +'<div style="font-size:16px;font-weight:700;color:var(--navy);margin-bottom:14px">'+title+'</div>'
+    +'<div style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:20px">'+bodyHtml+'</div>'
+    +'<div style="display:flex;gap:8px;justify-content:flex-end">'
+    +'<button class="btn" onclick="closeModal()">취소</button>'
+    +'<button class="btn '+(confirmClass||'btn-primary')+'" id="__modal-confirm">'+(confirmLabel||'확인')+'</button>'
+    +'</div></div>';
+  m.addEventListener('click',function(e){ if(e.target===m) closeModal(); });
+  document.body.appendChild(m);
+  document.getElementById('__modal-confirm').addEventListener('click',function(){ closeModal(); if(typeof onConfirm==='function') onConfirm(); });
+}
+function closeModal(){ var m=document.getElementById('__modal'); if(m) m.remove(); }
+function showToast(msg, type) {
+  var bg = type==='success'?'#059669':type==='error'?'#DC2626':'var(--navy)';
   var toast = document.createElement('div');
-  toast.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:2000;animation:slideUp .25s ease;white-space:nowrap';
+  toast.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:2000;animation:slideUp .25s ease;white-space:nowrap';
   toast.textContent = msg;
   document.body.appendChild(toast);
   setTimeout(function() {
@@ -382,7 +400,7 @@ function planFeature(enabled, text) {
 function changePlan(planId, planName, price) {
   var isUpgrade = planId === 'enterprise' || (planId === 'pro' && currentPlan === 'basic');
   var actionLabel = isUpgrade ? '업그레이드' : '다운그레이드';
-  var color = isUpgrade ? 'var(--purple)' : 'var(--red)';
+  var color = isUpgrade ? 'var(--navy)' : 'var(--red)';
   var planLabels = {basic:'Basic', pro:'Pro', enterprise:'Enterprise'};
   var currentLabel = planLabels[currentPlan] || 'Pro';
 
@@ -535,9 +553,9 @@ function renderPlanSection() {
     return '<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:'+(ok?'var(--gray-700)':'var(--gray-300)')+'"><span style="color:'+(ok?'var(--green)':'var(--gray-300)')+';font-weight:700">'+(ok?'✓':'✕')+'</span>'+txt+'</div>';
   }
   function planCard(id, name, price, desc, features, btnHtml, highlight) {
-    var borderColor = highlight ? 'var(--teal)' : 'var(--gray-200)';
-    var bg = highlight ? 'background:var(--teal-l);' : '';
-    var badge = highlight ? '<div style="position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--teal);color:#fff;font-size:10px;font-weight:700;padding:3px 12px;border-radius:0 0 8px 8px;white-space:nowrap;letter-spacing:.04em">현재 플랜</div>' : '';
+    var borderColor = highlight ? 'var(--blue)' : 'var(--gray-200)';
+    var bg = highlight ? 'background:var(--navy-l);' : '';
+    var badge = highlight ? '<div style="position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;font-size:10px;font-weight:700;padding:3px 12px;border-radius:0 0 8px 8px;white-space:nowrap;letter-spacing:.04em">현재 플랜</div>' : '';
     var mt = highlight ? 'margin-top:8px;' : '';
     var html = '<div style="border:2px solid '+borderColor+';border-radius:var(--rl);padding:20px 18px;'+bg+'position:relative;transition:all .2s">';
     html += badge;
@@ -576,16 +594,16 @@ function renderPlanSection() {
 
   // 버튼은 planCard 내부에서 currentPlan 기준으로 동적 생성
   var basicBtn = currentPlan === 'basic'
-    ? '<button disabled style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--teal);background:var(--teal);color:#fff;font-size:12px;font-weight:600;font-family:inherit;cursor:not-allowed;opacity:.6">✓ 현재 플랜</button>'
+    ? '<button disabled style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--blue);background:var(--navy);color:#fff;font-size:12px;font-weight:600;font-family:inherit;cursor:not-allowed;opacity:.6">✓ 현재 플랜</button>'
     : '<button onclick="changePlan(\'basic\',\'Basic\',\'390,000\')" style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--gray-200);background:#fff;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--gray-500);">다운그레이드</button>';
   var proBtn = currentPlan === 'pro'
-    ? '<button disabled style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--teal);background:var(--teal);color:#fff;font-size:12px;font-weight:600;font-family:inherit;cursor:not-allowed;opacity:.6">✓ 현재 플랜</button>'
+    ? '<button disabled style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--blue);background:var(--navy);color:#fff;font-size:12px;font-weight:600;font-family:inherit;cursor:not-allowed;opacity:.6">✓ 현재 플랜</button>'
     : (currentPlan === 'basic'
-      ? '<button onclick="changePlan(\'pro\',\'Pro\',\'890,000\')" style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--teal);background:var(--teal-l);font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--teal-d);">업그레이드</button>'
+      ? '<button onclick="changePlan(\'pro\',\'Pro\',\'890,000\')" style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--blue);background:var(--navy-l);font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--navy);">업그레이드</button>'
       : '<button onclick="changePlan(\'pro\',\'Pro\',\'890,000\')" style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--gray-200);background:#fff;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--gray-500);">다운그레이드</button>');
   var entBtn = currentPlan === 'enterprise'
-    ? '<button disabled style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--teal);background:var(--teal);color:#fff;font-size:12px;font-weight:600;font-family:inherit;cursor:not-allowed;opacity:.6">✓ 현재 플랜</button>'
-    : '<button onclick="changePlan(\'enterprise\',\'Enterprise\',\'1,490,000\')" style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--purple);background:var(--purple-l);font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--purple);">업그레이드</button>';
+    ? '<button disabled style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--blue);background:var(--navy);color:#fff;font-size:12px;font-weight:600;font-family:inherit;cursor:not-allowed;opacity:.6">✓ 현재 플랜</button>'
+    : '<button onclick="changePlan(\'enterprise\',\'Enterprise\',\'1,490,000\')" style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--navy);background:var(--navy-l);font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--navy);">업그레이드</button>';
 
   var html = '<div class="card fade">';
   html += '<div style="font-size:15px;font-weight:600;color:var(--navy);margin-bottom:4px">💳 플랜 및 결제</div>';
