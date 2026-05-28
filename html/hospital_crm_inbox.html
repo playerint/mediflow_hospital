@@ -8,17 +8,62 @@
 <link rel="stylesheet" href="../css/crm.css">
 <script src="../js/gate.js"></script>
 <style>
+/* ── 메시지 말풍선 ── */
 .msg-ja{font-size:13px;line-height:1.7;color:inherit;}
 .msg-ko-badge{margin-top:6px;padding:5px 8px;background:rgba(255,255,255,.5);border-radius:6px;font-size:11px;color:#374151;line-height:1.6;border-left:2px solid rgba(0,0,0,.1);}
 .msg-ko-send{font-size:13px;line-height:1.7;color:inherit;}
 .msg-ja-send{margin-top:6px;padding:5px 8px;background:rgba(255,255,255,.25);border-radius:6px;font-size:11px;line-height:1.6;border-left:2px solid rgba(255,255,255,.5);}
-/* ZENO v2: 하나 배지 — teal→navy */
 .msg-av-hana{flex-shrink:0;display:flex;align-items:flex-start;}
 .hana-badge-av{width:34px;height:34px;border-radius:50%;background:var(--navy-l);font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .hana-name{font-size:11px;font-weight:600;color:var(--navy);margin-bottom:4px;display:flex;align-items:center;gap:5px;}
 .hana-name::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--blue);}
-.ai-draft-label{display:flex;align-items:center;gap:8px;}
 .hana-badge-mini{width:22px;height:22px;border-radius:50%;background:var(--navy-l);font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+/* ── 우측 패널 공통 ── */
+.rp-section{padding:14px 16px;border-bottom:1px solid var(--gray-100);}
+.rp-section:last-child{border-bottom:none;}
+.rp-title{font-size:11px;font-weight:700;color:var(--gray-400);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.rp-tab-bar{display:flex;gap:2px;background:var(--gray-100);border-radius:8px;padding:2px;margin-bottom:12px;}
+.rp-tab{flex:1;padding:5px 0;font-size:11px;font-weight:500;text-align:center;border:none;background:transparent;border-radius:6px;cursor:pointer;color:var(--gray-500);transition:all .15s;font-family:inherit;}
+.rp-tab.active{background:#fff;color:var(--navy);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.08);}
+
+/* ── 고객 프로필 카드 ── */
+.profile-card{padding:16px;}
+.pc-top{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.pc-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;}
+.pc-name{font-size:14px;font-weight:700;color:var(--navy);}
+.pc-name-ja{font-size:11px;color:var(--gray-400);margin-top:2px;}
+.pc-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;margin-top:4px;}
+.pc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.pc-item{background:var(--gray-50);border-radius:8px;padding:8px 10px;}
+.pc-item-label{font-size:10px;color:var(--gray-400);margin-bottom:2px;letter-spacing:.03em;}
+.pc-item-value{font-size:12px;font-weight:600;color:var(--gray-900);}
+.pc-history{font-size:12px;color:var(--gray-600);line-height:1.7;}
+.pc-history-item{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid var(--gray-100);}
+.pc-history-item:last-child{border-bottom:none;}
+.pc-history-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.pc-action-row{display:flex;gap:6px;margin-top:12px;}
+
+/* ── AI 추천 답변 ── */
+.ai-suggest-item{border:1px solid var(--gray-200);border-radius:10px;padding:10px 12px;margin-bottom:8px;cursor:pointer;transition:all .15s;}
+.ai-suggest-item:hover{border-color:var(--blue);background:var(--blue-l);}
+.ai-suggest-item.selected{border-color:var(--navy);background:var(--navy-l);}
+.ai-suggest-tone{font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;margin-bottom:6px;display:inline-block;}
+.ai-suggest-text{font-size:12px;color:var(--gray-700);line-height:1.6;}
+.ai-suggest-ja{font-size:11px;color:var(--gray-400);margin-top:4px;line-height:1.5;padding-top:4px;border-top:1px dashed var(--gray-200);}
+
+/* ── 시술 매뉴얼 ── */
+.manual-item{padding:10px 12px;border-radius:10px;background:var(--gray-50);margin-bottom:8px;}
+.manual-item-title{font-size:12px;font-weight:600;color:var(--navy);margin-bottom:4px;display:flex;align-items:center;gap:6px;}
+.manual-item-body{font-size:11px;color:var(--gray-600);line-height:1.7;}
+.manual-badge{font-size:10px;padding:1px 6px;border-radius:4px;font-weight:500;}
+
+/* ── 번역 패널 ── */
+.trans-row{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
+.trans-label{font-size:10px;font-weight:600;color:var(--gray-400);letter-spacing:.04em;}
+.trans-box{background:var(--gray-50);border-radius:8px;padding:9px 11px;font-size:12px;line-height:1.7;color:var(--gray-800);}
+.trans-box.ja{background:var(--navy-l);color:var(--navy);}
+.trans-copy{font-size:10px;color:var(--blue);cursor:pointer;margin-top:3px;text-align:right;}
 </style>
 </head>
 <body>
@@ -32,17 +77,22 @@
     </div>
     <div class="topbar-right">
       <button class="btn" onclick="location.href='hospital_crm_booking.html'">📅 예약 관리</button>
-      <button class="btn btn-primary" onclick="location.href='hospital_funnel.html'">⚡ 리타게팅 현황</button>
+      <button class="btn btn-primary" onclick="location.href='hospital_funnel.html'">⚡ 리타게팅</button>
     </div>
   </div>
   <div class="content">
-    <div class="kpi-grid" style="grid-template-columns:repeat(4,minmax(0,1fr))">
-      <div style="background:var(--gray-50);border-radius:var(--r);padding:12px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">전체 문의</div><div style="font-size:20px;font-weight:700;color:var(--navy)">23건</div><div class="up" style="font-size:11px;margin-top:3px">↑ +8 전월</div></div>
-      <div style="background:var(--gray-50);border-radius:var(--r);padding:12px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">미확인</div><div style="font-size:20px;font-weight:700;color:var(--red)">3건</div><div style="font-size:11px;color:var(--red);margin-top:3px">최대 2시간 경과</div></div>
-      <div style="background:var(--gray-50);border-radius:var(--r);padding:12px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">예약 전환</div><div style="font-size:20px;font-weight:700;color:var(--navy)">8건</div><div class="neu" style="font-size:11px;margin-top:3px">전환율 34.8%</div></div>
-      <div style="background:var(--gray-50);border-radius:var(--r);padding:12px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:4px">AI 자동 해결</div><div style="font-size:20px;font-weight:700;color:var(--navy)">14건</div><div class="neu" style="font-size:11px;margin-top:3px">60.9%</div></div>
+    <!-- KPI -->
+    <div class="kpi-grid" style="grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:12px">
+      <div style="background:var(--gray-50);border-radius:var(--r);padding:10px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:3px">전체 문의</div><div style="font-size:18px;font-weight:700;color:var(--navy)">23건</div><div class="up" style="font-size:11px">↑ +8 전월</div></div>
+      <div style="background:var(--gray-50);border-radius:var(--r);padding:10px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:3px">미확인</div><div style="font-size:18px;font-weight:700;color:var(--red)">3건</div><div style="font-size:11px;color:var(--red)">최대 2시간 경과</div></div>
+      <div style="background:var(--gray-50);border-radius:var(--r);padding:10px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:3px">예약 전환</div><div style="font-size:18px;font-weight:700;color:var(--navy)">8건</div><div class="neu" style="font-size:11px">전환율 34.8%</div></div>
+      <div style="background:var(--gray-50);border-radius:var(--r);padding:10px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:3px">AI 자동 해결</div><div style="font-size:18px;font-weight:700;color:var(--navy)">14건</div><div class="neu" style="font-size:11px">60.9%</div></div>
     </div>
-    <div class="layout-crm">
+
+    <!-- 메인 3열 레이아웃 -->
+    <div class="layout-crm-3col">
+
+      <!-- ① 좌측: 상담 목록 -->
       <div class="inbox-panel">
         <div class="inbox-head">
           <input class="inbox-search" placeholder="환자 이름·시술·채널 검색..." oninput="filterList(this.value)">
@@ -56,6 +106,8 @@
         </div>
         <div class="inbox-list" id="inbox-list"></div>
       </div>
+
+      <!-- ② 중앙: 채팅창 -->
       <div class="detail-panel">
         <div class="detail-head">
           <div class="dh-left">
@@ -70,48 +122,26 @@
             <button class="btn btn-primary" style="font-size:12px" id="status-btn" onclick="changeStatus()">상담중으로 변경</button>
           </div>
         </div>
-        <div class="profile-bar">
-          <div class="pb-item"><div class="pb-label">관심 시술</div><div class="pb-value" id="pb-proc">쌍꺼풀</div></div>
-          <div class="pb-item"><div class="pb-label">접점 채널</div><div class="pb-value" id="pb-ch">LINE</div></div>
-          <div class="pb-item"><div class="pb-label">문의 시간 (JST)</div><div class="pb-value">오전 11:23</div></div>
-          <div class="pb-item"><div class="pb-label">경과</div><div class="pb-value" id="pb-el" style="color:var(--red)">2시간 12분</div></div>
-        </div>
         <div class="msg-area" id="msg-area"></div>
         <div class="ai-draft" id="ai-draft">
           <div class="ai-draft-head">
-            <div class="ai-draft-label">
+            <div style="display:flex;align-items:center;gap:8px">
               <div class="hana-badge-mini">🌸</div>
-              <span style="font-size:13px;font-weight:600;color:var(--navy)">🌸 AI はな의 답변 초안</span>
-              <span style="font-size:10px;color:var(--gray-400);font-weight:400">· AI Agent</span>
+              <span style="font-size:13px;font-weight:600;color:var(--navy)">AI はな 답변 초안</span>
             </div>
-            <div class="ai-draft-actions">
-              <!-- ZENO v2: translate toggle — teal→blue -->
-              <button id="translate-toggle" onclick="toggleTranslation()"
-                style="font-size:11px;padding:3px 10px;border-radius:8px;border:1px solid var(--blue);background:var(--blue-l);color:var(--blue);cursor:pointer;font-family:inherit;transition:all .15s">
-                🇰🇷 번역 ON
-              </button>
+            <div style="display:flex;gap:5px">
+              <button id="translate-toggle" onclick="toggleTranslation()" style="font-size:11px;padding:3px 10px;border-radius:8px;border:1px solid var(--blue);background:var(--blue-l);color:var(--blue);cursor:pointer;font-family:inherit">🇰🇷 번역 ON</button>
               <button class="btn" style="font-size:11px;padding:3px 9px" onclick="regenDraft()">↺ 재생성</button>
-              <button class="btn" style="font-size:11px;padding:3px 9px" onclick="checkAnswerCompliance()">🔍 검사</button>
             </div>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;padding:0 14px 10px">
-            <div style="padding-right:8px;border-right:1px solid #F3F4F6">
-              <div style="font-size:11px;font-weight:600;color:#6B7280;margin-bottom:4px;display:flex;align-items:center;gap:4px">
-                🇰🇷 한국어 입력 <span style="font-size:10px;color:#9CA3AF;font-weight:400">→ 자동 번역</span>
-              </div>
-              <textarea id="draft-text-ko" rows="4" oninput="onKoInput()"
-                style="width:100%;padding:8px 10px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;font-family:inherit;resize:none;outline:none;line-height:1.7;transition:border .15s"
-                onfocus="this.style.borderColor='#2563EB'" onblur="this.style.borderColor='#E5E7EB'"
-                placeholder="한국어로 답변을 입력하세요..."></textarea>
+          <div style="display:grid;grid-template-columns:1fr 1fr;padding:0 14px 10px;gap:8px">
+            <div>
+              <div style="font-size:11px;font-weight:600;color:#6B7280;margin-bottom:4px">🇰🇷 한국어 입력</div>
+              <textarea id="draft-text-ko" rows="3" oninput="onKoInput()" style="width:100%;padding:8px 10px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;font-family:inherit;resize:none;outline:none;line-height:1.7" onfocus="this.style.borderColor='#2563EB'" onblur="this.style.borderColor='#E5E7EB'" placeholder="한국어로 답변 입력..."></textarea>
             </div>
-            <div style="padding-left:8px">
-              <div style="font-size:11px;font-weight:600;color:#6B7280;margin-bottom:4px;display:flex;align-items:center;gap:4px">
-                🇯🇵 일본어 발송 내용 <span style="font-size:10px;color:#9CA3AF;font-weight:400">직접 수정 가능</span>
-              </div>
-              <textarea id="draft-text-ja" rows="4"
-                style="width:100%;padding:8px 10px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;font-family:inherit;resize:none;outline:none;line-height:1.7;background:#F9FAFB;transition:all .15s"
-                onfocus="this.style.borderColor='#2563EB';this.style.background='#fff'" onblur="this.style.borderColor='#E5E7EB'"
-                placeholder="일본어 번역 결과가 표시됩니다..."></textarea>
+            <div>
+              <div style="font-size:11px;font-weight:600;color:#6B7280;margin-bottom:4px">🇯🇵 일본어 발송</div>
+              <textarea id="draft-text-ja" rows="3" style="width:100%;padding:8px 10px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;font-family:inherit;resize:none;outline:none;line-height:1.7;background:#F9FAFB" onfocus="this.style.borderColor='#2563EB';this.style.background='#fff'" onblur="this.style.borderColor='#E5E7EB'" placeholder="일본어 번역 결과..."></textarea>
             </div>
           </div>
           <div class="ai-draft-footer">
@@ -120,56 +150,242 @@
           </div>
         </div>
       </div>
+
+      <!-- ③ 우측: 멀티 패널 -->
+      <div class="right-panel">
+
+        <!-- 고객 프로필 카드 -->
+        <div class="rp-section" style="padding:0">
+          <div class="profile-card">
+            <div class="pc-top">
+              <div class="pc-avatar" id="rp-avatar" style="background:#EEEDFE;color:#3C3489">야마</div>
+              <div style="flex:1;min-width:0">
+                <div class="pc-name" id="rp-name">야마다 사오리</div>
+                <div class="pc-name-ja" id="rp-name-ja">山田 沙織</div>
+                <div id="rp-status-badge"></div>
+              </div>
+              <button class="btn" style="font-size:11px;padding:4px 10px;flex-shrink:0" onclick="location.href='hospital_crm_booking.html'">📅 예약</button>
+            </div>
+            <div class="pc-grid">
+              <div class="pc-item"><div class="pc-item-label">관심 시술</div><div class="pc-item-value" id="rp-proc">쌍꺼풀</div></div>
+              <div class="pc-item"><div class="pc-item-label">접점 채널</div><div class="pc-item-value" id="rp-ch">LINE</div></div>
+              <div class="pc-item"><div class="pc-item-label">문의 경과</div><div class="pc-item-value" id="rp-el" style="color:var(--red)">2시간</div></div>
+              <div class="pc-item"><div class="pc-item-label">방문 이력</div><div class="pc-item-value" id="rp-visit">첫 방문</div></div>
+            </div>
+            <div id="rp-history-wrap"></div>
+            <div class="pc-action-row">
+              <button class="btn" style="flex:1;justify-content:center;font-size:11px" onclick="showToastInbox('📝 메모가 저장되었습니다.')">📝 메모</button>
+              <button class="btn" style="flex:1;justify-content:center;font-size:11px" onclick="showToastInbox('⭐ 즐겨찾기에 추가되었습니다.')">⭐ 즐겨찾기</button>
+              <button class="btn btn-primary" style="flex:1;justify-content:center;font-size:11px" id="rp-status-btn" onclick="changeStatus()">상담중으로</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 탭: AI 추천 / 시술 매뉴얼 / 번역 -->
+        <div style="padding:12px 16px 0">
+          <div class="rp-tab-bar">
+            <button class="rp-tab active" onclick="setRpTab('ai',this)">🤖 AI 추천</button>
+            <button class="rp-tab" onclick="setRpTab('manual',this)">📋 시술</button>
+            <button class="rp-tab" onclick="setRpTab('trans',this)">🌐 번역</button>
+          </div>
+        </div>
+
+        <!-- AI 추천 답변 탭 -->
+        <div class="rp-section" id="rp-tab-ai" style="padding-top:0">
+          <div id="ai-suggests"></div>
+          <button class="btn" style="width:100%;justify-content:center;font-size:12px;margin-top:4px" onclick="regenSuggests()">↺ 답변 재생성</button>
+        </div>
+
+        <!-- 시술 매뉴얼 탭 -->
+        <div class="rp-section" id="rp-tab-manual" style="display:none;padding-top:0">
+          <div id="manual-content"></div>
+        </div>
+
+        <!-- 번역 탭 -->
+        <div class="rp-section" id="rp-tab-trans" style="display:none;padding-top:0">
+          <div id="trans-content"></div>
+        </div>
+
+      </div>
     </div>
-    <footer class="site-footer">© 2026 MEDIFLOW. All rights reserved.</footer>
+    <footer class="site-footer" style="margin-top:12px">© 2026 MEDIFLOW. All rights reserved.</footer>
   </div>
 </main>
+
 <script src="../js/auth.js"></script>
 <script src="../js/sidebar.js"></script>
 <script>
+/* ── 상태 변경 ── */
 function changeStatus() {
   var btn = document.getElementById('status-btn');
-  var current = btn.textContent.trim();
-  if (current === '상담중으로 변경') {
-    btn.textContent = '✓ 상담중';
-    btn.style.background = 'var(--green)'; btn.style.borderColor = 'var(--green)';
-    btn.onclick = function() { changeStatusBack(); };
+  var rpBtn = document.getElementById('rp-status-btn');
+  if (btn.textContent.trim() === '상담중으로 변경' || btn.textContent.trim() === '상담중으로') {
+    btn.textContent = '✓ 상담중'; btn.style.background = 'var(--green)'; btn.style.borderColor = 'var(--green)';
+    if(rpBtn){ rpBtn.textContent='✓ 상담중'; rpBtn.style.background='var(--green)'; rpBtn.style.borderColor='var(--green)'; }
     showToastInbox('상태가 상담중으로 변경되었습니다.');
   }
 }
-function changeStatusBack() {
-  var btn = document.getElementById('status-btn');
-  btn.textContent = '상담중으로 변경';
-  btn.style.background = ''; btn.style.borderColor = '';
-  btn.onclick = function() { changeStatus(); };
-  showToastInbox('상태가 미확인으로 변경되었습니다.');
-}
 function showToastInbox(msg) {
-  var existing = document.getElementById('inbox-toast'); if (existing) existing.remove();
-  var toast = document.createElement('div'); toast.id = 'inbox-toast';
-  toast.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:11px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:2000;white-space:nowrap;';
-  toast.textContent = msg; document.body.appendChild(toast);
-  setTimeout(function() { toast.style.opacity='0'; toast.style.transition='opacity .3s'; setTimeout(function(){ toast.remove(); },300); }, 2500);
+  var e = document.getElementById('inbox-toast'); if(e) e.remove();
+  var t = document.createElement('div'); t.id='inbox-toast';
+  t.style.cssText='position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:11px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:2000;white-space:nowrap';
+  t.textContent=msg; document.body.appendChild(t);
+  setTimeout(function(){ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(function(){ t.remove(); },300); },2500);
 }
-function openModal(title,bodyHtml,onConfirm,confirmLabel,confirmClass){
-  var existing=document.getElementById('__modal'); if(existing) existing.remove();
-  var m=document.createElement('div'); m.id='__modal';
-  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center';
-  m.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.2)">'
-    +'<div style="font-size:16px;font-weight:700;color:var(--navy);margin-bottom:14px">'+title+'</div>'
-    +'<div style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:20px">'+bodyHtml+'</div>'
-    +'<div style="display:flex;gap:8px;justify-content:flex-end">'
-    +'<button class="btn" onclick="closeModal()">취소</button>'
-    +'<button class="btn '+(confirmClass||'btn-primary')+'" id="__modal-confirm">'+(confirmLabel||'확인')+'</button>'
-    +'</div></div>';
-  m.addEventListener('click',function(e){ if(e.target===m) closeModal(); });
-  document.body.appendChild(m);
-  document.getElementById('__modal-confirm').addEventListener('click',function(){ closeModal(); if(typeof onConfirm==='function') onConfirm(); });
+
+/* ── 우측 패널 탭 전환 ── */
+function setRpTab(tab, btn) {
+  document.querySelectorAll('.rp-tab').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById('rp-tab-ai').style.display = tab==='ai' ? '' : 'none';
+  document.getElementById('rp-tab-manual').style.display = tab==='manual' ? '' : 'none';
+  document.getElementById('rp-tab-trans').style.display = tab==='trans' ? '' : 'none';
 }
-function closeModal(){ var m=document.getElementById('__modal'); if(m) m.remove(); }
+
+/* ── 우측 패널 업데이트 ── */
+function updateRightPanel(p) {
+  // 프로필 카드
+  var av = document.getElementById('rp-avatar');
+  av.textContent = p.init; av.style.background = p.bg; av.style.color = p.tc;
+  document.getElementById('rp-name').textContent = p.name;
+  document.getElementById('rp-name-ja').textContent = p.nameJa;
+  document.getElementById('rp-proc').textContent = p.proc;
+  document.getElementById('rp-ch').textContent = p.ch;
+  document.getElementById('rp-el').textContent = p.elapsed || '—';
+  document.getElementById('rp-el').style.color = p.elapsed ? 'var(--red)' : 'var(--gray-700)';
+
+  // 방문 이력
+  var historyMap = {new:'첫 방문', consulting:'상담 이력 있음', booked:'예약 완료', closed:'시술 완료'};
+  document.getElementById('rp-visit').textContent = historyMap[p.status] || '첫 방문';
+
+  // 상태 배지
+  var sc = {new:{bg:'#FEF2F2',tc:'#991B1B',label:'신규'}, consulting:{bg:'#F3F4F6',tc:'#374151',label:'상담중'}, booked:{bg:'#D1FAE5',tc:'#065F46',label:'예약완료'}, closed:{bg:'#F3F4F6',tc:'#6B7280',label:'종료'}};
+  var s = sc[p.status] || sc.new;
+  document.getElementById('rp-status-badge').innerHTML = '<span class="pc-badge" style="background:'+s.bg+';color:'+s.tc+'">'+s.label+'</span>';
+
+  // 상담 이력
+  var hw = document.getElementById('rp-history-wrap');
+  if (p.msgs && p.msgs.length > 1) {
+    hw.innerHTML = '<div style="font-size:11px;font-weight:600;color:var(--gray-400);letter-spacing:.04em;margin-bottom:6px">대화 이력 '+p.msgs.length+'건</div>'
+      + p.msgs.slice(-2).map(function(m){
+        var isP = m.from==='patient';
+        return '<div class="pc-history-item"><div class="pc-history-dot" style="background:'+(isP?'var(--gray-400)':'+'var(--blue)')+'"></div><div style="flex:1;min-width:0"><div style="font-size:11px;color:var(--gray-700);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(isP?'👤 ':'✉ ')+m.ko+'</div><div style="font-size:10px;color:var(--gray-400)">'+ m.time+'</div></div></div>';
+      }).join('');
+  } else { hw.innerHTML = ''; }
+
+  // AI 추천 답변
+  renderAISuggests(p);
+  // 시술 매뉴얼
+  renderManual(p);
+  // 번역
+  renderTrans(p);
+}
+
+/* ── AI 추천 답변 ── */
+var suggestData = {
+  '쌍꺼풀': [
+    {tone:'친절', toneBg:'#D1FAE5', toneTc:'#065F46', ko:'안녕하세요! 상담은 무료로 진행하고 있습니다. 매몰법은 ₩400,000~, 절개법은 ₩800,000~ 입니다.', ja:'こんにちは！カウンセリングは無料です。埋没法は₩400,000〜、切開法は₩800,000〜となります。'},
+    {tone:'전문적', toneBg:'#EEF2FF', toneTc:'#0D1B3E', ko:'쌍꺼풀 수술은 매몰법과 절개법으로 나뉩니다. 눈의 상태와 원하시는 디자인에 따라 적합한 방법을 카운슬링에서 결정합니다.', ja:'二重手術は埋没法と切開法に分かれます。目の状態と希望のデザインに応じて最適な方法をカウンセリングで決定します。'},
+    {tone:'간결', toneBg:'#F3F4F6', toneTc:'#374151', ko:'카운슬링은 무료입니다. 편하신 날짜로 예약해드릴까요?', ja:'カウンセリングは無料です。ご希望の日程でご予約しましょうか？'},
+  ],
+  '코 성형': [
+    {tone:'친절', toneBg:'#D1FAE5', toneTc:'#065F46', ko:'코 필러 다운타임은 1~3일 정도로 매우 짧습니다. 출근하시면서 시술 가능하세요!', ja:'鼻フィラーのダウンタイムは1〜3日程度でとても短いです。お仕事しながら施術できますよ！'},
+    {tone:'전문적', toneBg:'#EEF2FF', toneTc:'#0D1B3E', ko:'히알루론산 코 필러는 자연스러운 코 높이 개선에 효과적입니다. 효과는 6~12개월 지속됩니다.', ja:'ヒアルロン酸鼻フィラーは自然な鼻筋の改善に効果的です。効果は6〜12ヶ月持続します。'},
+    {tone:'간결', toneBg:'#F3F4F6', toneTc:'#374151', ko:'다운타임 1~3일, 효과 6~12개월입니다. 무료 상담 예약 가능합니다.', ja:'ダウンタイム1〜3日、効果6〜12ヶ月です。無料相談予約可能です。'},
+  ],
+  'default': [
+    {tone:'친절', toneBg:'#D1FAE5', toneTc:'#065F46', ko:'안녕하세요! 올래성형외과입니다. 궁금하신 점이 있으시면 편하게 여쭤봐 주세요.', ja:'こんにちは！オーレ整形外科です。お気軽にご質問ください。'},
+    {tone:'전문적', toneBg:'#EEF2FF', toneTc:'#0D1B3E', ko:'저희 병원에서는 다양한 성형 시술을 제공하고 있습니다. 관심 시술을 알려주시면 자세한 안내를 드리겠습니다.', ja:'当院では様々な美容整形を提供しております。ご興味のある施術をお知らせください。'},
+    {tone:'간결', toneBg:'#F3F4F6', toneTc:'#374151', ko:'무료 카운슬링 예약 가능합니다. 편하신 날짜를 알려주세요.', ja:'無料カウンセリング予約可能です。ご希望の日程をお知らせください。'},
+  ],
+};
+var selectedSuggestIdx = -1;
+
+function renderAISuggests(p) {
+  var suggests = suggestData[p.proc] || suggestData['default'];
+  var el = document.getElementById('ai-suggests');
+  el.innerHTML = suggests.map(function(s, i){
+    return '<div class="ai-suggest-item" id="sug-'+i+'" onclick="selectSuggest('+i+','+(JSON.stringify(s).replace(/'/g,"&#39;"))+')">'
+      +'<div class="ai-suggest-tone" style="background:'+s.toneBg+';color:'+s.toneTc+'">'+s.tone+'</div>'
+      +'<div class="ai-suggest-text">'+s.ko+'</div>'
+      +'<div class="ai-suggest-ja">🇯🇵 '+s.ja+'</div>'
+      +'</div>';
+  }).join('');
+  selectedSuggestIdx = -1;
+}
+
+function selectSuggest(idx, s) {
+  document.querySelectorAll('.ai-suggest-item').forEach(function(el){ el.classList.remove('selected'); });
+  document.getElementById('sug-'+idx).classList.add('selected');
+  selectedSuggestIdx = idx;
+  // 초안 영역에 자동 입력
+  var koEl = document.getElementById('draft-text-ko');
+  var jaEl = document.getElementById('draft-text-ja');
+  if(koEl) koEl.value = s.ko;
+  if(jaEl) jaEl.value = s.ja;
+  var draft = document.getElementById('ai-draft');
+  if(draft) draft.style.display = 'block';
+  showToastInbox('✓ 답변 초안에 적용되었습니다.');
+}
+
+function regenSuggests() {
+  var el = document.getElementById('ai-suggests');
+  el.style.opacity = '.4';
+  setTimeout(function(){ el.style.opacity = '1'; showToastInbox('✓ AI 추천 답변이 재생성되었습니다.'); }, 1200);
+}
+
+/* ── 시술 매뉴얼 ── */
+var manualData = {
+  '쌍꺼풀': [
+    {icon:'👁', title:'매몰법', tags:[{label:'비절개',bg:'#D1FAE5',tc:'#065F46'},{label:'1~3일',bg:'#EEF2FF',tc:'#0D1B3E'}], body:'실로 피부와 연결조직을 고정. 절개 없이 시술 가능. 다운타임 최소화. 풀릴 가능성 있음.'},
+    {icon:'✂', title:'절개법', tags:[{label:'절개',bg:'#FEF2F2',tc:'#991B1B'},{label:'7~14일',bg:'#F3F4F6',tc:'#374151'}], body:'피부 절개 후 지방·근육 조정. 영구적 효과. 붓기 2주 지속.'},
+    {icon:'💰', title:'가격 안내', tags:[], body:'매몰법 ₩400,000~ / 절개법 ₩800,000~ / 수정 절개법 ₩1,200,000~'},
+  ],
+  '코 성형': [
+    {icon:'💉', title:'코 필러', tags:[{label:'비수술',bg:'#D1FAE5',tc:'#065F46'},{label:'1~3일',bg:'#EEF2FF',tc:'#0D1B3E'}], body:'히알루론산 주입으로 자연스러운 코 높이 개선. 효과 6~12개월.'},
+    {icon:'🔧', title:'코 성형 수술', tags:[{label:'절개',bg:'#FEF2F2',tc:'#991B1B'},{label:'7~14일',bg:'#F3F4F6',tc:'#374151'}], body:'실리콘 보형물 삽입. 반영구적. 다운타임 1~2주.'},
+    {icon:'💰', title:'가격 안내', tags:[], body:'코 필러 ₩300,000~ / 코 수술 ₩2,500,000~'},
+  ],
+  'default': [
+    {icon:'📋', title:'상담 진행 방법', tags:[], body:'1. LINE 문의 접수 → 2. 무료 카운슬링 예약 → 3. 담당의 상담 → 4. 시술 결정'},
+    {icon:'🌐', title:'일본어 지원', tags:[{label:'일본어 스탭 상주',bg:'#EEF2FF',tc:'#0D1B3E'}], body:'일본어 전담 코디네이터 상주. 통역 서비스 무료 제공.'},
+  ],
+};
+
+function renderManual(p) {
+  var data = manualData[p.proc] || manualData['default'];
+  document.getElementById('manual-content').innerHTML = data.map(function(m){
+    var badges = m.tags.map(function(t){ return '<span class="manual-badge" style="background:'+t.bg+';color:'+t.tc+'">'+t.label+'</span>'; }).join(' ');
+    return '<div class="manual-item">'
+      +'<div class="manual-item-title">'+m.icon+' '+m.title+(badges?' '+badges:'')+'</div>'
+      +'<div class="manual-item-body">'+m.body+'</div>'
+      +'</div>';
+  }).join('');
+}
+
+/* ── 번역 패널 ── */
+function renderTrans(p) {
+  var lastMsg = p.msgs[p.msgs.length - 1];
+  var el = document.getElementById('trans-content');
+  el.innerHTML = '<div class="trans-row">'
+    +'<div class="trans-label">🇯🇵 원문 (일본어)</div>'
+    +'<div class="trans-box ja">'+lastMsg.ja+'</div>'
+    +'<div class="trans-copy" onclick="copyText(\''+lastMsg.ja+'\')">복사 📋</div>'
+    +'</div>'
+    +'<div class="trans-row">'
+    +'<div class="trans-label">🇰🇷 번역 (한국어)</div>'
+    +'<div class="trans-box">'+lastMsg.ko+'</div>'
+    +'<div class="trans-copy" onclick="copyText(\''+lastMsg.ko+'\')">복사 📋</div>'
+    +'</div>';
+}
+
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(function(){ showToastInbox('✓ 복사되었습니다.'); });
+}
+
 function checkAnswerCompliance(){
-  showToastInbox('🔍 답변 컴플라이언스 검사 중...');
-  setTimeout(function(){ showToastInbox('✓ 컴플라이언스 통과 — 위반 표현 없음'); },1500);
+  showToastInbox('🔍 컴플라이언스 검사 중...');
+  setTimeout(function(){ showToastInbox('✓ 통과 — 위반 표현 없음'); },1500);
 }
 </script>
 <script src="../js/crm_inbox.js"></script>
