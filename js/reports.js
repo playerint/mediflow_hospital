@@ -47,7 +47,6 @@ new Chart(document.getElementById('lineAuto'),{type:'doughnut',
 });
 
 // 채널별 문의 Bar
-new Chart(document.getElementById('channelChart'),{type:'bar',
-  data:{labels:['LINE','상담폼','전화'],datasets:[{data:[12,7,4],backgroundColor:['#0D9488','#2563EB','#6D28D9'],borderRadius:6}]},
+new Chart(document.getElementById('channelChart'),]},
   options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:11},color:'#9CA3AF'}},y:{display:false,beginAtZero:true}}}
 });
