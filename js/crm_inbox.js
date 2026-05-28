@@ -123,7 +123,7 @@ function selectPatient(id) {
   document.getElementById('d-meta').textContent = p.ch + ' · ' + p.msgs[0].time + (p.elapsed ? ' · ' + p.elapsed + ' 경과' : '');
   var pbProc = document.getElementById('pb-proc'); if(pbProc) pbProc.textContent = p.proc;
   var pbCh   = document.getElementById('pb-ch');   if(pbCh)   pbCh.textContent = p.ch;
-  var pbEl   = document.getElementById('pb-el');
+  var pbEl   = document.getElementById('rp-el');
   if(pbEl){
     var elapsedLabels = {new: p.elapsed || '—', consulting:'응대 중', booked:'예약 완료', closed:'종료'};
     var elapsedColors = {new: p.elapsed ? 'var(--red)' : 'var(--gray-400)', consulting:'var(--green)', booked:'var(--blue)', closed:'var(--gray-400)'};
