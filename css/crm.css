@@ -92,3 +92,7 @@
 /* 인박스 태그 — dot 없이 텍스트만 */
 .inq-tags .tag::before { display:none; }
 .inq-tags .tag { gap:0; }
+
+/* ── 3열 CRM 레이아웃 ── */
+.layout-crm-3col{display:grid;grid-template-columns:300px 1fr 280px;gap:12px;height:calc(100vh - 200px);}
+.right-panel{background:#fff;border:1px solid var(--gray-200);border-radius:var(--rl);display:flex;flex-direction:column;overflow-y:auto;}
