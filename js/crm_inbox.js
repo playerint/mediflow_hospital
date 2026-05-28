@@ -211,28 +211,7 @@ function toggleTranslation() {
 }
 
 // ── AI 초안 한→일 번역 입력 ──────────────────────────────────────
-function onKoInput() {
-  const koVal = document.getElementById('draft-text-ko').value;
-  const jaEl  = document.getElementById('draft-text-ja');
-  // 시뮬레이션: 한국어 → 일본어 (실제는 AI Agent API 호출)
-  jaEl.style.background = '#FFF9C4';
-  clearTimeout(window._translateTimer);
-  window._translateTimer = setTimeout(function() {
-    // 간단 더미 번역 시뮬레이션
-    const jaMap = {
-      '안녕하세요': 'こんにちは', '올래성형외과': 'オーレ整形外科',
-      '감사합니다': 'ありがとうございます', '예약': 'ご予約',
-      '상담': 'カウンセリング', '무료': '無料', '다운타임': 'ダウンタイム',
-    };
-    let translated = koVal;
-    Object.keys(jaMap).forEach(function(k) {
-      translated = translated.replace(new RegExp(k, 'g'), jaMap[k]);
-    });
-    jaEl.value = translated;
-    jaEl.style.background = '#F0FDF4';
-    setTimeout(function(){ jaEl.style.background = ''; }, 1000);
-  }, 800);
-}
+
 
 // ── 발송 ─────────────────────────────────────────────────────────
 function sendMsg() {
@@ -260,6 +239,43 @@ function setFilter(f, btn) {
 }
 function filterList(v) { renderList(curFilter, v); }
 
+
+/* ══════════════════════════════════════════════════════
+   번역 함수 — 현재: MyMemory API (무료)
+   추후 Claude API로 교체 시 translateKoToJa 함수만 수정
+══════════════════════════════════════════════════════ */
+function translateKoToJa(text, callback) {
+  if (!text || !text.trim()) { callback(''); return; }
+  var url = 'https://api.mymemory.translated.net/get?q='
+    + encodeURIComponent(text)
+    + '&langpair=ko|ja';
+  fetch(url)
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var result = d.responseData && d.responseData.translatedText
+        ? d.responseData.translatedText
+        : '';
+      callback(result);
+    })
+    .catch(function(){ callback(''); });
+}
+
+/* 번역 디바운스 타이머 */
+var _translateTimer = null;
+function onKoInput() {
+  var koEl = document.getElementById('draft-text-ko');
+  var jaEl = document.getElementById('draft-text-ja');
+  if (!koEl || !jaEl) return;
+  jaEl.value = '번역 중...';
+  jaEl.style.color = 'var(--gray-400)';
+  clearTimeout(_translateTimer);
+  _translateTimer = setTimeout(function() {
+    translateKoToJa(koEl.value, function(result) {
+      jaEl.value = result;
+      jaEl.style.color = '';
+    });
+  }, 600); // 600ms 디바운스
+}
 function regenDraft() {
   const koEl = document.getElementById('draft-text-ko');
   const jaEl = document.getElementById('draft-text-ja');
