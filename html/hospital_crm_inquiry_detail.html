@@ -42,8 +42,6 @@
 <script src="../js/crm_inquiry.js"></script>
 <script>
 function showToast(msg,type){var e=document.getElementById('__toast');if(e)e.remove();var bg=type==='success'?'#059669':type==='error'?'#DC2626':'#0D1B3E';var t=document.createElement('div');t.id='__toast';t.style.cssText='position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:11px 22px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;white-space:nowrap';t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(function(){t.remove();},300);},2500);}
-function exportCSV(type){showToast('📥 CSV 파일을 다운로드합니다...','');setTimeout(function(){var a=document.createElement('a');a.href='data:text/csv;charset=utf-8,%EF%BB%BF날짜,채널,환자명,내용,상태
-5/22,LINE,야마다 사오리,二重整形について,완료
-5/22,LINE,스즈키 미카,料金を教えてください,대기';a.download='inquiry_export.csv';a.click();showToast('✓ CSV 다운로드 완료','success');},800);}
+function exportCSV(type){showToast('📥 CSV 파일을 다운로드합니다...','');setTimeout(function(){var a=document.createElement('a');a.href='data:text/csv;charset=utf-8,%EF%BB%BF' + encodeURIComponent('날짜,채널,환자명,내용,상태\n5/22,LINE,야마다 사오리,二重整形について,완료\n5/22,LINE,스즈키 미카,料金を教えてください,대기');a.download='inquiry_export.csv';a.click();showToast('✓ CSV 다운로드 완료','success');},800);}
 </script>
 </body></html>
