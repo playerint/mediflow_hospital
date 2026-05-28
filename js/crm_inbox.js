@@ -46,6 +46,28 @@ const patients = [
      {from:'patient', ja:'鼻整形で内院しました。ありがとうございました！', ko:'코 성형으로 내원했습니다. 감사했습니다!', time:'5/10'},
    ],
    draft:{ja:'', ko:''}},
+  // ── Instagram 유입 환자 ──
+  {id:6, name:'하야시 유이', nameJa:'林 結衣', init:'하야', bg:'#FCE7F3', tc:'#9D174D',
+   proc:'쌍꺼풀', ch:'Instagram', chColor:'#E1306C', status:'new', statusLabel:'신규', elapsed:'30분', unread:true,
+   msgs:[
+     {from:'patient', ja:'インスタのビフォーアフターを見て気になりました！二重整形の料金を教えてください😊', ko:'인스타 B/A 보고 궁금해졌어요! 쌍꺼풀 가격 알려주세요😊', time:'오늘 14:52'},
+     {from:'ai',      ja:'ご連絡ありがとうございます🌸 埋没法は₩400,000〜、切開法は₩800,000〜となります。無料カウンセリングもございます！', ko:'연락 주셔서 감사합니다🌸 매몰법 ₩400,000~, 절개법 ₩800,000~ 입니다. 무료 상담도 있어요!', time:'오늘 14:52'},
+   ]},
+  {id:7, name:'오가와 사키', nameJa:'小川 咲', init:'오가', bg:'#FDF4FF', tc:'#7E22CE',
+   proc:'코 필러', ch:'Instagram', chColor:'#E1306C', status:'consulting', statusLabel:'상담중', elapsed:null, unread:false,
+   msgs:[
+     {from:'patient', ja:'鼻のフィラーに興味があります。ダウンタイムはどのくらいですか？', ko:'코 필러에 관심 있어요. 다운타임이 얼마나 돼요?', time:'어제 20:11'},
+     {from:'ai',      ja:'鼻フィラーのダウンタイムは1〜3日程度です。お仕事されながらでも施術可能ですよ！', ko:'코 필러 다운타임은 1~3일 정도예요. 출근하면서 시술 가능해요!', time:'어제 20:12'},
+   ]},
+  {id:8, name:'마츠이 노노카', nameJa:'松井 乃々花', init:'마츠', bg:'#FFF7ED', tc:'#C2410C',
+   proc:'윤곽', ch:'Instagram', chColor:'#E1306C', status:'booked', statusLabel:'예약완료', elapsed:null, unread:false,
+   msgs:[
+     {from:'patient', ja:'輪郭整形について詳しく教えてもらえますか？', ko:'윤곽 성형에 대해 자세히 알려주세요.', time:'5/20 19:44'},
+     {from:'ai',      ja:'輪郭整形には小顔手術、エラ削り、顎形成などがあります。', ko:'윤곽 성형에는 소안면, 광대축소, 턱 성형 등이 있어요.', time:'5/20 19:45'},
+     {from:'patient', ja:'カウンセリング予約したいです！', ko:'상담 예약하고 싶어요!', time:'5/20 20:01'},
+     {from:'ai',      ja:'6月3日(火)14:00はいかがでしょうか？', ko:'6월 3일(화) 14:00 어떠세요?', time:'5/20 20:02'},
+   ]},
+
 ];
 
 const statusColors = {
