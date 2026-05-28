@@ -215,20 +215,27 @@ function toggleTranslation() {
 
 // ── 발송 ─────────────────────────────────────────────────────────
 function sendMsg() {
-  const koTxt = document.getElementById('draft-text-ko').value;
-  const jaTxt = document.getElementById('draft-text-ja').value;
-  if (!jaTxt.trim()) return;
+  var koTxt = document.getElementById('draft-text-ko').value;
+  var jaTxt = document.getElementById('draft-text-ja').value;
+  if (!jaTxt.trim()) { showToastInbox('일본어 발송 내용을 입력해주세요.', 'error'); return; }
 
-  const p = patients[curId];
+  var p = patients[curId];
   p.msgs.push({ from:'staff', ja: jaTxt, ko: koTxt || jaTxt, time:'지금' });
   p.unread = false;
-  p.draft = { ja:'', ko:'' };
 
   renderMessages(p);
-  document.getElementById('ai-draft').style.display = 'none';
 
-  // 성공 토스트
-  if (typeof showToast === 'function') showToast('✓ LINE으로 발송되었습니다.', 'success');
+  // 입력창 초기화 (폼은 유지)
+  var koEl = document.getElementById('draft-text-ko');
+  var jaEl = document.getElementById('draft-text-ja');
+  if (koEl) koEl.value = '';
+  if (jaEl) jaEl.value = '';
+
+  // AI 코칭 추천 답변 선택 해제
+  document.querySelectorAll('.ai-suggest-item').forEach(function(e){ e.classList.remove('selected'); });
+
+  showToastInbox('✓ LINE으로 발송되었습니다.', 'success');
+  renderList(curFilter, '');
 }
 
 function setFilter(f, btn) {
