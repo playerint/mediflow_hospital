@@ -175,7 +175,7 @@
             <div id="rp-history-wrap"></div>
             <div class="pc-action-row" style="align-items:stretch">
               <button class="btn" style="flex:1;justify-content:center;font-size:11px;white-space:nowrap;height:32px" onclick="openMemo()">📝 메모</button>
-              <button class="btn" style="flex:1;justify-content:center;font-size:11px" id="fav-btn" onclick="toggleFavorite()">⭐ 즐겨찾기</button>
+              
               <button class="btn btn-primary" style="flex:1;justify-content:center;font-size:11px;white-space:nowrap;height:32px" id="rp-status-btn" onclick="changeStatus()">상담중으로</button>
             </div>
           </div>
@@ -471,29 +471,6 @@ function openMemo() {
    즐겨찾기 (localStorage)
 ──────────────────────────────────────────────── */
 var favorites = JSON.parse(localStorage.getItem('crm_favorites') || '[]');
-function toggleFavorite() {
-  var p = patients[curId];
-  var idx = favorites.indexOf(p.id);
-  if(idx === -1){
-    favorites.push(p.id);
-    showToastInbox('⭐ ' + p.name + '님을 즐겨찾기에 추가했습니다.', 'success');
-  } else {
-    favorites.splice(idx, 1);
-    showToastInbox('★ ' + p.name + '님을 즐겨찾기에서 제거했습니다.', '');
-  }
-  localStorage.setItem('crm_favorites', JSON.stringify(favorites));
-  updateFavBtn();
-  renderList(curFilter, '');
-}
-function updateFavBtn() {
-  var btn = document.getElementById('fav-btn');
-  if(!btn) return;
-  var isFav = favorites.indexOf(patients[curId].id) !== -1;
-  btn.textContent = isFav ? '⭐ 즐겨찾기' : '☆ 즐겨찾기';
-  btn.style.background = isFav ? '#FEF9C3' : '';
-  btn.style.borderColor = isFav ? '#EAB308' : '';
-  btn.style.color = isFav ? '#92400E' : '';
-}
 
 /* ────────────────────────────────────────────────
    예약으로 이동 (환자 정보 파라미터 전달)
