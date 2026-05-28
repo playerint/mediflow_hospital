@@ -19,7 +19,7 @@ funnelData.forEach((f,i)=>{
   frEl.innerHTML+=`<div class="funnel-col"><div class="funnel-num">${f.n.toLocaleString()}</div><div class="funnel-lbl">${f.lbl}</div><div class="funnel-bar" style="background:${f.color}"></div><div class="funnel-rate">${rate}</div></div>`;
 });
 
-const chData=[{name:'LINE',cnt:12,pct:52,color:'#0D9488'},{name:'상담 폼',cnt:7,pct:30,color:'#2563EB'},];
+const chData=[{name:'LINE',cnt:12,pct:52,color:'#0D9488'},];
 const chEl=document.getElementById('ch-rows');
 chData.forEach(c=>{
   chEl.innerHTML+=`<div class="ch-row"><div class="ch-dot" style="background:${c.color}"></div><div class="ch-name">${c.name}</div><div class="ch-bar-wrap"><div class="ch-bar" style="width:${c.pct}%;background:${c.color}"></div></div><div class="ch-cnt">${c.cnt}건</div><div class="ch-pct">${c.pct}%</div></div>`;
