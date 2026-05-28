@@ -76,7 +76,7 @@
       <span class="topbar-title">문의·상담 CRM</span>
     </div>
     <div class="topbar-right">
-      <button class="btn" onclick="location.href='hospital_crm_booking.html'">📅 예약 관리</button>
+      <button class="btn" onclick="goToBooking()">📅 예약 관리</button>
       <button class="btn btn-primary" onclick="location.href='hospital_funnel.html'">⚡ 리타게팅</button>
     </div>
   </div>
@@ -118,7 +118,7 @@
             </div>
           </div>
           <div class="dh-actions">
-            <button class="btn" style="font-size:12px" onclick="location.href='hospital_crm_booking.html'">📅 예약 전환</button>
+            <button class="btn" style="font-size:12px" onclick="goToBooking()">📅 예약 전환</button>
             <button class="btn btn-primary" style="font-size:12px" id="status-btn" onclick="changeStatus()">상담중으로 변경</button>
           </div>
         </div>
@@ -164,7 +164,7 @@
                 <div class="pc-name-ja" id="rp-name-ja">山田 沙織</div>
                 <div id="rp-status-badge"></div>
               </div>
-              <button class="btn" style="font-size:11px;padding:4px 10px;flex-shrink:0" onclick="location.href='hospital_crm_booking.html'">📅 예약</button>
+              <button class="btn" style="font-size:11px;padding:4px 10px;flex-shrink:0" onclick="goToBooking()">📅 예약</button>
             </div>
             <div class="pc-grid">
               <div class="pc-item"><div class="pc-item-label">관심 시술</div><div class="pc-item-value" id="rp-proc">쌍꺼풀</div></div>
@@ -388,6 +388,18 @@ function checkAnswerCompliance(){
   setTimeout(function(){ showToastInbox('✓ 통과 — 위반 표현 없음'); },1500);
 }
 </script>
+
+function goToBooking() {
+  var p = patients[curId];
+  var params = new URLSearchParams({
+    name:   p.name,
+    nameJa: p.nameJa,
+    proc:   p.proc,
+    ch:     p.ch,
+    id:     p.id
+  });
+  location.href = 'hospital_crm_booking_new.html?' + params.toString();
+}
 <script src="../js/crm_inbox.js"></script>
 </body>
 </html>
