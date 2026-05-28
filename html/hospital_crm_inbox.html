@@ -383,12 +383,6 @@ function copyText(text) {
   navigator.clipboard.writeText(text).then(function(){ showToastInbox('✓ 복사되었습니다.'); });
 }
 
-function checkAnswerCompliance(){
-  showToastInbox('🔍 컴플라이언스 검사 중...');
-  setTimeout(function(){ showToastInbox('✓ 통과 — 위반 표현 없음'); },1500);
-}
-</script>
-
 function goToBooking() {
   var p = patients[curId];
   var params = new URLSearchParams({
@@ -400,6 +394,11 @@ function goToBooking() {
   });
   location.href = 'hospital_crm_booking_new.html?' + params.toString();
 }
+function checkAnswerCompliance(){
+  showToastInbox('🔍 컴플라이언스 검사 중...');
+  setTimeout(function(){ showToastInbox('✓ 통과 — 위반 표현 없음'); },1500);
+}
+</script>
 <script src="../js/crm_inbox.js"></script>
 </body>
 </html>
