@@ -504,6 +504,10 @@ function updateRightPanel(p) {
   if(rb) rb.innerHTML = '<span class="pc-badge" style="background:'+s.bg+';color:'+s.tc+'">'+s.label+'</span>';
   var hw = document.getElementById('rp-history-wrap'); if(hw) hw.innerHTML = '';
 
+  // 답변 재생성 버튼 — 종료 시 숨김
+  var regenBtn = document.getElementById('regen-btn');
+  if (regenBtn) regenBtn.style.display = p.status === 'closed' ? 'none' : '';
+
   // 종료 상태면 코칭 대신 종료 메시지
   if (p.status === 'closed') {
     var aiEl = document.getElementById('ai-suggests');
