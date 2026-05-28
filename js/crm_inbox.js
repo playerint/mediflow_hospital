@@ -240,3 +240,153 @@ function regenDraft() {
 
 renderList('all', '');
 selectPatient(0);
+
+
+/* ══════════════════════════════════════════════════════
+   우측 패널 통합 기능 (patients 데이터 로드 후 실행)
+══════════════════════════════════════════════════════ */
+
+/* ── 토스트 ── */
+function showToastInbox(msg, type) {
+  var e = document.getElementById('inbox-toast'); if(e) e.remove();
+  var bg = type==='success' ? '#059669' : type==='error' ? '#DC2626' : '#0D1B3E';
+  var t = document.createElement('div'); t.id='inbox-toast';
+  t.style.cssText='position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:11px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:2000;white-space:nowrap';
+  t.textContent=msg; document.body.appendChild(t);
+  setTimeout(function(){ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(function(){ t.remove(); },300); },2500);
+}
+
+/* ── 모달 ── */
+function openModal(title, bodyHtml, onConfirm, confirmLabel, confirmClass) {
+  var e = document.getElementById('__modal'); if(e) e.remove();
+  var m = document.createElement('div'); m.id='__modal';
+  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center';
+  m.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.2)">'
+    +'<div style="font-size:16px;font-weight:700;color:#0D1B3E;margin-bottom:14px">'+title+'</div>'
+    +'<div style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:20px">'+bodyHtml+'</div>'
+    +'<div style="display:flex;gap:8px;justify-content:flex-end">'
+    +'<button class="btn" onclick="closeModal()">취소</button>'
+    +'<button class="btn '+(confirmClass||'btn-primary')+'" id="__modal-confirm">'+(confirmLabel||'확인')+'</button>'
+    +'</div></div>';
+  m.addEventListener('click',function(e){ if(e.target===m) closeModal(); });
+  document.body.appendChild(m);
+  document.getElementById('__modal-confirm').addEventListener('click',function(){ closeModal(); if(typeof onConfirm==='function') onConfirm(); });
+}
+function closeModal(){ var m=document.getElementById('__modal'); if(m) m.remove(); }
+
+/* ── 예약으로 이동 ── */
+function goToBooking() {
+  var p = patients[curId];
+  if(!p){ showToastInbox('환자를 먼저 선택해주세요.','error'); return; }
+  var params = new URLSearchParams({
+    name:   p.name,
+    nameJa: p.nameJa || '',
+    proc:   p.proc   || '',
+    ch:     p.ch     || 'LINE',
+    id:     p.id
+  });
+  location.href = 'hospital_crm_booking_new.html?' + params.toString();
+}
+
+/* ── 상태 변경 ── */
+function changeStatus() {
+  var p = patients[curId];
+  if(!p) return;
+  var flow   = {new:'consulting', consulting:'booked', booked:'closed', closed:'new'};
+  var labels = {new:'신규', consulting:'상담중', booked:'예약완료', closed:'종료'};
+  var colors = {new:'var(--gray-400)', consulting:'var(--green)', booked:'var(--blue)', closed:'var(--gray-500)'};
+  p.status = flow[p.status] || 'consulting';
+  p.statusLabel = labels[p.status];
+
+  var btn   = document.getElementById('status-btn');
+  var rpBtn = document.getElementById('rp-status-btn');
+  if(btn){   btn.textContent=labels[p.status]+' ✓'; btn.style.background=colors[p.status]; btn.style.borderColor=colors[p.status]; }
+  if(rpBtn){ rpBtn.textContent=labels[p.status];    rpBtn.style.background=colors[p.status]; rpBtn.style.borderColor=colors[p.status]; }
+
+  if(typeof updateRightPanel === 'function') updateRightPanel(p);
+  renderList(curFilter, '');
+  showToastInbox('✓ 상태가 ' + labels[p.status] + '(으)로 변경되었습니다.', 'success');
+}
+
+/* ── 메모 ── */
+var memoStore = {};
+function openMemo() {
+  var p = patients[curId];
+  if(!p) return;
+  var saved = memoStore[p.id] || '';
+  openModal(
+    '📝 메모 — ' + p.name,
+    '<textarea id="memo-input" rows="5" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:13px;font-family:inherit;resize:none;outline:none;line-height:1.7" onfocus="this.style.borderColor='#2563EB'" onblur="this.style.borderColor='#E5E7EB'">' + saved + '</textarea>',
+    function(){
+      var val = document.getElementById('memo-input');
+      if(val) memoStore[p.id] = val.value;
+      showToastInbox('✓ 메모가 저장되었습니다.', 'success');
+    },
+    '저장', 'btn-primary'
+  );
+  setTimeout(function(){ var el=document.getElementById('memo-input'); if(el){el.focus();el.setSelectionRange(el.value.length,el.value.length);} },100);
+}
+
+/* ── 즐겨찾기 ── */
+var favorites = [];
+try { favorites = JSON.parse(localStorage.getItem('crm_favorites') || '[]'); } catch(e){}
+function toggleFavorite() {
+  var p = patients[curId];
+  if(!p) return;
+  var idx = favorites.indexOf(p.id);
+  if(idx === -1){
+    favorites.push(p.id);
+    showToastInbox('⭐ ' + p.name + '님을 즐겨찾기에 추가했습니다.', 'success');
+  } else {
+    favorites.splice(idx,1);
+    showToastInbox('★ ' + p.name + '님을 즐겨찾기에서 제거했습니다.', '');
+  }
+  try { localStorage.setItem('crm_favorites', JSON.stringify(favorites)); } catch(e){}
+  updateFavBtn();
+  renderList(curFilter, '');
+}
+function updateFavBtn() {
+  var btn = document.getElementById('fav-btn');
+  if(!btn || !patients[curId]) return;
+  var isFav = favorites.indexOf(patients[curId].id) !== -1;
+  btn.innerHTML = (isFav ? '⭐' : '☆') + ' 즐겨찾기';
+  btn.style.background   = isFav ? '#FEF9C3' : '';
+  btn.style.borderColor  = isFav ? '#EAB308' : '';
+  btn.style.color        = isFav ? '#92400E' : '';
+}
+
+/* ── 탭 전환 ── */
+function setRpTab(tab, btn) {
+  document.querySelectorAll('.rp-tab').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  ['ai','manual','trans'].forEach(function(t){
+    var el = document.getElementById('rp-tab-'+t);
+    if(el) el.style.display = t===tab ? '' : 'none';
+  });
+}
+
+/* ── 답변 재생성 ── */
+function regenSuggests() {
+  var el = document.getElementById('ai-suggests');
+  if(!el) return;
+  el.style.opacity = '0.4';
+  el.style.transition = 'opacity .3s';
+  showToastInbox('🤖 AI 추천 답변 재생성 중...');
+  setTimeout(function(){
+    el.style.opacity = '1';
+    if(typeof renderAISuggests === 'function') renderAISuggests(patients[curId]);
+    showToastInbox('✓ AI 추천 답변이 재생성되었습니다.', 'success');
+  }, 1200);
+}
+
+/* ── 번역 복사 ── */
+function copyText(text) {
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(function(){ showToastInbox('✓ 복사되었습니다.', 'success'); });
+  } else {
+    var ta = document.createElement('textarea'); ta.value=text;
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToastInbox('✓ 복사되었습니다.', 'success');
+  }
+}
