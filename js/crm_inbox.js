@@ -130,14 +130,13 @@ function selectPatient(id) {
 
   // AI 초안 — 상태 기준: 신규/상담중만 표시
   const da = document.getElementById('ai-draft');
-  const showDraft = (p.status === 'new' || p.status === 'consulting');
+  const showDraft = ['new', 'consulting'].indexOf(p.status) !== -1;
   if (showDraft) {
-    // draft 데이터가 있으면 미리 채움
-    if (p.draft && p.draft.ko) document.getElementById('draft-text-ko').value = p.draft.ko;
-    else document.getElementById('draft-text-ko').value = '';
-    if (p.draft && p.draft.ja) document.getElementById('draft-text-ja').value = p.draft.ja;
-    else document.getElementById('draft-text-ja').value = '';
-    da.style.display = 'block';
+    var koEl = document.getElementById('draft-text-ko');
+    var jaEl = document.getElementById('draft-text-ja');
+    if (koEl) koEl.value = (p.draft && p.draft.ko) ? p.draft.ko : '';
+    if (jaEl) jaEl.value = (p.draft && p.draft.ja) ? p.draft.ja : '';
+    da.style.display = '';
   } else {
     da.style.display = 'none';
   }
