@@ -246,48 +246,7 @@ function setRpTab(tab, btn) {
 }
 
 /* ── 우측 패널 업데이트 ── */
-function updateRightPanel(p) {
-  // 프로필 카드
-  var av = document.getElementById('rp-avatar');
-  av.textContent = p.init; av.style.background = p.bg; av.style.color = p.tc;
-  document.getElementById('rp-name').textContent = p.name;
-  document.getElementById('rp-name-ja').textContent = p.nameJa;
-  document.getElementById('rp-proc').textContent = p.proc;
-  document.getElementById('rp-ch').textContent = p.ch;
-  var rpElEl = document.getElementById('rp-el');
-  if(rpElEl){
-    var elLabels = {new: p.elapsed || '—', consulting:'응대 중', booked:'예약 완료', closed:'종료'};
-    var elColors = {new: p.elapsed ? 'var(--red)' : 'var(--gray-400)', consulting:'var(--green)', booked:'var(--blue)', closed:'var(--gray-400)'};
-    rpElEl.textContent = elLabels[p.status] || '—';
-    rpElEl.style.color = elColors[p.status] || 'var(--gray-400)';
-  }
 
-  // 방문 이력
-  var historyMap = {new:'첫 방문', consulting:'상담 이력 있음', booked:'예약 완료', closed:'시술 완료'};
-  document.getElementById('rp-visit').textContent = historyMap[p.status] || '첫 방문';
-
-  // 상태 배지
-  var sc = {new:{bg:'#FEF2F2',tc:'#991B1B',label:'신규'}, consulting:{bg:'#F3F4F6',tc:'#374151',label:'상담중'}, booked:{bg:'#D1FAE5',tc:'#065F46',label:'예약완료'}, closed:{bg:'#F3F4F6',tc:'#6B7280',label:'종료'}};
-  var s = sc[p.status] || sc.new;
-  document.getElementById('rp-status-badge').innerHTML = '<span class="pc-badge" style="background:'+s.bg+';color:'+s.tc+'">'+s.label+'</span>';
-
-  // 상담 이력
-  var hw = document.getElementById('rp-history-wrap');
-  if (p.msgs && p.msgs.length > 1) {
-    hw.innerHTML = '<div style="font-size:11px;font-weight:600;color:var(--gray-400);letter-spacing:.04em;margin-bottom:6px">대화 이력 '+p.msgs.length+'건</div>'
-      + p.msgs.slice(-2).map(function(m){
-        var isP = m.from==='patient';
-        return '<div class="pc-history-item"><div class="pc-history-dot" style="background:'+(isP?'var(--gray-400)':'var(--blue)')+'"></div><div style="flex:1;min-width:0"><div style="font-size:11px;color:var(--gray-700);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(isP?'👤 ':'✉ ')+m.ko+'</div><div style="font-size:10px;color:var(--gray-400)">'+ m.time+'</div></div></div>';
-      }).join('');
-  } else { hw.innerHTML = ''; }
-
-  // AI 추천 답변
-  renderAISuggests(p);
-  // 시술 매뉴얼
-  renderManual(p);
-  // 번역
-  renderTrans(p);
-}
 
 /* ── AI 추천 답변 ── */
 var suggestData = {
