@@ -126,20 +126,8 @@ function selectPatient(id) {
   var pbEl   = document.getElementById('pb-el');
   if(pbEl){ pbEl.textContent = p.elapsed || '—'; pbEl.style.color = p.elapsed ? 'var(--red)' : 'var(--gray-700)'; }
 
-  // ── 상태 버튼 완전 초기화 (매번 새로 세팅) ──
-  var isClosed = p.status === 'closed';
-  var nextLabels = {new:'상담중으로 변경', consulting:'예약완료로 변경', booked:'종료로 변경', closed:'종료됨'};
-  var statusBtn  = document.getElementById('status-btn');
-  var rpStatusBtn = document.getElementById('rp-status-btn');
-  [statusBtn, rpStatusBtn].forEach(function(btn) {
-    if (!btn) return;
-    btn.textContent  = nextLabels[p.status] || '상태 변경';
-    btn.disabled     = isClosed;
-    btn.className    = isClosed ? 'btn' : 'btn btn-primary';
-    btn.style.cssText = isClosed
-      ? 'opacity:0.5;cursor:not-allowed;'
-      : '';
-  });
+  // ── 상태 버튼 초기화 ──
+  applyStatusBtn(p);
 
   // ── 메시지 렌더링 ──
   renderMessages(p);
@@ -334,6 +322,29 @@ function goToBooking() {
 }
 
 /* ── 상태 변경 ── */
+
+/* ── 버튼 상태 통합 함수 ── */
+function applyStatusBtn(p) {
+  var isClosed = p.status === 'closed';
+  var cfg = {
+    new:        { label:'상담중으로 변경',  cls:'btn btn-primary', color:'',              opacity:'' },
+    consulting: { label:'예약완료로 변경',  cls:'btn btn-success', color:'var(--green)',   opacity:'' },
+    booked:     { label:'종료로 변경',      cls:'btn btn-primary', color:'',              opacity:'' },
+    closed:     { label:'종료됨',           cls:'btn',             color:'var(--gray-300)', opacity:'0.55' },
+  };
+  var c = cfg[p.status] || cfg.new;
+  ['status-btn', 'rp-status-btn'].forEach(function(id) {
+    var btn = document.getElementById(id);
+    if (!btn) return;
+    btn.textContent      = c.label;
+    btn.className        = c.cls;
+    btn.disabled         = isClosed;
+    btn.style.cursor     = isClosed ? 'not-allowed' : '';
+    btn.style.opacity    = c.opacity;
+    btn.style.background = c.color;
+    btn.style.borderColor= c.color;
+  });
+}
 function changeStatus() {
   var p = patients[curId];
   if(!p) return;
@@ -344,30 +355,7 @@ function changeStatus() {
   p.status = flow[p.status] || 'consulting';
   p.statusLabel = labels[p.status];
 
-  var btn   = document.getElementById('status-btn');
-  var rpBtn = document.getElementById('rp-status-btn');
-  var nextLabels = {new:'상담중으로 변경', consulting:'예약완료로 변경', booked:'종료로 변경', closed:'종료됨'};
-  var isClosed = p.status === 'closed';
-  if(btn){
-    btn.textContent = nextLabels[p.status] || '상태 변경';
-    btn.style.background = isClosed ? 'var(--gray-300)' : '';
-    btn.style.borderColor = isClosed ? 'var(--gray-300)' : '';
-    btn.style.color = isClosed ? '#fff' : '';
-    btn.style.cursor = isClosed ? 'not-allowed' : '';
-    btn.style.opacity = isClosed ? '0.6' : '';
-    btn.disabled = isClosed;
-    btn.className = isClosed ? 'btn' : 'btn btn-primary';
-  }
-  if(rpBtn){
-    rpBtn.textContent = nextLabels[p.status] || '상태 변경';
-    rpBtn.style.background = isClosed ? 'var(--gray-300)' : '';
-    rpBtn.style.borderColor = isClosed ? 'var(--gray-300)' : '';
-    rpBtn.style.color = isClosed ? '#fff' : '';
-    rpBtn.style.cursor = isClosed ? 'not-allowed' : '';
-    rpBtn.style.opacity = isClosed ? '0.6' : '';
-    rpBtn.disabled = isClosed;
-    rpBtn.className = isClosed ? 'btn' : 'btn btn-primary';
-  }
+  applyStatusBtn(p);
 
   if(typeof updateRightPanel === 'function') updateRightPanel(p);
   renderList(curFilter, '');
