@@ -47,6 +47,11 @@ new Chart(document.getElementById('lineAuto'),{type:'doughnut',
 });
 
 // 채널별 문의 Bar
-new Chart(document.getElementById('channelChart'),]},
+new Chart(document.getElementById('channelChart'),{
+  type:'bar',
+  data:{
+    labels:['LINE'],
+    datasets:[{data:[19],backgroundColor:['#2563EB'],borderRadius:6,borderSkipped:false}]
+  },
   options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:11},color:'#9CA3AF'}},y:{display:false,beginAtZero:true}}}
 });
