@@ -3,7 +3,7 @@
 .sn-item{display:flex;align-items:center;gap:8px;padding:10px 14px;font-size:13px;color:var(--gray-500);cursor:pointer;border-bottom:1px solid var(--gray-100);transition:background .1s;}
 .sn-item:last-child{border-bottom:none;}
 .sn-item:hover{background:var(--gray-50);color:var(--gray-700);}
-.sn-item.active{background:var(--teal-l);color:var(--teal-d);font-weight:500;}
+.sn-item.active{background:var(--navy-l);color:var(--navy);font-weight:600;border-left:3px solid var(--navy);}
 .field-group{margin-bottom:14px;}
 .field-group:last-child{margin-bottom:0;}
 .f-label{font-size:12px;font-weight:500;color:var(--gray-700);margin-bottom:6px;}
@@ -14,14 +14,25 @@
 .f-row-label{font-size:13px;color:var(--gray-900);font-weight:500;}
 .f-row-sub{font-size:11px;color:var(--gray-400);margin-top:2px;}
 .av-upload{width:72px;height:72px;border-radius:50%;background:var(--gray-100);border:2px dashed var(--gray-300);display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;transition:all .2s;flex-shrink:0;}
-.av-upload:hover{border-color:var(--teal);background:var(--teal-l);}
+.av-upload:hover{border-color:var(--blue);background:var(--blue-l);}
 .m-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--gray-100);}
 .m-item:last-child{border-bottom:none;}
 .m-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;}
 .m-name{font-size:13px;font-weight:500;color:var(--gray-900);}
 .m-email{font-size:11px;color:var(--gray-400);}
 .m-role{font-size:11px;padding:2px 8px;border-radius:6px;margin-left:auto;}
-.plan-badge{font-size:11px;padding:3px 10px;border-radius:6px;background:var(--purple-l);color:#4C1D95;font-weight:500;}
+.plan-badge{font-size:11px;padding:3px 10px;border-radius:6px;background:var(--navy-l);color:var(--navy);font-weight:500;}
 .danger-zone{border:1px solid #FCA5A5;border-radius:var(--rl);padding:16px 20px;background:var(--red-l);}
 .dz-title{font-size:13px;font-weight:600;color:var(--red);margin-bottom:8px;}
 .dz-desc{font-size:12px;color:#991B1B;margin-bottom:12px;}
+
+/* ── 설정 컨텐츠 카드 ── */
+.s-card{background:#fff;border:1px solid var(--gray-200);border-radius:var(--rl);overflow:hidden;}
+.s-section{padding:20px 24px;border-bottom:1px solid var(--gray-100);}
+.s-section:last-child{border-bottom:none;}
+.s-section-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:16px;display:flex;align-items:center;gap:6px;}
+.s-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gray-100);}
+.s-row:last-child{border-bottom:none;}
+.s-label{font-size:12px;font-weight:500;color:var(--gray-600);min-width:120px;}
+.s-input{flex:1;padding:7px 11px;border:1.5px solid var(--gray-200);border-radius:var(--r);font-size:13px;font-family:inherit;outline:none;color:var(--gray-800);background:#fff;max-width:320px;}
+.s-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.08);}
