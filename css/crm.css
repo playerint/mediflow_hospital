@@ -88,3 +88,7 @@
   white-space:nowrap;
   vertical-align:middle;
 }
+
+/* 인박스 태그 — dot 없이 텍스트만 */
+.inq-tags .tag::before { display:none; }
+.inq-tags .tag { gap:0; }
