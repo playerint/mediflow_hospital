@@ -197,8 +197,9 @@ function renderMessages(p) {
       if (m.ja) bubbleContent += '<div class="msg-ja-send">JP ' + m.ja + '</div>';
     }
 
-    var alignClass = isPatient ? 'msg-row in' : 'msg-row out';
-    return '<div class="' + alignClass + '">'
+    var alignClass = isPatient ? 'msg-row-in' : 'msg-row-out';
+    var rowStyle = isPatient ? 'display:flex;align-items:flex-start;gap:8px;margin-bottom:14px' : 'display:flex;align-items:flex-start;gap:8px;margin-bottom:14px;flex-direction:row-reverse';
+    return '<div style="' + rowStyle + '">'
       + avatarHtml
       + '<div>'
       + senderLabel
