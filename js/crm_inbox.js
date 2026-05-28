@@ -157,38 +157,51 @@ function selectPatient(id) {
 
 // ── 메시지 렌더링 (한국어 병기) ──────────────────────────────────
 function renderMessages(p) {
-  const ma = document.getElementById('msg-area');
-  ma.innerHTML = p.msgs.map(m => {
-    const isPatient = m.from === 'patient';
-    const isAI = m.from === 'ai';
-    const bubbleClass = isPatient ? 'msg-in' : (isAI ? 'msg-out ai' : 'msg-out');
+  var ma = document.getElementById('msg-area');
+  ma.innerHTML = p.msgs.map(function(m) {
+    var isPatient = m.from === 'patient';
+    var isAI      = m.from === 'ai';
+    var isStaff   = m.from === 'staff';
+    var bubbleClass = isPatient ? 'msg-in' : (isAI ? 'msg-out ai' : 'msg-out');
 
-    // 아바타 HTML
-    let avatarHtml;
+    // 아바타
+    var avatarHtml;
     if (isAI) {
-      avatarHtml = '<div class="msg-av-hana" title="AI はな">'
-        + '<div class="hana-badge-av">🌸</div>'
-        + '</div>';
+      avatarHtml = '<div class="msg-av-hana" title="AI はな"><div class="hana-badge-av">🌸</div></div>';
     } else if (isPatient) {
       avatarHtml = '<div class="msg-av-sm" style="background:' + p.bg + ';color:' + p.tc + '">' + p.init[0] + '</div>';
     } else {
-      avatarHtml = '<div class="msg-av-sm" style="background:#E1F5EE;color:#085041">나</div>';
+      // 담당자 — 로그인 사용자 이니셜
+      var user = (typeof getSession === 'function' && getSession()) ? getSession() : null;
+      var initials = user ? user.name.slice(0,1) : '나';
+      avatarHtml = '<div class="msg-av-sm" style="background:var(--navy-l);color:var(--navy);font-weight:700">' + initials + '</div>';
     }
 
-    // 말풍선 내용 — 환자는 일본어+한국어, 스탭/AI는 한국어+일본어
-    let bubbleContent = '';
+    // 발신자 이름 레이블
+    var senderLabel = '';
+    if (isAI) {
+      senderLabel = '<div class="hana-name">AI はな <span style="font-size:9px;background:#EEF2FF;color:var(--navy);padding:1px 5px;border-radius:4px;font-weight:400">자동응답</span></div>';
+    } else if (isStaff) {
+      var user2 = (typeof getSession === 'function' && getSession()) ? getSession() : null;
+      var staffName = user2 ? user2.name : '담당자';
+      senderLabel = '<div class="hana-name" style="color:var(--navy)">' + staffName + ' <span style="font-size:9px;background:#D1FAE5;color:#065F46;padding:1px 5px;border-radius:4px;font-weight:400">직접 발송</span></div>';
+    }
+
+    // 말풍선 내용
+    var bubbleContent = '';
     if (isPatient) {
-      bubbleContent = `<div class="msg-ja">${m.ja}</div>`
-        + (showKo ? `<div class="msg-ko-badge">🇰🇷 ${m.ko}</div>` : '');
+      bubbleContent = '<div class="msg-ja">' + m.ja + '</div>';
+      if (m.ko) bubbleContent += '<div class="msg-ko-badge">KR ' + m.ko + '</div>';
     } else {
-      bubbleContent = `<div class="msg-ko-send">${m.ko}</div>`
-        + `<div class="msg-ja-send">🇯🇵 ${m.ja}</div>`;
+      if (m.ko) bubbleContent += '<div class="msg-ko-send">' + m.ko + '</div>';
+      if (m.ja) bubbleContent += '<div class="msg-ja-send">JP ' + m.ja + '</div>';
     }
 
-    return '<div class="msg-row' + (!isPatient ? ' out' : '') + '">'
+    var alignClass = isPatient ? 'msg-row in' : 'msg-row out';
+    return '<div class="' + alignClass + '">'
       + avatarHtml
       + '<div>'
-      + (isAI ? '<div class="hana-name">AI はな</div>' : '')
+      + senderLabel
       + '<div class="msg-bubble ' + bubbleClass + '">' + bubbleContent + '</div>'
       + '<div class="msg-time">' + m.time + '</div>'
       + '</div>'
