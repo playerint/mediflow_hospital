@@ -24,7 +24,7 @@ const patients = [
    draft:{ja:'はじめまして。当院には日本語対応スタッフが常駐しております。', ko:'안녕하세요. 저희 병원에는 일본어 대응 스탭이 상주하고 있습니다.'}},
 
   {id:3, name:'사토 하루카', nameJa:'佐藤 春花', init:'사토', bg:'#E6F1FB', tc:'#0C447C',
-   proc:'윤곽', ch:'상담폼', chColor:'#2563EB', status:'consulting', statusLabel:'상담중', elapsed:'', unread:false,
+   proc:'윤곽', ch:'LINE', chColor:'#2563EB', status:'consulting', statusLabel:'상담중', elapsed:'', unread:false,
    msgs:[
      {from:'patient', ja:'輪郭整形に興味があります。', ko:'윤곽 성형에 관심이 있습니다.', time:'5/18'},
      {from:'staff',   ja:'当院では顎骨切り・頬骨縮小・エラボトックスなどをご提供しております。', ko:'저희 병원에서는 턱뼈절제·광대축소·에라보톡스 등을 제공하고 있습니다.', time:'5/18'},
