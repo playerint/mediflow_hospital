@@ -300,14 +300,37 @@ var langLabels = {
   'th':    { flag: '🇹🇭', name: '태국어',      mm: 'ko|th' },
 };
 
-function onLangChange() {
-  var sel = document.getElementById('lang-select');
-  if(!sel) return;
-  currentLang = sel.value;
-  var info = langLabels[currentLang] || langLabels['ja'];
-  // 라벨 업데이트
-  var lbl = document.getElementById('lang-label');
-  if(lbl) lbl.textContent = info.flag + ' ' + info.name + ' 발송';
+
+
+
+function toggleLangMenu() {
+  var menu = document.getElementById('lang-menu');
+  if(!menu) return;
+  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+  // 외부 클릭 시 닫기
+  if(menu.style.display === 'block') {
+    setTimeout(function(){
+      document.addEventListener('click', closeLangMenu, {once: true});
+    }, 0);
+  }
+}
+function closeLangMenu(e) {
+  var menu = document.getElementById('lang-menu');
+  var btn  = document.getElementById('lang-btn');
+  if(menu && !menu.contains(e.target) && e.target !== btn) {
+    menu.style.display = 'none';
+  }
+}
+function selectLang(code, flag, name) {
+  currentLang = code;
+  var flagEl = document.getElementById('lang-flag');
+  var nameEl = document.getElementById('lang-name');
+  var lbl    = document.getElementById('lang-label');
+  if(flagEl) flagEl.textContent = flag;
+  if(nameEl) nameEl.textContent = name;
+  if(lbl)    lbl.textContent = flag + ' ' + name + ' 발송';
+  var menu = document.getElementById('lang-menu');
+  if(menu) menu.style.display = 'none';
   // 입력창에 내용 있으면 즉시 재번역
   var koEl = document.getElementById('draft-text-ko');
   if(koEl && koEl.value.trim()) onKoInput();
