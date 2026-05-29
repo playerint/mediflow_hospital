@@ -224,17 +224,7 @@ function renderMessages(p) {
 }
 
 
-function toggleTranslation() {
-  showKo = !showKo;
-  const btn = document.getElementById('translate-toggle');
-  if (btn) {
-    btn.textContent = showKo ? '🇰🇷 번역 ON' : '🇯🇵 번역 OFF';
-    btn.style.background = showKo ? 'var(--blue-l)' : '#F3F4F6';
-    btn.style.borderColor = showKo ? 'var(--blue)' : '#E5E7EB';
-    btn.style.color = showKo ? 'var(--blue)' : '#6B7280';
-  }
-  renderMessages(patients[curId]);
-}
+
 
 // ── AI 초안 한→일 번역 입력 ──────────────────────────────────────
 
@@ -281,9 +271,11 @@ function filterList(v) { renderList(curFilter, v); }
 ══════════════════════════════════════════════════════ */
 function translateKoToJa(text, callback) {
   if (!text || !text.trim()) { callback(''); return; }
+  var lang = typeof currentLang !== 'undefined' ? currentLang : 'ja';
+  var pair = (langLabels && langLabels[lang]) ? langLabels[lang].mm : 'ko|ja';
   var url = 'https://api.mymemory.translated.net/get?q='
     + encodeURIComponent(text)
-    + '&langpair=ko|ja';
+    + '&langpair=' + pair;
   fetch(url)
     .then(function(r){ return r.json(); })
     .then(function(d){
@@ -297,6 +289,30 @@ function translateKoToJa(text, callback) {
 
 /* 번역 디바운스 타이머 */
 var _translateTimer = null;
+
+/* ── 발송 언어 선택 ── */
+var currentLang = 'ja';
+var langLabels = {
+  'ja':    { flag: '🇯🇵', name: '일본어',      mm: 'ko|ja' },
+  'zh-CN': { flag: '🇨🇳', name: '중국어 간체', mm: 'ko|zh-CN' },
+  'zh-TW': { flag: '🇹🇼', name: '중국어 번체', mm: 'ko|zh-TW' },
+  'en':    { flag: '🇬🇧', name: '영어',        mm: 'ko|en' },
+  'th':    { flag: '🇹🇭', name: '태국어',      mm: 'ko|th' },
+};
+
+function onLangChange() {
+  var sel = document.getElementById('lang-select');
+  if(!sel) return;
+  currentLang = sel.value;
+  var info = langLabels[currentLang] || langLabels['ja'];
+  // 라벨 업데이트
+  var lbl = document.getElementById('lang-label');
+  if(lbl) lbl.textContent = info.flag + ' ' + info.name + ' 발송';
+  // 입력창에 내용 있으면 즉시 재번역
+  var koEl = document.getElementById('draft-text-ko');
+  if(koEl && koEl.value.trim()) onKoInput();
+}
+
 function onKoInput() {
   var koEl = document.getElementById('draft-text-ko');
   var jaEl = document.getElementById('draft-text-ja');
