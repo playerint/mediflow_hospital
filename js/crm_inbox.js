@@ -342,6 +342,16 @@ function selectLang(code, flag, name) {
   var badgeEl = btn ? btn.querySelector('span[style*="border-radius:3px"]') : null;
   if(badgeEl) badgeEl.outerHTML = badge.html;
   if(lbl) lbl.textContent = badge.label + ' 발송';
+  // JP 라벨 텍스트도 업데이트
+  var jpLabel = document.querySelector('.ai-draft [style*="JP 일본어"], .ai-draft [style*="font-weight:600"]');
+  // placeholder 업데이트
+  var jaInput = document.getElementById('draft-text-ja');
+  if(jaInput) jaInput.placeholder = name + ' 번역 결과...';
+  // 발송 입력란 위 라벨 업데이트
+  var jaColLabel = document.querySelector('#draft-text-ja');
+  if(jaColLabel && jaColLabel.previousElementSibling) {
+    jaColLabel.previousElementSibling.textContent = badge.label + ' 발송';
+  }
   var menu = document.getElementById('lang-menu');
   if(menu) menu.style.display = 'none';
   // 입력창에 내용 있으면 즉시 재번역
