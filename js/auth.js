@@ -40,3 +40,18 @@ function logout() {
   clearSession();
   window.location.replace(getLoginPath());
 }
+
+// ── 맞춤법 검사 빨간 줄 전역 제거 ──
+document.addEventListener('DOMContentLoaded', function() {
+  function disableSpellcheck() {
+    document.querySelectorAll('input, textarea').forEach(function(el) {
+      el.setAttribute('spellcheck', 'false');
+      el.setAttribute('autocorrect', 'off');
+      el.setAttribute('autocapitalize', 'off');
+    });
+  }
+  disableSpellcheck();
+  // 동적으로 추가되는 요소도 처리
+  var observer = new MutationObserver(function() { disableSpellcheck(); });
+  observer.observe(document.body, { childList: true, subtree: true });
+});
