@@ -909,3 +909,6 @@ function copyText(text) {
     showToastInbox('✓ 복사되었습니다.', 'success');
   }
 }
+
+renderList('all', '');
+selectPatient(0);
