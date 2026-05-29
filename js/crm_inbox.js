@@ -375,14 +375,7 @@ function closeModal(){ var m=document.getElementById('__modal'); if(m) m.remove(
 function goToBooking() {
   var p = patients[curId];
   if(!p){ showToastInbox('환자를 먼저 선택해주세요.','error'); return; }
-  var params = new URLSearchParams({
-    name:   p.name,
-    nameJa: p.nameJa || '',
-    proc:   p.proc   || '',
-    ch:     p.ch     || 'LINE',
-    id:     p.id
-  });
-  location.href = 'hospital_crm_booking_new.html?' + params.toString();
+  openBookingModal(p);
 }
 
 /* ── 상태 변경 ── */
