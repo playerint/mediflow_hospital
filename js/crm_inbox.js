@@ -340,7 +340,7 @@ selectPatient(0);
 function showToastInboxColor(msg, bg) {
   var e = document.getElementById('inbox-toast'); if(e) e.remove();
   var t = document.createElement('div'); t.id='inbox-toast';
-  t.style.cssText='position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:11px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:2000;white-space:nowrap';
+  t.style.cssText='position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:11px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:99999;white-space:nowrap';
   t.textContent=msg; document.body.appendChild(t);
   setTimeout(function(){ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(function(){ t.remove(); },300); },2500);
 }
@@ -348,7 +348,7 @@ function showToastInbox(msg, type) {
   var e = document.getElementById('inbox-toast'); if(e) e.remove();
   var bg = type==='success' ? '#059669' : type==='error' ? '#DC2626' : '#0D1B3E';
   var t = document.createElement('div'); t.id='inbox-toast';
-  t.style.cssText='position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:11px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:2000;white-space:nowrap';
+  t.style.cssText='position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:11px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:99999;white-space:nowrap';
   t.textContent=msg; document.body.appendChild(t);
   setTimeout(function(){ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(function(){ t.remove(); },300); },2500);
 }
