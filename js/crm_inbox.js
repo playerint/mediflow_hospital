@@ -321,14 +321,27 @@ function closeLangMenu(e) {
     menu.style.display = 'none';
   }
 }
+var langBadges = {
+  'ja':    {html:'<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:14px;background:#2563EB;color:#fff;border-radius:3px;font-size:9px;font-weight:700">JP</span>', label:'JP 일본어'},
+  'zh-CN': {html:'<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:14px;background:#DE2910;color:#fff;border-radius:3px;font-size:9px;font-weight:700">CN</span>', label:'CN 중국어 간체'},
+  'zh-TW': {html:'<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:14px;background:#002395;color:#fff;border-radius:3px;font-size:9px;font-weight:700">TW</span>', label:'TW 중국어 번체'},
+  'en':    {html:'<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:14px;background:#012169;color:#fff;border-radius:3px;font-size:9px;font-weight:700">EN</span>', label:'EN 영어'},
+  'th':    {html:'<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:14px;background:#A51931;color:#fff;border-radius:3px;font-size:9px;font-weight:700">TH</span>', label:'TH 태국어'},
+};
+
 function selectLang(code, flag, name) {
   currentLang = code;
+  var badge  = langBadges[code] || langBadges['ja'];
   var flagEl = document.getElementById('lang-flag');
   var nameEl = document.getElementById('lang-name');
   var lbl    = document.getElementById('lang-label');
-  if(flagEl) flagEl.textContent = flag;
+  var btn    = document.getElementById('lang-btn');
+  if(flagEl) { flagEl.style.display='none'; }
   if(nameEl) nameEl.textContent = name;
-  if(lbl)    lbl.textContent = flag + ' ' + name + ' 발송';
+  // 버튼 배지 업데이트
+  var badgeEl = btn ? btn.querySelector('span[style*="border-radius:3px"]') : null;
+  if(badgeEl) badgeEl.outerHTML = badge.html;
+  if(lbl) lbl.textContent = badge.label + ' 발송';
   var menu = document.getElementById('lang-menu');
   if(menu) menu.style.display = 'none';
   // 입력창에 내용 있으면 즉시 재번역
