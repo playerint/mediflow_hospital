@@ -197,17 +197,10 @@ function selectPatient(id) {
   var li = langInfo[detectedLang] || langInfo['ja'];
   currentLang = detectedLang;
   // 버튼 뱃지 업데이트
-  var langBtn = document.getElementById('lang-btn');
-  if(langBtn) {
-    // 뱃지 스팬 직접 교체
-    var badgeSpan = langBtn.querySelector('span[style*="border-radius:3px"]');
-    var nameSpan  = document.getElementById('lang-name');
-    if(badgeSpan) {
-      badgeSpan.style.background = li.bg;
-      badgeSpan.textContent = li.abbr;
-    }
-    if(nameSpan) nameSpan.textContent = li.name;
-  }
+  var badgeSpan = document.getElementById('lang-badge');
+  var nameSpan  = document.getElementById('lang-name');
+  if(badgeSpan) { badgeSpan.style.background = li.bg; badgeSpan.textContent = li.abbr; }
+  if(nameSpan)  nameSpan.textContent = li.name;
   // 발송 라벨 업데이트
   var lbl = document.getElementById('lang-label');
   if(lbl) lbl.textContent = li.abbr + ' ' + li.name + ' 발송';
@@ -404,17 +397,17 @@ var langBadges = {
 
 function selectLang(code, flag, name) {
   currentLang = code;
-  var badge  = langBadges[code] || langBadges['ja'];
-  var flagEl = document.getElementById('lang-flag');
   var nameEl = document.getElementById('lang-name');
   var lbl    = document.getElementById('lang-label');
-  var btn    = document.getElementById('lang-btn');
-  if(flagEl) { flagEl.style.display='none'; }
+  var langColors = {'ja':'#2563EB','zh-CN':'#DE2910','zh-TW':'#002395','en':'#012169','th':'#A51931'};
+  var langAbbrs  = {'ja':'JP','zh-CN':'CN','zh-TW':'TW','en':'EN','th':'TH'};
   if(nameEl) nameEl.textContent = name;
-  // 버튼 배지 업데이트
-  var badgeEl = btn ? btn.querySelector('span[style*="border-radius:3px"]') : null;
-  if(badgeEl) badgeEl.outerHTML = badge.html;
-  if(lbl) lbl.textContent = badge.label + ' 발송';
+  var badgeEl = document.getElementById('lang-badge');
+  if(badgeEl) {
+    badgeEl.style.background = langColors[code] || '#2563EB';
+    badgeEl.textContent = langAbbrs[code] || 'JP';
+  }
+  if(lbl) lbl.textContent = (langAbbrs[code]||'JP') + ' ' + name + ' 발송';
   // JP 라벨 텍스트도 업데이트
   var jpLabel = document.querySelector('.ai-draft [style*="JP 일본어"], .ai-draft [style*="font-weight:600"]');
   // placeholder 업데이트
