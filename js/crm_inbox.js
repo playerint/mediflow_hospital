@@ -522,6 +522,62 @@ function setRpTab(tab, btn) {
 }
 
 /* ── 답변 재생성 ── */
+
+/* ── AI 코칭 언어별 재번역 ── */
+function renderAISuggestsWithLang(p, langCode) {
+  var el = document.getElementById('ai-suggests');
+  if(!el) return;
+  langCode = langCode || currentLang || 'ja';
+
+  var lastMsg = null;
+  for(var i = p.msgs.length - 1; i >= 0; i--) {
+    if(p.msgs[i].from === 'patient') { lastMsg = p.msgs[i]; break; }
+  }
+
+  // 현재 suggests 데이터 가져오기
+  var suggests = el._suggests;
+  if(!suggests || !suggests.length) { renderAISuggests(p); return; }
+
+  // 일본어가 아닌 경우 ko 텍스트를 선택 언어로 번역
+  if(langCode === 'ja') {
+    renderAISuggests(p); return;
+  }
+
+  // 번역 중 표시
+  el.style.opacity = '0.5';
+  var pendingCount = suggests.length;
+  var translated = suggests.map(function(s){ return Object.assign({}, s); });
+
+  translated.forEach(function(s, i) {
+    translateKoToJa(s.ko, function(result) {
+      translated[i].ja = result || s.ko;
+      pendingCount--;
+      if(pendingCount === 0) {
+        el.style.opacity = '1';
+        var badge = langBadges[langCode] || langBadges['ja'];
+        var html = '';
+        if(lastMsg) {
+          html += '<div style="background:var(--gray-50);border-radius:8px;padding:8px 10px;margin-bottom:10px">'
+            + '<div style="font-size:10px;font-weight:600;color:var(--gray-400);margin-bottom:4px">환자 마지막 질문</div>'
+            + '<div style="font-size:11px;color:var(--navy);line-height:1.6">' + lastMsg.ja + '</div>'
+            + '<div style="font-size:10px;color:var(--gray-500);margin-top:2px">' + lastMsg.ko + '</div>'
+            + '</div>';
+        }
+        html += '<div style="font-size:10px;font-weight:600;color:var(--gray-400);margin-bottom:6px">추천 답변 ' + translated.length + '개</div>';
+        translated.forEach(function(s2, idx) {
+          html += '<div class="ai-suggest-item" id="sug-'+idx+'" onclick="selectSuggest('+idx+',this)">'
+            + '<div class="ai-suggest-tone" style="background:'+s2.toneBg+';color:'+s2.toneTc+'">'+s2.tone+'</div>'
+            + '<div class="ai-suggest-text">'+s2.ko+'</div>'
+            + '<div class="ai-suggest-ja">'+badge.label+' '+s2.ja+'</div>'
+            + '</div>';
+        });
+        el.innerHTML = html;
+        el._suggests = translated;
+      }
+    });
+  });
+}
+
 function regenSuggests() {
   var el = document.getElementById('ai-suggests');
   if(!el) return;
@@ -639,6 +695,62 @@ function selectSuggest(idx, el) {
   showToastInbox('✓ 답변이 발송폼에 적용되었습니다.', 'success');
 }
 
+
+/* ── AI 코칭 언어별 재번역 ── */
+function renderAISuggestsWithLang(p, langCode) {
+  var el = document.getElementById('ai-suggests');
+  if(!el) return;
+  langCode = langCode || currentLang || 'ja';
+
+  var lastMsg = null;
+  for(var i = p.msgs.length - 1; i >= 0; i--) {
+    if(p.msgs[i].from === 'patient') { lastMsg = p.msgs[i]; break; }
+  }
+
+  // 현재 suggests 데이터 가져오기
+  var suggests = el._suggests;
+  if(!suggests || !suggests.length) { renderAISuggests(p); return; }
+
+  // 일본어가 아닌 경우 ko 텍스트를 선택 언어로 번역
+  if(langCode === 'ja') {
+    renderAISuggests(p); return;
+  }
+
+  // 번역 중 표시
+  el.style.opacity = '0.5';
+  var pendingCount = suggests.length;
+  var translated = suggests.map(function(s){ return Object.assign({}, s); });
+
+  translated.forEach(function(s, i) {
+    translateKoToJa(s.ko, function(result) {
+      translated[i].ja = result || s.ko;
+      pendingCount--;
+      if(pendingCount === 0) {
+        el.style.opacity = '1';
+        var badge = langBadges[langCode] || langBadges['ja'];
+        var html = '';
+        if(lastMsg) {
+          html += '<div style="background:var(--gray-50);border-radius:8px;padding:8px 10px;margin-bottom:10px">'
+            + '<div style="font-size:10px;font-weight:600;color:var(--gray-400);margin-bottom:4px">환자 마지막 질문</div>'
+            + '<div style="font-size:11px;color:var(--navy);line-height:1.6">' + lastMsg.ja + '</div>'
+            + '<div style="font-size:10px;color:var(--gray-500);margin-top:2px">' + lastMsg.ko + '</div>'
+            + '</div>';
+        }
+        html += '<div style="font-size:10px;font-weight:600;color:var(--gray-400);margin-bottom:6px">추천 답변 ' + translated.length + '개</div>';
+        translated.forEach(function(s2, idx) {
+          html += '<div class="ai-suggest-item" id="sug-'+idx+'" onclick="selectSuggest('+idx+',this)">'
+            + '<div class="ai-suggest-tone" style="background:'+s2.toneBg+';color:'+s2.toneTc+'">'+s2.tone+'</div>'
+            + '<div class="ai-suggest-text">'+s2.ko+'</div>'
+            + '<div class="ai-suggest-ja">'+badge.label+' '+s2.ja+'</div>'
+            + '</div>';
+        });
+        el.innerHTML = html;
+        el._suggests = translated;
+      }
+    });
+  });
+}
+
 function regenSuggests() {
   var el = document.getElementById('ai-suggests');
   if (!el) return;
@@ -646,7 +758,13 @@ function regenSuggests() {
   showToastInbox('🤖 AI 코칭 재생성 중...');
   setTimeout(function(){
     el.style.opacity = '1';
-    if (patients[curId]) renderAISuggests(patients[curId]);
+    if(patients[curId]) {
+      if(typeof currentLang !== 'undefined' && currentLang !== 'ja') {
+        renderAISuggestsWithLang(patients[curId], currentLang);
+      } else {
+        renderAISuggests(patients[curId]);
+      }
+    }
     showToastInbox('✓ AI 코칭이 업데이트되었습니다.', 'success');
   }, 800);
 }
