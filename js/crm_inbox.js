@@ -705,8 +705,13 @@ function updateRightPanel(p) {
     if (aiEl) aiEl.innerHTML = closedHtml;
     if (manEl) manEl.innerHTML = closedHtml;
   } else {
-    renderAISuggests(p);
-    renderManual(p);
+    var _pLang = getLangInfo(p.id);
+    if(_pLang.code !== 'ja') {
+      renderAISuggestsWithLang(p, _pLang.code);
+    } else {
+      renderAISuggests(p);
+    }
+    renderManualWithLang(p, _pLang.code);
   }
 }
 
