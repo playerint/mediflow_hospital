@@ -676,6 +676,8 @@ function bmUpdateSlots() {
 function bmSelectSlot(el) {
   var time = el.getAttribute('data-time');
   document.querySelectorAll('#bm-slots div').forEach(function(s){
+    // 비활성 슬롯은 건드리지 않음
+    if(s.style.cursor === 'not-allowed') return;
     s.style.background = '#fff';
     s.style.borderColor = 'var(--gray-200)';
     s.style.color = 'var(--gray-600)';
