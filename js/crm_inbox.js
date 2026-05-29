@@ -199,11 +199,14 @@ function selectPatient(id) {
   // 버튼 뱃지 업데이트
   var langBtn = document.getElementById('lang-btn');
   if(langBtn) {
+    // 뱃지 스팬 직접 교체
     var badgeSpan = langBtn.querySelector('span[style*="border-radius:3px"]');
     var nameSpan  = document.getElementById('lang-name');
-    if(badgeSpan) badgeSpan.style.background = li.bg;
-    if(badgeSpan) badgeSpan.textContent = li.abbr;
-    if(nameSpan)  nameSpan.textContent  = li.name;
+    if(badgeSpan) {
+      badgeSpan.style.background = li.bg;
+      badgeSpan.textContent = li.abbr;
+    }
+    if(nameSpan) nameSpan.textContent = li.name;
   }
   // 발송 라벨 업데이트
   var lbl = document.getElementById('lang-label');
@@ -246,7 +249,19 @@ function renderMessages(p) {
       senderLabel = '<div style="font-size:11px;font-weight:600;color:var(--navy);margin-bottom:3px;display:flex;align-items:center;gap:4px">HANA <span style="font-size:9px;background:#EEF2FF;color:var(--navy);padding:1px 5px;border-radius:4px;font-weight:400">자동응답</span></div>';
     } else if (isStaff) {
       var chName = p.ch === 'Instagram' ? 'Instagram' : 'LINE';
-      senderLabel = '<div style="font-size:11px;font-weight:600;color:var(--gray-500);margin-bottom:3px;display:flex;align-items:center;gap:4px">' + chName + ' <span style="font-size:9px;background:#D1FAE5;color:#065F46;padding:1px 5px;border-radius:4px;font-weight:400">발송</span></div>';
+      var _li = {
+        'ja':    {abbr:'JP', bg:'#2563EB'},
+        'zh-CN': {abbr:'CN', bg:'#DE2910'},
+        'zh-TW': {abbr:'TW', bg:'#002395'},
+        'en':    {abbr:'EN', bg:'#012169'},
+        'th':    {abbr:'TH', bg:'#A51931'},
+      };
+      var _lang = typeof currentLang !== 'undefined' ? currentLang : 'ja';
+      var _badge = _li[_lang] || _li['ja'];
+      senderLabel = '<div style="font-size:11px;font-weight:600;color:var(--gray-500);margin-bottom:3px;display:flex;align-items:center;gap:4px">'
+        + chName
+        + ' <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:14px;background:' + _badge.bg + ';color:#fff;border-radius:3px;font-size:9px;font-weight:700;margin-left:2px">' + _badge.abbr + '</span>'
+        + ' <span style="font-size:9px;background:#D1FAE5;color:#065F46;padding:1px 5px;border-radius:4px;font-weight:400">발송</span></div>';
     }
 
     // 말풍선
