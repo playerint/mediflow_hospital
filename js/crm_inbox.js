@@ -648,6 +648,14 @@ function openBookingModal(p) {
   var dateEl = document.getElementById('bm-date');
   if(dateEl) dateEl.value = d.toISOString().slice(0,10);
   bmUpdateSlots();
+  // 우측 패널 메모 가져오기
+  var memoEl = document.getElementById('bm-memo');
+  var rpMemo = document.getElementById('rp-memo-input');
+  if(memoEl && rpMemo) memoEl.value = rpMemo.value || '';
+  // memoStore에서도 확인
+  if(memoEl && (!memoEl.value) && typeof memoStore !== 'undefined' && memoStore[p.id]) {
+    memoEl.value = memoStore[p.id];
+  }
   var modal = document.getElementById('booking-modal');
   if(modal){ modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
 }
