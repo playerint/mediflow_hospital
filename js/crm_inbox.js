@@ -209,7 +209,6 @@ function selectPatient(id) {
   currentLang = li.code;
   // 처음 대화면 자동 감지 언어 저장
   if(!savedLang) patientLangStore[id] = currentLang;
-  currentLang = detectedLang;
   // 버튼 뱃지 업데이트
   var badgeSpan = document.getElementById('lang-badge');
   var nameSpan  = document.getElementById('lang-name');
@@ -352,7 +351,8 @@ function filterList(v) { renderList(curFilter, v); }
 function translateKoToJa(text, callback) {
   if (!text || !text.trim()) { callback(''); return; }
   var lang = typeof currentLang !== 'undefined' ? currentLang : 'ja';
-  var pair = (langLabels && langLabels[lang]) ? langLabels[lang].mm : 'ko|ja';
+  var mmMap = {'ja':'ko|ja','zh-CN':'ko|zh-CN','zh-TW':'ko|zh-TW','en':'ko|en','th':'ko|th'};
+  var pair = mmMap[lang] || 'ko|ja';
   var url = 'https://api.mymemory.translated.net/get?q='
     + encodeURIComponent(text)
     + '&langpair=' + pair;
