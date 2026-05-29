@@ -463,5 +463,101 @@ function checkAnswerCompliance(){
 }
 </script>
 <script src="../js/crm_inbox.js"></script>
+
+<!-- 예약 전환 모달 -->
+<div id="booking-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;align-items:center;justify-content:center;padding:16px">
+  <div style="background:#fff;border-radius:20px;width:100%;max-width:560px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.2)">
+    <!-- 모달 헤더 -->
+    <div style="padding:20px 24px 16px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+      <div>
+        <div style="font-size:16px;font-weight:700;color:var(--navy)">📅 예약 전환</div>
+        <div style="font-size:12px;color:var(--gray-400);margin-top:2px" id="bm-patient-info">환자 정보 로딩 중...</div>
+      </div>
+      <button onclick="closeBookingModal()" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--gray-200);background:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--gray-500)">✕</button>
+    </div>
+    <!-- 모달 바디 -->
+    <div style="overflow-y:auto;padding:20px 24px;flex:1">
+      <!-- 환자 카드 -->
+      <div id="bm-patient-card" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--navy-l);border:1px solid var(--blue);border-radius:12px;margin-bottom:18px">
+        <div id="bm-avatar" style="width:38px;height:38px;border-radius:50%;background:#EEF2FF;color:var(--navy);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">야마</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600;color:var(--navy)" id="bm-name">야마다 사오리</div>
+          <div style="font-size:11px;color:var(--gray-500)" id="bm-meta">LINE · 쌍꺼풀 · 신규</div>
+        </div>
+        <span id="bm-ch-badge" style="font-size:11px;padding:3px 10px;border-radius:20px;background:#EFF6FF;color:#2563EB;font-weight:500">💬 LINE</span>
+      </div>
+
+      <!-- 예약 유형 -->
+      <div style="margin-bottom:14px">
+        <div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">예약 유형 <span style="color:var(--red)">*</span></div>
+        <select id="bm-type" onchange="bmUpdateSlots()" style="width:100%;padding:9px 12px;border:1.5px solid var(--gray-200);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:#fff" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--gray-200)'">
+          <option value="">선택</option>
+          <option value="consult" selected>상담 (카운슬링)</option>
+          <option value="online">비대면 상담</option>
+          <option value="surgery">수술</option>
+          <option value="checkup">사후 체크업</option>
+          <option value="laser">시술 (레이저 등)</option>
+        </select>
+      </div>
+
+      <!-- 관심 시술 -->
+      <div style="margin-bottom:14px">
+        <div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">관심 시술</div>
+        <select id="bm-proc" style="width:100%;padding:9px 12px;border:1.5px solid var(--gray-200);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:#fff" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--gray-200)'">
+          <option value="">선택</option>
+          <option>쌍꺼풀 (매몰법)</option>
+          <option>쌍꺼풀 (절개법)</option>
+          <option>코 성형</option>
+          <option>윤곽 수술</option>
+          <option>지방흡입</option>
+          <option>피부 레이저</option>
+          <option>기타</option>
+        </select>
+      </div>
+
+      <!-- 날짜 -->
+      <div style="margin-bottom:14px">
+        <div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">예약 날짜 <span style="color:var(--red)">*</span></div>
+        <input type="date" id="bm-date" onchange="bmUpdateSlots()" style="width:100%;padding:9px 12px;border:1.5px solid var(--gray-200);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:#fff;box-sizing:border-box" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--gray-200)'">
+      </div>
+
+      <!-- 시간 슬롯 -->
+      <div style="margin-bottom:14px">
+        <div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">예약 시간 <span style="color:var(--red)">*</span></div>
+        <div id="bm-slots" style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px"></div>
+        <input type="hidden" id="bm-selected-time">
+      </div>
+
+      <!-- 담당의 -->
+      <div style="margin-bottom:14px">
+        <div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">담당 의사</div>
+        <select id="bm-doctor" style="width:100%;padding:9px 12px;border:1.5px solid var(--gray-200);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:#fff" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--gray-200)'">
+          <option value="">배정 없음</option>
+          <option>김민준 원장</option>
+          <option>이수진 전문의</option>
+          <option>박정호 전문의</option>
+          <option>최유리 전문의</option>
+        </select>
+      </div>
+
+      <!-- 메모 -->
+      <div style="margin-bottom:6px">
+        <div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">내부 메모</div>
+        <textarea id="bm-memo" rows="2" style="width:100%;padding:9px 12px;border:1.5px solid var(--gray-200);border-radius:10px;font-size:12px;font-family:inherit;resize:none;outline:none;line-height:1.6;box-sizing:border-box" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--gray-200)'" placeholder="예) 일본어 전담 스탭 배정 필요"></textarea>
+      </div>
+
+      <!-- LINE 발송 체크 -->
+      <label style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--gray-50);border-radius:10px;font-size:12px;color:var(--gray-700);cursor:pointer">
+        <input type="checkbox" id="bm-send-line" checked style="width:14px;height:14px;accent-color:var(--navy)">
+        예약 등록 즉시 LINE/Instagram으로 확정 메시지 자동 발송
+      </label>
+    </div>
+    <!-- 모달 푸터 -->
+    <div style="padding:16px 24px;border-top:1px solid var(--gray-100);display:flex;justify-content:flex-end;gap:8px;flex-shrink:0;background:#fff">
+      <button class="btn" onclick="closeBookingModal()">취소</button>
+      <button class="btn btn-primary" onclick="submitBookingModal()" style="min-width:120px">📅 예약 등록</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
