@@ -68,6 +68,36 @@ const patients = [
      {from:'ai',      ja:'6月3日(火)14:00はいかがでしょうか？', ko:'6월 3일(화) 14:00 어떠세요?', time:'5/20 20:02'},
    ]},
 
+  // ── 중국어 간체 환자 ──
+  {id:9, name:'왕 메이링', nameJa:'王 美玲', init:'왕', bg:'#FEF2F2', tc:'#991B1B',
+   proc:'쌍꺼풀', ch:'Instagram', chColor:'#E1306C', status:'new', statusLabel:'신규', elapsed:'1시간', unread:true,
+   msgs:[
+     {from:'patient', ja:'你好！我在网上看到了双眼皮手术的信息，请问咨询是免费的吗？价格大概是多少？', ko:'안녕하세요! 온라인에서 쌍꺼풀 수술 정보를 봤는데요, 상담은 무료인가요? 가격이 얼마 정도인가요?', time:'오늘 13:20'},
+     {from:'ai', ja:'您好！咨询是免费的🌸 埋没法从₩400,000起，切开法从₩800,000起。请问您方便预约咨询吗？', ko:'안녕하세요! 상담은 무료입니다🌸 매몰법 ₩400,000~, 절개법 ₩800,000~입니다. 편하신 날 예약하시겠어요?', time:'오늘 13:20'},
+   ]},
+  // ── 중국어 번체 환자 ──
+  {id:10, name:'천 샤오후이', nameJa:'陳 曉慧', init:'천', bg:'#F0FDF4', tc:'#166534',
+   proc:'코 성형', ch:'LINE', chColor:'#2563EB', status:'consulting', statusLabel:'상담중', elapsed:null, unread:false,
+   msgs:[
+     {from:'patient', ja:'你好，我想詢問關於鼻子整形的事情，恢復期大概需要多久？', ko:'안녕하세요, 코 성형에 대해 문의하고 싶은데요, 회복 기간이 얼마나 걸리나요?', time:'어제 16:45'},
+     {from:'ai', ja:'您好！鼻子填充劑的恢復期約為1〜3天，手術約需7〜14天。我們提供免費諮詢服務！', ko:'안녕하세요! 코 필러 회복 기간은 약 1~3일, 수술은 7~14일 정도입니다. 무료 상담 가능해요!', time:'어제 16:46'},
+     {from:'staff', ja:'請問您方便預約諮詢嗎？我們有中文工作人員為您服務。', ko:'상담 예약 가능하세요? 중국어 스탭이 안내해드릴게요.', time:'어제 17:00'},
+   ]},
+  // ── 영어 환자 ──
+  {id:11, name:'에밀리 박', nameJa:'Emily Park', init:'EM', bg:'#EFF6FF', tc:'#1D4ED8',
+   proc:'피부레이저', ch:'Instagram', chColor:'#E1306C', status:'new', statusLabel:'신규', elapsed:'45분', unread:true,
+   msgs:[
+     {from:'patient', ja:"Hi! I'm interested in skin laser treatment. Do you have English-speaking staff?", ko:'안녕하세요! 피부 레이저 시술에 관심이 있어요. 영어 가능한 스탭 계신가요?', time:'오늘 14:10'},
+     {from:'ai', ja:"Hello! Yes, we have English-speaking coordinators🌸 We offer various laser treatments. Would you like to book a free consultation?", ko:'안녕하세요! 네, 영어 가능한 코디네이터가 있어요🌸 다양한 레이저 시술을 제공합니다. 무료 상담 예약하시겠어요?', time:'오늘 14:10'},
+   ]},
+  // ── 태국어 환자 ──
+  {id:12, name:'나파폰 씨리', nameJa:'นภาพร ศิริ', init:'나파', bg:'#FFF7ED', tc:'#9A3412',
+   proc:'윤곽', ch:'LINE', chColor:'#2563EB', status:'consulting', statusLabel:'상담중', elapsed:null, unread:false,
+   msgs:[
+     {from:'patient', ja:'สวัสดีค่ะ ฉันสนใจเรื่องการศัลยกรรมกรอบหน้า ราคาประมาณเท่าไหร่คะ？', ko:'안녕하세요! 윤곽 성형에 관심이 있어요. 가격이 얼마 정도인가요?', time:'어제 19:30'},
+     {from:'ai', ja:'สวัสดีค่ะ! การปรึกษาฟรีนะคะ🌸 การผ่าตัดกรอบหน้าเริ่มต้นที่ ₩3,000,000 ค่ะ ยินดีนัดหมายให้ค่ะ！', ko:'안녕하세요! 상담은 무료예요🌸 윤곽 수술은 ₩3,000,000~입니다. 예약해드릴게요!', time:'어제 19:31'},
+     {from:'staff', ja:'คุณสะดวกนัดหมายวันไหนคะ？เรามีล่ามภาษาไทยให้บริการค่ะ', ko:'편하신 날 언제인가요? 태국어 통역 서비스 제공해드려요.', time:'어제 20:00'},
+   ]},
 ];
 
 const statusColors = {
