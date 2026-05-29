@@ -3,6 +3,9 @@
 
 /* ── 환자별 언어 매핑 (전역) ── */
 var PATIENT_LANG_MAP = {0:'ja',1:'ja',2:'ja',3:'ja',4:'ja',5:'ja',6:'ja',7:'ja',8:'ja',9:'zh-CN',10:'zh-TW',11:'en',12:'th'};
+/* 환자별 선택 언어 저장 — 담당자가 변경한 언어 기억 */
+var patientLangStore = {};
+
 var LANG_INFO = {
   'ja':    {abbr:'JP', name:'일본어',      bg:'#2563EB'},
   'zh-CN': {abbr:'CN', name:'중국어 간체', bg:'#DE2910'},
@@ -200,8 +203,12 @@ function selectPatient(id) {
   }
 
   // ── 환자 언어 자동 감지 및 전환 ──
-  var li = getLangInfo(id);
+  // 이전에 선택한 언어 있으면 유지, 없으면 자동 감지
+  var savedLang = patientLangStore[id];
+  var li = savedLang ? (LANG_INFO[savedLang] ? Object.assign({code: savedLang}, LANG_INFO[savedLang]) : getLangInfo(id)) : getLangInfo(id);
   currentLang = li.code;
+  // 처음 대화면 자동 감지 언어 저장
+  if(!savedLang) patientLangStore[id] = currentLang;
   currentLang = detectedLang;
   // 버튼 뱃지 업데이트
   var badgeSpan = document.getElementById('lang-badge');
@@ -424,12 +431,15 @@ function selectLang(code, flag, name) {
   }
   var menu = document.getElementById('lang-menu');
   if(menu) menu.style.display = 'none';
+  // 현재 환자에 선택 언어 저장
+  if(typeof curId !== 'undefined') patientLangStore[curId] = code;
   // 입력창에 내용 있으면 즉시 재번역
   var koEl = document.getElementById('draft-text-ko');
   if(koEl && koEl.value.trim()) onKoInput();
   // AI 코칭 추천 답변 선택 언어로 재번역
   if(typeof patients !== 'undefined' && typeof curId !== 'undefined' && patients[curId]) {
     renderAISuggestsWithLang(patients[curId], code);
+    renderManualWithLang(patients[curId], code);
   }
 }
 
