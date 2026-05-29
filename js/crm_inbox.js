@@ -665,7 +665,7 @@ function renderAISuggests(p) {
     html += '<div class="ai-suggest-item" id="sug-'+i+'" onclick="selectSuggest('+i+',this)">'
       + '<div class="ai-suggest-tone" style="background:'+s.toneBg+';color:'+s.toneTc+'">'+s.tone+'</div>'
       + '<div class="ai-suggest-text">'+s.ko+'</div>'
-      + '<div class="ai-suggest-ja">JP '+s.ja+'</div>'
+      + '<div class="ai-suggest-ja">'+getLang().abbr+' '+(s.jaLang||s.ja)+'</div>'
       + '</div>';
   });
   el.innerHTML = html;
@@ -680,7 +680,7 @@ function selectSuggest(idx, el) {
   if (!s) return;
   var jaEl = document.getElementById('draft-text-ja');
   var koEl = document.getElementById('draft-text-ko');
-  if (jaEl) jaEl.value = s.ja;
+  if (jaEl) jaEl.value = s.jaLang || s.ja;
   if (koEl) koEl.value = s.ko;
   var draft = document.getElementById('ai-draft');
   if (draft && draft.style.display === 'none') draft.style.display = '';
@@ -694,7 +694,12 @@ function regenSuggests() {
   showToastInbox('🤖 AI 코칭 재생성 중...');
   setTimeout(function(){
     el.style.opacity = '1';
-    if (patients[curId]) renderAISuggests(patients[curId]);
+    var p = patients[curId];
+    if (!p) return;
+    renderAISuggests(p);
+    if (currentLang !== 'ja') {
+      setTimeout(function(){ renderAISuggestsWithLang(p); }, 50);
+    }
     showToastInbox('✓ AI 코칭이 업데이트되었습니다.', 'success');
   }, 800);
 }
