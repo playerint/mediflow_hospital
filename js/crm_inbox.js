@@ -1,21 +1,136 @@
 
 // ── 환자 데이터 ──────────────────────────────────────────────────
 
-/* ── 환자별 언어 매핑 (전역) ── */
-var PATIENT_LANG_MAP = {0:'ja',1:'ja',2:'ja',3:'ja',4:'ja',5:'ja',6:'ja',7:'ja',8:'ja',9:'zh-CN',10:'zh-TW',11:'en',12:'th'};
-/* 환자별 선택 언어 저장 — 담당자가 변경한 언어 기억 */
-var patientLangStore = {};
-
-var LANG_INFO = {
-  'ja':    {abbr:'JP', name:'일본어',      bg:'#2563EB'},
-  'zh-CN': {abbr:'CN', name:'중국어 간체', bg:'#DE2910'},
-  'zh-TW': {abbr:'TW', name:'중국어 번체', bg:'#002395'},
-  'en':    {abbr:'EN', name:'영어',        bg:'#012169'},
-  'th':    {abbr:'TH', name:'태국어',      bg:'#A51931'},
+/* ══════════════════════════════════════════════════════
+   다국어 발송 시스템
+══════════════════════════════════════════════════════ */
+var LANG_CONFIG = {
+  'ja':    { abbr:'JP', name:'일본어',      bg:'#2563EB', pair:'ko|ja' },
+  'zh-CN': { abbr:'CN', name:'중국어 간체', bg:'#DE2910', pair:'ko|zh-CN' },
+  'zh-TW': { abbr:'TW', name:'중국어 번체', bg:'#002395', pair:'ko|zh-TW' },
+  'en':    { abbr:'EN', name:'영어',        bg:'#012169', pair:'ko|en' },
+  'th':    { abbr:'TH', name:'태국어',      bg:'#A51931', pair:'ko|th' },
 };
-function getLangInfo(patientId) {
-  var code = PATIENT_LANG_MAP[patientId] || 'ja';
-  return Object.assign({code: code}, LANG_INFO[code] || LANG_INFO['ja']);
+var PATIENT_DEFAULT_LANG = {0:'ja',1:'ja',2:'ja',3:'ja',4:'ja',5:'ja',6:'ja',7:'ja',8:'ja',9:'zh-CN',10:'zh-TW',11:'en',12:'th'};
+var patientLangStore = {};
+var currentLang = 'ja';
+
+function getLang() { return LANG_CONFIG[currentLang] || LANG_CONFIG['ja']; }
+
+function setLangForPatient(id) {
+  currentLang = patientLangStore[id] || PATIENT_DEFAULT_LANG[id] || 'ja';
+  if(!patientLangStore[id]) patientLangStore[id] = currentLang;
+  updateLangUI();
+}
+
+function updateLangUI() {
+  var li = getLang();
+  var badge = document.getElementById('lang-badge');
+  var name  = document.getElementById('lang-name');
+  var lbl   = document.getElementById('lang-label');
+  var jaEl  = document.getElementById('draft-text-ja');
+  if(badge) { badge.style.background = li.bg; badge.textContent = li.abbr; }
+  if(name)  name.textContent = li.name;
+  if(lbl)   lbl.textContent = li.abbr + ' ' + li.name + ' 발송';
+  if(jaEl)  jaEl.placeholder = li.name + ' 번역 결과...';
+}
+
+function toggleLangMenu() {
+  var menu = document.getElementById('lang-menu');
+  if(menu) menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+document.addEventListener('click', function(e) {
+  var menu = document.getElementById('lang-menu');
+  var btn  = document.getElementById('lang-btn');
+  if(!menu || menu.style.display === 'none') return;
+  if(btn && btn.contains(e.target)) return;
+  if(!menu.contains(e.target)) menu.style.display = 'none';
+});
+
+function selectLang(code, flag, name) {
+  currentLang = code;
+  if(typeof curId !== 'undefined') patientLangStore[curId] = code;
+  updateLangUI();
+  var menu = document.getElementById('lang-menu');
+  if(menu) menu.style.display = 'none';
+  var koEl = document.getElementById('draft-text-ko');
+  if(koEl && koEl.value.trim()) onKoInput();
+  if(typeof patients !== 'undefined' && typeof curId !== 'undefined' && patients[curId]) {
+    renderAISuggests(patients[curId]);
+    renderManual(patients[curId]);
+    if(code !== 'ja') {
+      setTimeout(function(){ renderAISuggestsWithLang(patients[curId]); renderManualWithLang(patients[curId]); }, 100);
+    }
+  }
+}
+
+var _translateTimer = null;
+function translateKoToJa(text, callback) {
+  if(!text || !text.trim()) { callback(''); return; }
+  var pair = getLang().pair;
+  fetch('https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) + '&langpair=' + pair)
+    .then(function(r){ return r.json(); })
+    .then(function(d){ callback(d.responseData && d.responseData.translatedText ? d.responseData.translatedText : ''); })
+    .catch(function(){ callback(''); });
+}
+
+function onKoInput() {
+  var koEl = document.getElementById('draft-text-ko');
+  var jaEl = document.getElementById('draft-text-ja');
+  if(!koEl || !jaEl) return;
+  jaEl.value = '번역 중...';
+  jaEl.style.color = 'var(--gray-400)';
+  clearTimeout(_translateTimer);
+  _translateTimer = setTimeout(function() {
+    translateKoToJa(koEl.value, function(result) {
+      jaEl.value = result;
+      jaEl.style.color = '';
+    });
+  }, 600);
+}
+
+function renderAISuggestsWithLang(p) {
+  var el = document.getElementById('ai-suggests');
+  if(!el || !el._suggests) return;
+  var li = getLang();
+  var suggests = el._suggests;
+  el.style.opacity = '0.4';
+  var done = 0;
+  var results = suggests.map(function(s){ return Object.assign({}, s); });
+  suggests.forEach(function(s, i) {
+    translateKoToJa(s.ko, function(t) {
+      results[i].jaLang = t || s.ja;
+      if(++done === suggests.length) {
+        el.style.opacity = '1';
+        var lastMsg = null;
+        for(var j = p.msgs.length-1; j >= 0; j--) { if(p.msgs[j].from==='patient') { lastMsg=p.msgs[j]; break; } }
+        var html = '';
+        if(lastMsg) html += '<div style="background:var(--gray-50);border-radius:8px;padding:8px 10px;margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--gray-400);margin-bottom:4px">환자 마지막 질문</div><div style="font-size:11px;color:var(--navy);line-height:1.6">'+lastMsg.ja+'</div><div style="font-size:10px;color:var(--gray-500);margin-top:2px">'+lastMsg.ko+'</div></div>';
+        html += '<div style="font-size:10px;font-weight:600;color:var(--gray-400);margin-bottom:6px">추천 답변 '+results.length+'개</div>';
+        results.forEach(function(s2, idx) {
+          html += '<div class="ai-suggest-item" id="sug-'+idx+'" onclick="selectSuggest('+idx+',this)"><div class="ai-suggest-tone" style="background:'+s2.toneBg+';color:'+s2.toneTc+'">'+s2.tone+'</div><div class="ai-suggest-text">'+s2.ko+'</div><div class="ai-suggest-ja">'+li.abbr+' '+s2.jaLang+'</div></div>';
+        });
+        el.innerHTML = html;
+        el._suggests = results;
+      }
+    });
+  });
+}
+
+function renderManualWithLang(p) {
+  renderManual(p);
+  if(currentLang === 'ja') return;
+  var el = document.getElementById('manual-content');
+  if(!el) return;
+  var li = getLang();
+  el.querySelectorAll('.manual-item-body').forEach(function(item) {
+    var orig = item.textContent;
+    item.style.opacity = '0.5';
+    translateKoToJa(orig, function(t) {
+      if(t) item.innerHTML = orig + '<div style="margin-top:4px;font-size:10px;color:var(--gray-500)">'+li.abbr+' '+t+'</div>';
+      item.style.opacity = '1';
+    });
+  });
 }
 
 const patients = [
@@ -23,7 +138,7 @@ const patients = [
    proc:'쌍꺼풀', ch:'LINE', chColor:'#2563EB', status:'new', statusLabel:'신규', elapsed:'2시간', unread:true,
    msgs:[
      {from:'patient', ja:'はじめまして！二重整形について聞きたいのですが、カウンセリングは無料ですか？', ko:'안녕하세요! 쌍꺼풀 성형에 대해 궁금한데요, 상담은 무료인가요?', time:'10:23'},
-     {from:'ai',      ja:'はじめまして！カウンセリングは無料です。埋没法は₩400,000〜が目安です。', ko:'안녕하세요! 상담은 무료입니다. 매몰법은 ₩400,000~이 기준입니다.', time:'10:23 (HANA)'},
+     {from:'ai',      ja:'はじめまして！カウンセリングは無料です。埋没法は₩400,000〜が目安です。', ko:'안녕하세요! 상담은 무료입니다. 매몰법은 ₩400,000~이 기준입니다.', time:'10:23 (AI はな)'},
    ],
    draft:{ja:'はじめまして、オーレ整形外科です。\nカウンセリングは無料で承っております。\nご来院のご希望日時をお聞かせください。', ko:'안녕하세요, 올래성형외과입니다.\n상담은 무료로 진행하고 있습니다.\n방문 희망 일시를 알려주세요.'}},
 
@@ -54,7 +169,7 @@ const patients = [
    msgs:[
      {from:'patient', ja:'二重整形を予約したいです。', ko:'쌍꺼풀 성형을 예약하고 싶습니다.', time:'5/17'},
      {from:'staff',   ja:'6月5日14:00はいかがでしょうか？', ko:'6월 5일 14:00은 어떠신가요?', time:'5/17'},
-     {from:'ai',      ja:'【予約確認】6月5日(金) 14:00 二重整形カウンセリング。', ko:'[예약 확인] 6월 5일(금) 14:00 쌍꺼풀 성형 상담.', time:'5/17 (HANA)'},
+     {from:'ai',      ja:'【予約確認】6月5日(金) 14:00 二重整形カウンセリング。', ko:'[예약 확인] 6월 5일(금) 14:00 쌍꺼풀 성형 상담.', time:'5/17 (AI はな)'},
    ],
    draft:{ja:'', ko:''}},
 
@@ -86,36 +201,35 @@ const patients = [
      {from:'ai',      ja:'6月3日(火)14:00はいかがでしょうか？', ko:'6월 3일(화) 14:00 어떠세요?', time:'5/20 20:02'},
    ]},
 
-  // ── 중국어 간체 환자 ──
+,
+  // ── 중국어 간체 ──
   {id:9, name:'왕 메이링', nameJa:'王 美玲', init:'왕', bg:'#FEF2F2', tc:'#991B1B',
    proc:'쌍꺼풀', ch:'Instagram', chColor:'#E1306C', status:'new', statusLabel:'신규', elapsed:'1시간', unread:true,
    msgs:[
-     {from:'patient', ja:'你好！我在网上看到了双眼皮手术的信息，请问咨询是免费的吗？价格大概是多少？', ko:'안녕하세요! 온라인에서 쌍꺼풀 수술 정보를 봤는데요, 상담은 무료인가요? 가격이 얼마 정도인가요?', time:'오늘 13:20'},
-     {from:'ai', ja:'您好！咨询是免费的🌸 埋没法从₩400,000起，切开法从₩800,000起。请问您方便预约咨询吗？', ko:'안녕하세요! 상담은 무료입니다🌸 매몰법 ₩400,000~, 절개법 ₩800,000~입니다. 편하신 날 예약하시겠어요?', time:'오늘 13:20'},
+     {from:'patient', ja:'你好！我在网上看到了双眼皮手术的信息，请问咨询是免费的吗？', ko:'안녕하세요! 쌍꺼풀 상담은 무료인가요?', time:'오늘 13:20'},
+     {from:'ai',      ja:'您好！咨询是免费的🌸 埋没法₩400,000起，切开法₩800,000起。', ko:'안녕하세요! 상담 무료🌸 매몰법 ₩400,000~, 절개법 ₩800,000~.', time:'오늘 13:20'},
    ]},
-  // ── 중국어 번체 환자 ──
+  // ── 중국어 번체 ──
   {id:10, name:'천 샤오후이', nameJa:'陳 曉慧', init:'천', bg:'#F0FDF4', tc:'#166534',
    proc:'코 성형', ch:'LINE', chColor:'#2563EB', status:'consulting', statusLabel:'상담중', elapsed:null, unread:false,
    msgs:[
-     {from:'patient', ja:'你好，我想詢問關於鼻子整形的事情，恢復期大概需要多久？', ko:'안녕하세요, 코 성형에 대해 문의하고 싶은데요, 회복 기간이 얼마나 걸리나요?', time:'어제 16:45'},
-     {from:'ai', ja:'您好！鼻子填充劑的恢復期約為1〜3天，手術約需7〜14天。我們提供免費諮詢服務！', ko:'안녕하세요! 코 필러 회복 기간은 약 1~3일, 수술은 7~14일 정도입니다. 무료 상담 가능해요!', time:'어제 16:46'},
-     {from:'staff', ja:'請問您方便預約諮詢嗎？我們有中文工作人員為您服務。', ko:'상담 예약 가능하세요? 중국어 스탭이 안내해드릴게요.', time:'어제 17:00'},
+     {from:'patient', ja:'你好，我想詢問鼻子整形，恢復期大概多久？', ko:'코 성형 회복 기간이 얼마나 걸리나요?', time:'어제 16:45'},
+     {from:'ai',      ja:'您好！恢復期填充1〜3天，手術7〜14天。提供免費諮詢！', ko:'코 필러 1~3일, 수술 7~14일. 무료 상담 가능!', time:'어제 16:46'},
    ]},
-  // ── 영어 환자 ──
+  // ── 영어 ──
   {id:11, name:'에밀리 박', nameJa:'Emily Park', init:'EM', bg:'#EFF6FF', tc:'#1D4ED8',
    proc:'피부레이저', ch:'Instagram', chColor:'#E1306C', status:'new', statusLabel:'신규', elapsed:'45분', unread:true,
    msgs:[
-     {from:'patient', ja:"Hi! I'm interested in skin laser treatment. Do you have English-speaking staff?", ko:'안녕하세요! 피부 레이저 시술에 관심이 있어요. 영어 가능한 스탭 계신가요?', time:'오늘 14:10'},
-     {from:'ai', ja:"Hello! Yes, we have English-speaking coordinators🌸 We offer various laser treatments. Would you like to book a free consultation?", ko:'안녕하세요! 네, 영어 가능한 코디네이터가 있어요🌸 다양한 레이저 시술을 제공합니다. 무료 상담 예약하시겠어요?', time:'오늘 14:10'},
+     {from:'patient', ja:"Hi! I'm interested in skin laser. Do you have English-speaking staff?", ko:'피부 레이저 관심있어요. 영어 가능한 스탭 계신가요?', time:'오늘 14:10'},
+     {from:'ai',      ja:"Hello! Yes, we have English coordinators! Free consultation available!", ko:'네, 영어 코디네이터 있어요! 무료 상담 예약 가능해요!', time:'오늘 14:10'},
    ]},
-  // ── 태국어 환자 ──
+  // ── 태국어 ──
   {id:12, name:'나파폰 씨리', nameJa:'นภาพร ศิริ', init:'나파', bg:'#FFF7ED', tc:'#9A3412',
    proc:'윤곽', ch:'LINE', chColor:'#2563EB', status:'consulting', statusLabel:'상담중', elapsed:null, unread:false,
    msgs:[
-     {from:'patient', ja:'สวัสดีค่ะ ฉันสนใจเรื่องการศัลยกรรมกรอบหน้า ราคาประมาณเท่าไหร่คะ？', ko:'안녕하세요! 윤곽 성형에 관심이 있어요. 가격이 얼마 정도인가요?', time:'어제 19:30'},
-     {from:'ai', ja:'สวัสดีค่ะ! การปรึกษาฟรีนะคะ🌸 การผ่าตัดกรอบหน้าเริ่มต้นที่ ₩3,000,000 ค่ะ ยินดีนัดหมายให้ค่ะ！', ko:'안녕하세요! 상담은 무료예요🌸 윤곽 수술은 ₩3,000,000~입니다. 예약해드릴게요!', time:'어제 19:31'},
-     {from:'staff', ja:'คุณสะดวกนัดหมายวันไหนคะ？เรามีล่ามภาษาไทยให้บริการค่ะ', ko:'편하신 날 언제인가요? 태국어 통역 서비스 제공해드려요.', time:'어제 20:00'},
-   ]},
+     {from:'patient', ja:'สวัสดีค่ะ สนใจเรื่องการศัลยกรรมกรอบหน้า ราคาเท่าไหร่คะ', ko:'윤곽 성형 가격이 얼마인가요?', time:'어제 19:30'},
+     {from:'ai',      ja:'สวัสดีค่ะ การปรึกษาฟรี! ราคาเริ่มต้น 3,000,000 วอน', ko:'안녕하세요! 상담 무료! ₩3,000,000~입니다.', time:'어제 19:31'},
+   ]}
 ];
 
 const statusColors = {
@@ -179,6 +293,9 @@ function selectPatient(id) {
     pbEl.style.color = elapsedColors[p.status] || 'var(--gray-400)';
   }
 
+  // ── 언어 세팅 ──
+  setLangForPatient(id);
+
   // ── 상태 버튼 초기화 ──
   applyStatusBtn(p);
 
@@ -201,25 +318,6 @@ function selectPatient(id) {
       da.style.display = 'none';
     }
   }
-
-  // ── 환자 언어 자동 감지 및 전환 ──
-  // 이전에 선택한 언어 있으면 유지, 없으면 자동 감지
-  var savedLang = patientLangStore[id];
-  var li = savedLang ? (LANG_INFO[savedLang] ? Object.assign({code: savedLang}, LANG_INFO[savedLang]) : getLangInfo(id)) : getLangInfo(id);
-  currentLang = li.code;
-  // 처음 대화면 자동 감지 언어 저장
-  if(!savedLang) patientLangStore[id] = currentLang;
-  // 버튼 뱃지 업데이트
-  var badgeSpan = document.getElementById('lang-badge');
-  var nameSpan  = document.getElementById('lang-name');
-  if(badgeSpan) { badgeSpan.style.background = li.bg; badgeSpan.textContent = li.abbr; }
-  if(nameSpan)  nameSpan.textContent = li.name;
-  // 발송 라벨 업데이트
-  var lbl = document.getElementById('lang-label');
-  if(lbl) lbl.textContent = li.abbr + ' ' + li.name + ' 발송';
-  // placeholder 업데이트
-  var jaInput = document.getElementById('draft-text-ja');
-  if(jaInput) jaInput.placeholder = li.name + ' 번역 결과...';
 
   // ── 발송 버튼 텍스트 채널별 변경 ──
   var sendBtn = document.getElementById('send-btn');
@@ -252,21 +350,11 @@ function renderMessages(p) {
     // 발신자 레이블
     var senderLabel = '';
     if (isAI) {
-      senderLabel = '<div style="font-size:11px;font-weight:600;color:var(--navy);margin-bottom:3px;display:flex;align-items:center;gap:4px">HANA <span style="font-size:9px;background:#EEF2FF;color:var(--navy);padding:1px 5px;border-radius:4px;font-weight:400">자동응답</span></div>';
+      senderLabel = '<div style="font-size:11px;font-weight:600;color:var(--navy);margin-bottom:3px;display:flex;align-items:center;gap:4px">AI はな <span style="font-size:9px;background:#EEF2FF;color:var(--navy);padding:1px 5px;border-radius:4px;font-weight:400">자동응답</span></div>';
     } else if (isStaff) {
       var chName = p.ch === 'Instagram' ? 'Instagram' : 'LINE';
-      var _li = {
-        'ja':    {abbr:'JP', bg:'#2563EB'},
-        'zh-CN': {abbr:'CN', bg:'#DE2910'},
-        'zh-TW': {abbr:'TW', bg:'#002395'},
-        'en':    {abbr:'EN', bg:'#012169'},
-        'th':    {abbr:'TH', bg:'#A51931'},
-      };
-      var _pli = LANG_INFO[currentLang] || LANG_INFO['ja'];
-      senderLabel = '<div style="font-size:11px;font-weight:600;color:var(--gray-500);margin-bottom:3px;display:flex;align-items:center;gap:4px">'
-        + chName
-        + ' <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:14px;background:' + _pli.bg + ';color:#fff;border-radius:3px;font-size:9px;font-weight:700;margin-left:2px">' + _pli.abbr + '</span>'
-        + ' <span style="font-size:9px;background:#D1FAE5;color:#065F46;padding:1px 5px;border-radius:4px;font-weight:400">발송</span></div>';
+      var _li2 = getLang();
+      senderLabel = '<div style="font-size:11px;font-weight:600;color:var(--gray-500);margin-bottom:3px;display:flex;align-items:center;gap:4px">' + chName + ' <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:13px;background:'+_li2.bg+';color:#fff;border-radius:2px;font-size:9px;font-weight:700">'+_li2.abbr+'</span> <span style="font-size:9px;background:#D1FAE5;color:#065F46;padding:1px 5px;border-radius:4px;font-weight:400">발송</span></div>';
     }
 
     // 말풍선
@@ -280,8 +368,7 @@ function renderMessages(p) {
       bubbleBg = isAI ? '#0D1B3E' : (p.ch === 'Instagram' ? '#E1306C' : '#06C755');
       bubbleTc = '#fff';
       if (m.ko) bubbleContent += '<div style="font-size:13px;line-height:1.7">' + m.ko + '</div>';
-      var _li = LANG_INFO[currentLang] || LANG_INFO['ja'];
-      if (m.ja) bubbleContent += '<div style="margin-top:5px;padding:5px 8px;background:rgba(255,255,255,.2);border-radius:6px;font-size:11px;line-height:1.6">' + _li.abbr + ' ' + m.ja + '</div>';
+      if (m.ja) bubbleContent += '<div style="margin-top:5px;padding:5px 8px;background:rgba(255,255,255,.2);border-radius:6px;font-size:11px;line-height:1.6">' + getLang().abbr + ' ' + m.ja + '</div>';
     }
 
     var isOut = !isPatient;
@@ -351,8 +438,7 @@ function filterList(v) { renderList(curFilter, v); }
 function translateKoToJa(text, callback) {
   if (!text || !text.trim()) { callback(''); return; }
   var lang = typeof currentLang !== 'undefined' ? currentLang : 'ja';
-  var mmMap = {'ja':'ko|ja','zh-CN':'ko|zh-CN','zh-TW':'ko|zh-TW','en':'ko|en','th':'ko|th'};
-  var pair = mmMap[lang] || 'ko|ja';
+  var pair = (langLabels && langLabels[lang]) ? langLabels[lang].mm : 'ko|ja';
   var url = 'https://api.mymemory.translated.net/get?q='
     + encodeURIComponent(text)
     + '&langpair=' + pair;
@@ -380,67 +466,17 @@ var langLabels = {
   'th':    { flag: '🇹🇭', name: '태국어',      mm: 'ko|th' },
 };
 
-
-
-
-function toggleLangMenu() {
-  var menu = document.getElementById('lang-menu');
-  if(!menu) return;
-  var isOpen = menu.style.display !== 'none';
-  menu.style.display = isOpen ? 'none' : 'block';
-}
-// 메뉴 외부 클릭 시 닫기 — 전역 이벤트 (한 번만 등록)
-document.addEventListener('click', function(e) {
-  var menu = document.getElementById('lang-menu');
-  var btn  = document.getElementById('lang-btn');
-  if(!menu || menu.style.display === 'none') return;
-  if(!menu.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
-    menu.style.display = 'none';
-  }
-});
-var langBadges = {
-  'ja':    {html:'<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:14px;background:#2563EB;color:#fff;border-radius:3px;font-size:9px;font-weight:700">JP</span>', label:'JP 일본어'},
-  'zh-CN': {html:'<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:14px;background:#DE2910;color:#fff;border-radius:3px;font-size:9px;font-weight:700">CN</span>', label:'CN 중국어 간체'},
-  'zh-TW': {html:'<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:14px;background:#002395;color:#fff;border-radius:3px;font-size:9px;font-weight:700">TW</span>', label:'TW 중국어 번체'},
-  'en':    {html:'<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:14px;background:#012169;color:#fff;border-radius:3px;font-size:9px;font-weight:700">EN</span>', label:'EN 영어'},
-  'th':    {html:'<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:14px;background:#A51931;color:#fff;border-radius:3px;font-size:9px;font-weight:700">TH</span>', label:'TH 태국어'},
-};
-
-function selectLang(code, flag, name) {
-  currentLang = code;
-  var nameEl = document.getElementById('lang-name');
-  var lbl    = document.getElementById('lang-label');
-  var langColors = {'ja':'#2563EB','zh-CN':'#DE2910','zh-TW':'#002395','en':'#012169','th':'#A51931'};
-  var langAbbrs  = {'ja':'JP','zh-CN':'CN','zh-TW':'TW','en':'EN','th':'TH'};
-  if(nameEl) nameEl.textContent = name;
-  var badgeEl = document.getElementById('lang-badge');
-  if(badgeEl) {
-    badgeEl.style.background = langColors[code] || '#2563EB';
-    badgeEl.textContent = langAbbrs[code] || 'JP';
-  }
-  if(lbl) lbl.textContent = (langAbbrs[code]||'JP') + ' ' + name + ' 발송';
-  // JP 라벨 텍스트도 업데이트
-  var jpLabel = document.querySelector('.ai-draft [style*="JP 일본어"], .ai-draft [style*="font-weight:600"]');
-  // placeholder 업데이트
-  var jaInput = document.getElementById('draft-text-ja');
-  if(jaInput) jaInput.placeholder = name + ' 번역 결과...';
-  // 발송 입력란 위 라벨 업데이트
-  var jaColLabel = document.querySelector('#draft-text-ja');
-  if(jaColLabel && jaColLabel.previousElementSibling) {
-    jaColLabel.previousElementSibling.textContent = badge.label + ' 발송';
-  }
-  var menu = document.getElementById('lang-menu');
-  if(menu) menu.style.display = 'none';
-  // 현재 환자에 선택 언어 저장
-  if(typeof curId !== 'undefined') patientLangStore[curId] = code;
+function onLangChange() {
+  var sel = document.getElementById('lang-select');
+  if(!sel) return;
+  currentLang = sel.value;
+  var info = langLabels[currentLang] || langLabels['ja'];
+  // 라벨 업데이트
+  var lbl = document.getElementById('lang-label');
+  if(lbl) lbl.textContent = info.flag + ' ' + info.name + ' 발송';
   // 입력창에 내용 있으면 즉시 재번역
   var koEl = document.getElementById('draft-text-ko');
   if(koEl && koEl.value.trim()) onKoInput();
-  // AI 코칭 추천 답변 선택 언어로 재번역
-  if(typeof patients !== 'undefined' && typeof curId !== 'undefined' && patients[curId]) {
-    renderAISuggestsWithLang(patients[curId], code);
-    renderManualWithLang(patients[curId], code);
-  }
 }
 
 function onKoInput() {
@@ -606,62 +642,6 @@ function setRpTab(tab, btn) {
 }
 
 /* ── 답변 재생성 ── */
-
-/* ── AI 코칭 언어별 재번역 ── */
-function renderAISuggestsWithLang(p, langCode) {
-  var el = document.getElementById('ai-suggests');
-  if(!el) return;
-  langCode = langCode || currentLang || 'ja';
-
-  var lastMsg = null;
-  for(var i = p.msgs.length - 1; i >= 0; i--) {
-    if(p.msgs[i].from === 'patient') { lastMsg = p.msgs[i]; break; }
-  }
-
-  // 현재 suggests 데이터 가져오기
-  var suggests = el._suggests;
-  if(!suggests || !suggests.length) { renderAISuggests(p); return; }
-
-  // 일본어가 아닌 경우 ko 텍스트를 선택 언어로 번역
-  if(langCode === 'ja') {
-    renderAISuggests(p); return;
-  }
-
-  // 번역 중 표시
-  el.style.opacity = '0.5';
-  var pendingCount = suggests.length;
-  var translated = suggests.map(function(s){ return Object.assign({}, s); });
-
-  translated.forEach(function(s, i) {
-    translateKoToJa(s.ko, function(result) {
-      translated[i].ja = result || s.ko;
-      pendingCount--;
-      if(pendingCount === 0) {
-        el.style.opacity = '1';
-        var badge = langBadges[langCode] || langBadges['ja'];
-        var html = '';
-        if(lastMsg) {
-          html += '<div style="background:var(--gray-50);border-radius:8px;padding:8px 10px;margin-bottom:10px">'
-            + '<div style="font-size:10px;font-weight:600;color:var(--gray-400);margin-bottom:4px">환자 마지막 질문</div>'
-            + '<div style="font-size:11px;color:var(--navy);line-height:1.6">' + lastMsg.ja + '</div>'
-            + '<div style="font-size:10px;color:var(--gray-500);margin-top:2px">' + lastMsg.ko + '</div>'
-            + '</div>';
-        }
-        html += '<div style="font-size:10px;font-weight:600;color:var(--gray-400);margin-bottom:6px">추천 답변 ' + translated.length + '개</div>';
-        translated.forEach(function(s2, idx) {
-          html += '<div class="ai-suggest-item" id="sug-'+idx+'" onclick="selectSuggest('+idx+',this)">'
-            + '<div class="ai-suggest-tone" style="background:'+s2.toneBg+';color:'+s2.toneTc+'">'+s2.tone+'</div>'
-            + '<div class="ai-suggest-text">'+s2.ko+'</div>'
-            + '<div class="ai-suggest-ja">'+badge.label+' '+s2.ja+'</div>'
-            + '</div>';
-        });
-        el.innerHTML = html;
-        el._suggests = translated;
-      }
-    });
-  });
-}
-
 function regenSuggests() {
   var el = document.getElementById('ai-suggests');
   if(!el) return;
@@ -715,12 +695,9 @@ function updateRightPanel(p) {
     if (aiEl) aiEl.innerHTML = closedHtml;
     if (manEl) manEl.innerHTML = closedHtml;
   } else {
-    if(currentLang !== 'ja') {
-      renderAISuggestsWithLang(p, currentLang);
-    } else {
-      renderAISuggests(p);
-    }
-    renderManualWithLang(p, currentLang);
+    renderAISuggests(p);
+    renderManual(p);
+    if(currentLang !== 'ja') setTimeout(function(){ renderAISuggestsWithLang(p); renderManualWithLang(p); }, 50);
   }
 }
 
@@ -783,62 +760,6 @@ function selectSuggest(idx, el) {
   showToastInbox('✓ 답변이 발송폼에 적용되었습니다.', 'success');
 }
 
-
-/* ── AI 코칭 언어별 재번역 ── */
-function renderAISuggestsWithLang(p, langCode) {
-  var el = document.getElementById('ai-suggests');
-  if(!el) return;
-  langCode = langCode || currentLang || 'ja';
-
-  var lastMsg = null;
-  for(var i = p.msgs.length - 1; i >= 0; i--) {
-    if(p.msgs[i].from === 'patient') { lastMsg = p.msgs[i]; break; }
-  }
-
-  // 현재 suggests 데이터 가져오기
-  var suggests = el._suggests;
-  if(!suggests || !suggests.length) { renderAISuggests(p); return; }
-
-  // 일본어가 아닌 경우 ko 텍스트를 선택 언어로 번역
-  if(langCode === 'ja') {
-    renderAISuggests(p); return;
-  }
-
-  // 번역 중 표시
-  el.style.opacity = '0.5';
-  var pendingCount = suggests.length;
-  var translated = suggests.map(function(s){ return Object.assign({}, s); });
-
-  translated.forEach(function(s, i) {
-    translateKoToJa(s.ko, function(result) {
-      translated[i].ja = result || s.ko;
-      pendingCount--;
-      if(pendingCount === 0) {
-        el.style.opacity = '1';
-        var badge = langBadges[langCode] || langBadges['ja'];
-        var html = '';
-        if(lastMsg) {
-          html += '<div style="background:var(--gray-50);border-radius:8px;padding:8px 10px;margin-bottom:10px">'
-            + '<div style="font-size:10px;font-weight:600;color:var(--gray-400);margin-bottom:4px">환자 마지막 질문</div>'
-            + '<div style="font-size:11px;color:var(--navy);line-height:1.6">' + lastMsg.ja + '</div>'
-            + '<div style="font-size:10px;color:var(--gray-500);margin-top:2px">' + lastMsg.ko + '</div>'
-            + '</div>';
-        }
-        html += '<div style="font-size:10px;font-weight:600;color:var(--gray-400);margin-bottom:6px">추천 답변 ' + translated.length + '개</div>';
-        translated.forEach(function(s2, idx) {
-          html += '<div class="ai-suggest-item" id="sug-'+idx+'" onclick="selectSuggest('+idx+',this)">'
-            + '<div class="ai-suggest-tone" style="background:'+s2.toneBg+';color:'+s2.toneTc+'">'+s2.tone+'</div>'
-            + '<div class="ai-suggest-text">'+s2.ko+'</div>'
-            + '<div class="ai-suggest-ja">'+badge.label+' '+s2.ja+'</div>'
-            + '</div>';
-        });
-        el.innerHTML = html;
-        el._suggests = translated;
-      }
-    });
-  });
-}
-
 function regenSuggests() {
   var el = document.getElementById('ai-suggests');
   if (!el) return;
@@ -846,42 +767,9 @@ function regenSuggests() {
   showToastInbox('🤖 AI 코칭 재생성 중...');
   setTimeout(function(){
     el.style.opacity = '1';
-    if(patients[curId]) {
-      if(typeof currentLang !== 'undefined' && currentLang !== 'ja') {
-        renderAISuggestsWithLang(patients[curId], currentLang);
-      } else {
-        renderAISuggests(patients[curId]);
-      }
-    }
+    if (patients[curId]) renderAISuggests(patients[curId]);
     showToastInbox('✓ AI 코칭이 업데이트되었습니다.', 'success');
   }, 800);
-}
-
-
-/* ── 시술 코칭 언어별 번역 ── */
-function renderManualWithLang(p, langCode) {
-  var el = document.getElementById('manual-content');
-  if(!el) return;
-  if(langCode === 'ja' || !langCode) { renderManual(p); return; }
-
-  // 일단 기본 렌더링 먼저
-  renderManual(p);
-
-  // 각 manual-item의 body 텍스트를 해당 언어로 번역
-  var items = el.querySelectorAll('.manual-item-body');
-  var li = LANG_INFO[currentLang] || LANG_INFO['ja'];
-  items.forEach(function(item) {
-    var origText = item.textContent;
-    item.style.opacity = '0.5';
-    translateKoToJa(origText, function(result) {
-      if(result) {
-        item.innerHTML = '<span style="font-size:10px;color:var(--gray-400)">' + origText + '</span>'
-          + '<div style="margin-top:4px;padding:4px 6px;background:var(--gray-50);border-radius:4px;font-size:11px;color:var(--gray-700)">'
-          + li.abbr + ' ' + result + '</div>';
-      }
-      item.style.opacity = '1';
-    });
-  });
 }
 
 function renderManual(p) {
