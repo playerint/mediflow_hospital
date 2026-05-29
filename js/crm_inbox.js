@@ -357,6 +357,10 @@ function selectLang(code, flag, name) {
   // 입력창에 내용 있으면 즉시 재번역
   var koEl = document.getElementById('draft-text-ko');
   if(koEl && koEl.value.trim()) onKoInput();
+  // AI 코칭 추천 답변 선택 언어로 재번역
+  if(typeof patients !== 'undefined' && typeof curId !== 'undefined' && patients[curId]) {
+    renderAISuggestsWithLang(patients[curId], code);
+  }
 }
 
 function onKoInput() {
