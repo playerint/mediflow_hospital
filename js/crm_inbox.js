@@ -843,6 +843,33 @@ function regenSuggests() {
   }, 800);
 }
 
+
+/* ── 시술 코칭 언어별 번역 ── */
+function renderManualWithLang(p, langCode) {
+  var el = document.getElementById('manual-content');
+  if(!el) return;
+  if(langCode === 'ja' || !langCode) { renderManual(p); return; }
+
+  // 일단 기본 렌더링 먼저
+  renderManual(p);
+
+  // 각 manual-item의 body 텍스트를 해당 언어로 번역
+  var items = el.querySelectorAll('.manual-item-body');
+  var li = getLangInfo(p.id);
+  items.forEach(function(item) {
+    var origText = item.textContent;
+    item.style.opacity = '0.5';
+    translateKoToJa(origText, function(result) {
+      if(result) {
+        item.innerHTML = '<span style="font-size:10px;color:var(--gray-400)">' + origText + '</span>'
+          + '<div style="margin-top:4px;padding:4px 6px;background:var(--gray-50);border-radius:4px;font-size:11px;color:var(--gray-700)">'
+          + li.abbr + ' ' + result + '</div>';
+      }
+      item.style.opacity = '1';
+    });
+  });
+}
+
 function renderManual(p) {
   var el = document.getElementById('manual-content');
   if (!el) return;
