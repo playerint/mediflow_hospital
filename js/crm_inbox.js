@@ -1,5 +1,20 @@
 
 // ── 환자 데이터 ──────────────────────────────────────────────────
+
+/* ── 환자별 언어 매핑 (전역) ── */
+var PATIENT_LANG_MAP = {0:'ja',1:'ja',2:'ja',3:'ja',4:'ja',5:'ja',6:'ja',7:'ja',8:'ja',9:'zh-CN',10:'zh-TW',11:'en',12:'th'};
+var LANG_INFO = {
+  'ja':    {abbr:'JP', name:'일본어',      bg:'#2563EB'},
+  'zh-CN': {abbr:'CN', name:'중국어 간체', bg:'#DE2910'},
+  'zh-TW': {abbr:'TW', name:'중국어 번체', bg:'#002395'},
+  'en':    {abbr:'EN', name:'영어',        bg:'#012169'},
+  'th':    {abbr:'TH', name:'태국어',      bg:'#A51931'},
+};
+function getLangInfo(patientId) {
+  var code = PATIENT_LANG_MAP[patientId] || 'ja';
+  return Object.assign({code: code}, LANG_INFO[code] || LANG_INFO['ja']);
+}
+
 const patients = [
   {id:0, name:'야마다 사오리', nameJa:'山田 沙織', init:'야마', bg:'#EEEDFE', tc:'#3C3489',
    proc:'쌍꺼풀', ch:'LINE', chColor:'#2563EB', status:'new', statusLabel:'신규', elapsed:'2시간', unread:true,
@@ -185,16 +200,8 @@ function selectPatient(id) {
   }
 
   // ── 환자 언어 자동 감지 및 전환 ──
-  var patientLangMap = {0:'ja',1:'ja',2:'ja',3:'ja',4:'ja',5:'ja',6:'ja',7:'ja',8:'ja',9:'zh-CN',10:'zh-TW',11:'en',12:'th'};
-  var detectedLang = patientLangMap[id] || 'ja';
-  var langInfo = {
-    'ja':    {code:'ja',    abbr:'JP', name:'일본어',      bg:'#2563EB'},
-    'zh-CN': {code:'zh-CN', abbr:'CN', name:'중국어 간체', bg:'#DE2910'},
-    'zh-TW': {code:'zh-TW', abbr:'TW', name:'중국어 번체', bg:'#002395'},
-    'en':    {code:'en',    abbr:'EN', name:'영어',        bg:'#012169'},
-    'th':    {code:'th',    abbr:'TH', name:'태국어',      bg:'#A51931'},
-  };
-  var li = langInfo[detectedLang] || langInfo['ja'];
+  var li = getLangInfo(id);
+  currentLang = li.code;
   currentLang = detectedLang;
   // 버튼 뱃지 업데이트
   var badgeSpan = document.getElementById('lang-badge');
@@ -249,11 +256,10 @@ function renderMessages(p) {
         'en':    {abbr:'EN', bg:'#012169'},
         'th':    {abbr:'TH', bg:'#A51931'},
       };
-      var _lang = typeof currentLang !== 'undefined' ? currentLang : 'ja';
-      var _badge = _li[_lang] || _li['ja'];
+      var _pli = getLangInfo(p.id);
       senderLabel = '<div style="font-size:11px;font-weight:600;color:var(--gray-500);margin-bottom:3px;display:flex;align-items:center;gap:4px">'
         + chName
-        + ' <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:14px;background:' + _badge.bg + ';color:#fff;border-radius:3px;font-size:9px;font-weight:700;margin-left:2px">' + _badge.abbr + '</span>'
+        + ' <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:14px;background:' + _pli.bg + ';color:#fff;border-radius:3px;font-size:9px;font-weight:700;margin-left:2px">' + _pli.abbr + '</span>'
         + ' <span style="font-size:9px;background:#D1FAE5;color:#065F46;padding:1px 5px;border-radius:4px;font-weight:400">발송</span></div>';
     }
 
@@ -268,9 +274,8 @@ function renderMessages(p) {
       bubbleBg = isAI ? '#0D1B3E' : (p.ch === 'Instagram' ? '#E1306C' : '#06C755');
       bubbleTc = '#fff';
       if (m.ko) bubbleContent += '<div style="font-size:13px;line-height:1.7">' + m.ko + '</div>';
-      var _abbrs = {'ja':'JP','zh-CN':'CN','zh-TW':'TW','en':'EN','th':'TH'};
-      var _abbr = _abbrs[typeof currentLang !== 'undefined' ? currentLang : 'ja'] || 'JP';
-      if (m.ja) bubbleContent += '<div style="margin-top:5px;padding:5px 8px;background:rgba(255,255,255,.2);border-radius:6px;font-size:11px;line-height:1.6">' + _abbr + ' ' + m.ja + '</div>';
+      var _li = getLangInfo(p.id);
+      if (m.ja) bubbleContent += '<div style="margin-top:5px;padding:5px 8px;background:rgba(255,255,255,.2);border-radius:6px;font-size:11px;line-height:1.6">' + _li.abbr + ' ' + m.ja + '</div>';
     }
 
     var isOut = !isPatient;
