@@ -268,7 +268,9 @@ function renderMessages(p) {
       bubbleBg = isAI ? '#0D1B3E' : (p.ch === 'Instagram' ? '#E1306C' : '#06C755');
       bubbleTc = '#fff';
       if (m.ko) bubbleContent += '<div style="font-size:13px;line-height:1.7">' + m.ko + '</div>';
-      if (m.ja) bubbleContent += '<div style="margin-top:5px;padding:5px 8px;background:rgba(255,255,255,.2);border-radius:6px;font-size:11px;line-height:1.6">JP ' + m.ja + '</div>';
+      var _abbrs = {'ja':'JP','zh-CN':'CN','zh-TW':'TW','en':'EN','th':'TH'};
+      var _abbr = _abbrs[typeof currentLang !== 'undefined' ? currentLang : 'ja'] || 'JP';
+      if (m.ja) bubbleContent += '<div style="margin-top:5px;padding:5px 8px;background:rgba(255,255,255,.2);border-radius:6px;font-size:11px;line-height:1.6">' + _abbr + ' ' + m.ja + '</div>';
     }
 
     var isOut = !isPatient;
