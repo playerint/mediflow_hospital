@@ -5,7 +5,7 @@ const patients = [
    proc:'쌍꺼풀', ch:'LINE', chColor:'#2563EB', status:'new', statusLabel:'신규', elapsed:'2시간', unread:true,
    msgs:[
      {from:'patient', ja:'はじめまして！二重整形について聞きたいのですが、カウンセリングは無料ですか？', ko:'안녕하세요! 쌍꺼풀 성형에 대해 궁금한데요, 상담은 무료인가요?', time:'10:23'},
-     {from:'ai',      ja:'はじめまして！カウンセリングは無料です。埋没法は₩400,000〜が目安です。', ko:'안녕하세요! 상담은 무료입니다. 매몰법은 ₩400,000~이 기준입니다.', time:'10:23 (AI はな)'},
+     {from:'ai',      ja:'はじめまして！カウンセリングは無料です。埋没法は₩400,000〜が目安です。', ko:'안녕하세요! 상담은 무료입니다. 매몰법은 ₩400,000~이 기준입니다.', time:'10:23 (HANA)'},
    ],
    draft:{ja:'はじめまして、オーレ整形外科です。\nカウンセリングは無料で承っております。\nご来院のご希望日時をお聞かせください。', ko:'안녕하세요, 올래성형외과입니다.\n상담은 무료로 진행하고 있습니다.\n방문 희망 일시를 알려주세요.'}},
 
@@ -36,7 +36,7 @@ const patients = [
    msgs:[
      {from:'patient', ja:'二重整形を予約したいです。', ko:'쌍꺼풀 성형을 예약하고 싶습니다.', time:'5/17'},
      {from:'staff',   ja:'6月5日14:00はいかがでしょうか？', ko:'6월 5일 14:00은 어떠신가요?', time:'5/17'},
-     {from:'ai',      ja:'【予約確認】6月5日(金) 14:00 二重整形カウンセリング。', ko:'[예약 확인] 6월 5일(금) 14:00 쌍꺼풀 성형 상담.', time:'5/17 (AI はな)'},
+     {from:'ai',      ja:'【予約確認】6月5日(金) 14:00 二重整形カウンセリング。', ko:'[예약 확인] 6월 5일(금) 14:00 쌍꺼풀 성형 상담.', time:'5/17 (HANA)'},
    ],
    draft:{ja:'', ko:''}},
 
@@ -184,6 +184,34 @@ function selectPatient(id) {
     }
   }
 
+  // ── 환자 언어 자동 감지 및 전환 ──
+  var patientLangMap = {0:'ja',1:'ja',2:'ja',3:'ja',4:'ja',5:'ja',6:'ja',7:'ja',8:'ja',9:'zh-CN',10:'zh-TW',11:'en',12:'th'};
+  var detectedLang = patientLangMap[id] || 'ja';
+  var langInfo = {
+    'ja':    {code:'ja',    abbr:'JP', name:'일본어',      bg:'#2563EB'},
+    'zh-CN': {code:'zh-CN', abbr:'CN', name:'중국어 간체', bg:'#DE2910'},
+    'zh-TW': {code:'zh-TW', abbr:'TW', name:'중국어 번체', bg:'#002395'},
+    'en':    {code:'en',    abbr:'EN', name:'영어',        bg:'#012169'},
+    'th':    {code:'th',    abbr:'TH', name:'태국어',      bg:'#A51931'},
+  };
+  var li = langInfo[detectedLang] || langInfo['ja'];
+  currentLang = detectedLang;
+  // 버튼 뱃지 업데이트
+  var langBtn = document.getElementById('lang-btn');
+  if(langBtn) {
+    var badgeSpan = langBtn.querySelector('span[style*="border-radius:3px"]');
+    var nameSpan  = document.getElementById('lang-name');
+    if(badgeSpan) badgeSpan.style.background = li.bg;
+    if(badgeSpan) badgeSpan.textContent = li.abbr;
+    if(nameSpan)  nameSpan.textContent  = li.name;
+  }
+  // 발송 라벨 업데이트
+  var lbl = document.getElementById('lang-label');
+  if(lbl) lbl.textContent = li.abbr + ' ' + li.name + ' 발송';
+  // placeholder 업데이트
+  var jaInput = document.getElementById('draft-text-ja');
+  if(jaInput) jaInput.placeholder = li.name + ' 번역 결과...';
+
   // ── 발송 버튼 텍스트 채널별 변경 ──
   var sendBtn = document.getElementById('send-btn');
   if (sendBtn) {
@@ -215,7 +243,7 @@ function renderMessages(p) {
     // 발신자 레이블
     var senderLabel = '';
     if (isAI) {
-      senderLabel = '<div style="font-size:11px;font-weight:600;color:var(--navy);margin-bottom:3px;display:flex;align-items:center;gap:4px">AI はな <span style="font-size:9px;background:#EEF2FF;color:var(--navy);padding:1px 5px;border-radius:4px;font-weight:400">자동응답</span></div>';
+      senderLabel = '<div style="font-size:11px;font-weight:600;color:var(--navy);margin-bottom:3px;display:flex;align-items:center;gap:4px">HANA <span style="font-size:9px;background:#EEF2FF;color:var(--navy);padding:1px 5px;border-radius:4px;font-weight:400">자동응답</span></div>';
     } else if (isStaff) {
       var chName = p.ch === 'Instagram' ? 'Instagram' : 'LINE';
       senderLabel = '<div style="font-size:11px;font-weight:600;color:var(--gray-500);margin-bottom:3px;display:flex;align-items:center;gap:4px">' + chName + ' <span style="font-size:9px;background:#D1FAE5;color:#065F46;padding:1px 5px;border-radius:4px;font-weight:400">발송</span></div>';
