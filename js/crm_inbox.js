@@ -374,21 +374,18 @@ var langLabels = {
 function toggleLangMenu() {
   var menu = document.getElementById('lang-menu');
   if(!menu) return;
-  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-  // 외부 클릭 시 닫기
-  if(menu.style.display === 'block') {
-    setTimeout(function(){
-      document.addEventListener('click', closeLangMenu, {once: true});
-    }, 0);
-  }
+  var isOpen = menu.style.display !== 'none';
+  menu.style.display = isOpen ? 'none' : 'block';
 }
-function closeLangMenu(e) {
+// 메뉴 외부 클릭 시 닫기 — 전역 이벤트 (한 번만 등록)
+document.addEventListener('click', function(e) {
   var menu = document.getElementById('lang-menu');
   var btn  = document.getElementById('lang-btn');
-  if(menu && !menu.contains(e.target) && e.target !== btn) {
+  if(!menu || menu.style.display === 'none') return;
+  if(!menu.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
     menu.style.display = 'none';
   }
-}
+});
 var langBadges = {
   'ja':    {html:'<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:14px;background:#2563EB;color:#fff;border-radius:3px;font-size:9px;font-weight:700">JP</span>', label:'JP 일본어'},
   'zh-CN': {html:'<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:14px;background:#DE2910;color:#fff;border-radius:3px;font-size:9px;font-weight:700">CN</span>', label:'CN 중국어 간체'},
