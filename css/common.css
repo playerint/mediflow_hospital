@@ -551,3 +551,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   opacity: 0;
   cursor: pointer;
 }
+
+/* ── 맞춤법 검사 빨간 줄 제거 ── */
+input, textarea, [contenteditable] {
+  spellcheck: false;
+  -webkit-spellcheck: false;
+}
