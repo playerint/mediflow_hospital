@@ -536,3 +536,18 @@ textarea { resize: vertical; line-height: 1.6; }
   border-top: 1px solid var(--s100);
   margin-top: auto;
 }
+
+/* ── date input — 전체 클릭 영역 캘린더 오픈 ── */
+input[type="date"] {
+  cursor: pointer;
+  position: relative;
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
