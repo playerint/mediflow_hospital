@@ -621,6 +621,91 @@ function renderManual(p) {
     }).join('');
 }
 
+function openBookingModal(p) {
+  var av = document.getElementById('bm-avatar');
+  var nm = document.getElementById('bm-name');
+  var mt = document.getElementById('bm-meta');
+  var pi = document.getElementById('bm-patient-info');
+  var cb = document.getElementById('bm-ch-badge');
+  if(av){ av.textContent = p.init; av.style.background = p.bg; av.style.color = p.tc; }
+  if(nm) nm.textContent = p.name + (p.nameJa ? ' (' + p.nameJa + ')' : '');
+  if(mt) mt.textContent = p.ch + ' · ' + (p.proc || '시술 미정') + ' · ' + (p.statusLabel || '');
+  if(pi) pi.textContent = p.name + '님의 예약을 등록합니다';
+  if(cb){
+    cb.textContent = p.ch === 'Instagram' ? '📸 Instagram' : '💬 LINE';
+    cb.style.background = p.ch === 'Instagram' ? '#FDF2F8' : '#EFF6FF';
+    cb.style.color = p.ch === 'Instagram' ? '#BE185D' : '#2563EB';
+  }
+  var procEl = document.getElementById('bm-proc');
+  if(procEl && p.proc) {
+    for(var i=0; i<procEl.options.length; i++){
+      if(procEl.options[i].text.indexOf(p.proc.replace(/\s*\(.*\)/,'')) !== -1) {
+        procEl.selectedIndex = i; break;
+      }
+    }
+  }
+  var d = new Date(); d.setDate(d.getDate()+3);
+  var dateEl = document.getElementById('bm-date');
+  if(dateEl) dateEl.value = d.toISOString().slice(0,10);
+  bmUpdateSlots();
+  var modal = document.getElementById('booking-modal');
+  if(modal){ modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+}
+
+function closeBookingModal() {
+  var modal = document.getElementById('booking-modal');
+  if(modal){ modal.style.display = 'none'; document.body.style.overflow = ''; }
+}
+
+function bmUpdateSlots() {
+  var slots = ['09:00','09:30','10:00','10:30','11:00','11:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00'];
+  var off = [2, 5, 8];
+  var el = document.getElementById('bm-slots');
+  if(!el) return;
+  el.innerHTML = slots.map(function(t, i) {
+    var isOff = off.indexOf(i) !== -1;
+    var style = 'padding:7px 4px;text-align:center;border:1px solid var(--gray-200);border-radius:var(--r);font-size:12px;transition:all .15s;';
+    style += isOff
+      ? 'cursor:not-allowed;color:var(--gray-300);background:var(--gray-100)'
+      : 'cursor:pointer;color:var(--gray-600);background:#fff';
+    var click = isOff ? '' : ' onclick="bmSelectSlot(this)"';
+    return '<div data-time="' + t + '"' + click + ' style="' + style + '">' + t + '</div>';
+  }).join('');
+}
+
+function bmSelectSlot(el) {
+  var time = el.getAttribute('data-time');
+  document.querySelectorAll('#bm-slots div').forEach(function(s){
+    s.style.background = '#fff';
+    s.style.borderColor = 'var(--gray-200)';
+    s.style.color = 'var(--gray-600)';
+    s.style.fontWeight = '';
+  });
+  el.style.background = 'var(--navy)';
+  el.style.borderColor = 'var(--navy)';
+  el.style.color = '#fff';
+  el.style.fontWeight = '500';
+  var t = document.getElementById('bm-selected-time');
+  if(t) t.value = time;
+}
+
+function submitBookingModal() {
+  var time = document.getElementById('bm-selected-time') ? document.getElementById('bm-selected-time').value : '';
+  var date = document.getElementById('bm-date') ? document.getElementById('bm-date').value : '';
+  if(!time){ showToastInbox('예약 시간을 선택해주세요.', 'error'); return; }
+  if(!date){ showToastInbox('예약 날짜를 선택해주세요.', 'error'); return; }
+  var p = patients[curId];
+  if(p) {
+    p.status = 'booked';
+    p.statusLabel = '예약완료';
+    applyStatusBtn(p);
+    renderList(curFilter, '');
+    if(typeof updateRightPanel === 'function') updateRightPanel(p);
+  }
+  closeBookingModal();
+  showToastInbox('✓ 예약이 등록되었습니다. ' + date + ' ' + time, 'success');
+}
+
 function copyText(text) {
   if(navigator.clipboard){
     navigator.clipboard.writeText(text).then(function(){ showToastInbox('✓ 복사되었습니다.', 'success'); });
