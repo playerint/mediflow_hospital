@@ -65,6 +65,12 @@ function selectLang(code, flag, name) {
 }
 
 var _translateTimer = null;
+
+/* ══════════════════════════════════════════════════════
+   번역 함수 — 현재: MyMemory API (무료)
+   추후 Claude API로 교체 시 이 함수만 수정하면 됨.
+   언어쌍(pair)은 LANG_CONFIG[currentLang].pair 에서 가져옴.
+══════════════════════════════════════════════════════ */
 function translateKoToJa(text, callback) {
   if(!text || !text.trim()) { callback(''); return; }
   var pair = getLang().pair;
@@ -201,7 +207,6 @@ const patients = [
      {from:'ai',      ja:'6月3日(火)14:00はいかがでしょうか？', ko:'6월 3일(화) 14:00 어떠세요?', time:'5/20 20:02'},
    ]},
 
-,
   // ── 중국어 간체 ──
   {id:9, name:'왕 메이링', nameJa:'王 美玲', init:'왕', bg:'#FEF2F2', tc:'#991B1B',
    proc:'쌍꺼풀', ch:'Instagram', chColor:'#E1306C', status:'new', statusLabel:'신규', elapsed:'1시간', unread:true,
@@ -431,68 +436,6 @@ function setFilter(f, btn) {
 function filterList(v) { renderList(curFilter, v); }
 
 
-/* ══════════════════════════════════════════════════════
-   번역 함수 — 현재: MyMemory API (무료)
-   추후 Claude API로 교체 시 translateKoToJa 함수만 수정
-══════════════════════════════════════════════════════ */
-function translateKoToJa(text, callback) {
-  if (!text || !text.trim()) { callback(''); return; }
-  var lang = typeof currentLang !== 'undefined' ? currentLang : 'ja';
-  var pair = (langLabels && langLabels[lang]) ? langLabels[lang].mm : 'ko|ja';
-  var url = 'https://api.mymemory.translated.net/get?q='
-    + encodeURIComponent(text)
-    + '&langpair=' + pair;
-  fetch(url)
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      var result = d.responseData && d.responseData.translatedText
-        ? d.responseData.translatedText
-        : '';
-      callback(result);
-    })
-    .catch(function(){ callback(''); });
-}
-
-/* 번역 디바운스 타이머 */
-var _translateTimer = null;
-
-/* ── 발송 언어 선택 ── */
-var currentLang = 'ja';
-var langLabels = {
-  'ja':    { flag: '🇯🇵', name: '일본어',      mm: 'ko|ja' },
-  'zh-CN': { flag: '🇨🇳', name: '중국어 간체', mm: 'ko|zh-CN' },
-  'zh-TW': { flag: '🇹🇼', name: '중국어 번체', mm: 'ko|zh-TW' },
-  'en':    { flag: '🇬🇧', name: '영어',        mm: 'ko|en' },
-  'th':    { flag: '🇹🇭', name: '태국어',      mm: 'ko|th' },
-};
-
-function onLangChange() {
-  var sel = document.getElementById('lang-select');
-  if(!sel) return;
-  currentLang = sel.value;
-  var info = langLabels[currentLang] || langLabels['ja'];
-  // 라벨 업데이트
-  var lbl = document.getElementById('lang-label');
-  if(lbl) lbl.textContent = info.flag + ' ' + info.name + ' 발송';
-  // 입력창에 내용 있으면 즉시 재번역
-  var koEl = document.getElementById('draft-text-ko');
-  if(koEl && koEl.value.trim()) onKoInput();
-}
-
-function onKoInput() {
-  var koEl = document.getElementById('draft-text-ko');
-  var jaEl = document.getElementById('draft-text-ja');
-  if (!koEl || !jaEl) return;
-  jaEl.value = '번역 중...';
-  jaEl.style.color = 'var(--gray-400)';
-  clearTimeout(_translateTimer);
-  _translateTimer = setTimeout(function() {
-    translateKoToJa(koEl.value, function(result) {
-      jaEl.value = result;
-      jaEl.style.color = '';
-    });
-  }, 600); // 600ms 디바운스
-}
 function regenDraft() {
   const koEl = document.getElementById('draft-text-ko');
   const jaEl = document.getElementById('draft-text-ja');
@@ -509,12 +452,10 @@ function regenDraft() {
   }, 1200);
 }
 
-renderList('all', '');
-selectPatient(0);
-
 
 /* ══════════════════════════════════════════════════════
    우측 패널 통합 기능 (patients 데이터 로드 후 실행)
+   ※ 초기화(renderList + selectPatient)는 파일 맨 끝에서 1회만 호출
 ══════════════════════════════════════════════════════ */
 
 /* ── 토스트 ── */
@@ -639,20 +580,6 @@ function setRpTab(tab, btn) {
     var el = document.getElementById('rp-tab-'+t);
     if(el) el.style.display = t===tab ? '' : 'none';
   });
-}
-
-/* ── 답변 재생성 ── */
-function regenSuggests() {
-  var el = document.getElementById('ai-suggests');
-  if(!el) return;
-  el.style.opacity = '0.4';
-  el.style.transition = 'opacity .3s';
-  showToastInbox('🤖 AI 추천 답변 재생성 중...');
-  setTimeout(function(){
-    el.style.opacity = '1';
-    if(typeof renderAISuggests === 'function') renderAISuggests(patients[curId]);
-    showToastInbox('✓ AI 추천 답변이 재생성되었습니다.', 'success');
-  }, 1200);
 }
 
 /* ── 번역 복사 ── */
