@@ -256,7 +256,7 @@ function renderMessages(p) {
         'en':    {abbr:'EN', bg:'#012169'},
         'th':    {abbr:'TH', bg:'#A51931'},
       };
-      var _pli = getLangInfo(p.id);
+      var _pli = LANG_INFO[currentLang] || LANG_INFO['ja'];
       senderLabel = '<div style="font-size:11px;font-weight:600;color:var(--gray-500);margin-bottom:3px;display:flex;align-items:center;gap:4px">'
         + chName
         + ' <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:14px;background:' + _pli.bg + ';color:#fff;border-radius:3px;font-size:9px;font-weight:700;margin-left:2px">' + _pli.abbr + '</span>'
@@ -274,7 +274,7 @@ function renderMessages(p) {
       bubbleBg = isAI ? '#0D1B3E' : (p.ch === 'Instagram' ? '#E1306C' : '#06C755');
       bubbleTc = '#fff';
       if (m.ko) bubbleContent += '<div style="font-size:13px;line-height:1.7">' + m.ko + '</div>';
-      var _li = getLangInfo(p.id);
+      var _li = LANG_INFO[currentLang] || LANG_INFO['ja'];
       if (m.ja) bubbleContent += '<div style="margin-top:5px;padding:5px 8px;background:rgba(255,255,255,.2);border-radius:6px;font-size:11px;line-height:1.6">' + _li.abbr + ' ' + m.ja + '</div>';
     }
 
@@ -705,13 +705,12 @@ function updateRightPanel(p) {
     if (aiEl) aiEl.innerHTML = closedHtml;
     if (manEl) manEl.innerHTML = closedHtml;
   } else {
-    var _pLang = getLangInfo(p.id);
-    if(_pLang.code !== 'ja') {
-      renderAISuggestsWithLang(p, _pLang.code);
+    if(currentLang !== 'ja') {
+      renderAISuggestsWithLang(p, currentLang);
     } else {
       renderAISuggests(p);
     }
-    renderManualWithLang(p, _pLang.code);
+    renderManualWithLang(p, currentLang);
   }
 }
 
@@ -860,7 +859,7 @@ function renderManualWithLang(p, langCode) {
 
   // 각 manual-item의 body 텍스트를 해당 언어로 번역
   var items = el.querySelectorAll('.manual-item-body');
-  var li = getLangInfo(p.id);
+  var li = LANG_INFO[currentLang] || LANG_INFO['ja'];
   items.forEach(function(item) {
     var origText = item.textContent;
     item.style.opacity = '0.5';
