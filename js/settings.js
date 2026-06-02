@@ -73,7 +73,7 @@ function saveRoles() {
     const sel = document.getElementById('role-select-' + i);
     if (sel) m.role = sel.value;
   });
-  alert('권한 변경이 저장되었습니다.');
+  showToast('✓ 권한 변경이 저장되었습니다.', 'success');
 }
 
 
@@ -176,7 +176,7 @@ const sections = {
       <div class="field-group"><div class="f-label">Channel ID</div><input type="text" value="2006xxxxxxxx" readonly></div>
       <div class="field-group"><div class="f-label">Channel Secret</div><input type="text" value="••••••••••••••••" readonly></div>
       <div class="field-group"><div class="f-label">Webhook URL</div><input type="text" value="https://api.hospital-site-os.com/webhook/line/oleps" readonly></div>
-      <div style="display:flex;gap:8px;margin-top:8px"><button class="btn" style="flex:1;justify-content:center;font-size:12px" onclick="alert('연결 테스트 성공!')">연결 테스트</button><button class="btn btn-danger" style="font-size:12px" onclick="alert('연결 해제')">연결 해제</button></div>
+      <div style="display:flex;gap:8px;margin-top:8px"><button class="btn" style="flex:1;justify-content:center;font-size:12px" onclick="showToast('✓ 연결 테스트 성공!','success')">연결 테스트</button><button class="btn btn-danger" style="font-size:12px" onclick="openModal('🔌 연결 해제','LINE Official Account 연결을 해제하시겠습니까?<br><span style=&quot;font-size:12px;color:#9CA3AF&quot;>해제 후 자동상담이 중단됩니다.</span>',function(){showToast('연결이 해제되었습니다.','');},'해제','btn-danger')">연결 해제</button></div>
     </div>`,
   instagram: `
     <div class="s-section">
@@ -232,29 +232,30 @@ const sections = {
 
 
 function deleteMember(name) {
-  if (confirm(name + ' 멤버를 삭제하시겠습니까?\n삭제 후 해당 계정은 더 이상 접속할 수 없습니다.')) {
-    alert(name + ' 멤버가 삭제되었습니다.');
-    // 해당 행 숨기기
-    var items = document.querySelectorAll('.m-item');
-    items.forEach(function(item) {
-      if (item.textContent.indexOf(name) > -1) {
-        item.style.display = 'none';
-      }
-    });
-  }
+  openModal(
+    '🗑 멤버 삭제',
+    '<strong>' + name + '</strong>님을 삭제하시겠습니까?<br><span style="font-size:12px;color:#9CA3AF">삭제 후 해당 계정은 더 이상 접속할 수 없습니다.</span>',
+    function() {
+      var items = document.querySelectorAll('.m-item');
+      items.forEach(function(item) {
+        if (item.textContent.indexOf(name) > -1) item.style.display = 'none';
+      });
+      showToast('✓ ' + name + ' 멤버가 삭제되었습니다.', 'success');
+    },
+    '삭제', 'btn-danger'
+  );
 }
 
 function saveTeamRoles() {
   var r1 = document.getElementById('role-1');
   var r2 = document.getElementById('role-2');
   var labels = { admin:'관리자', editor:'편집자', viewer:'뷰어' };
-  var msg = '권한이 저장되었습니다.\n\n';
-  if (r1) msg += '이수진  →  ' + labels[r1.value] + '\n';
-  if (r2) msg += '박민호  →  ' + labels[r2.value];
-  alert(msg);
-  // 테두리 원복
+  var parts = [];
+  if (r1) parts.push('이수진 → ' + (labels[r1.value] || r1.value));
+  if (r2) parts.push('박민호 → ' + (labels[r2.value] || r2.value));
   if (r1) r1.style.borderColor = 'var(--gray-200)';
   if (r2) r2.style.borderColor = 'var(--gray-200)';
+  showToast('✓ 권한이 저장되었습니다.' + (parts.length ? ' (' + parts.join(', ') + ')' : ''), 'success');
 }
 
 function updateRoleBadge(idx) {
@@ -383,11 +384,15 @@ function sendInvite() {
   setTimeout(function() {
     closeInviteModal();
     showToast('📧 ' + email + ' 으로 초대 이메일이 발송되었습니다. (' + roleLabels[role.value] + ' 권한)');
-    // 프로토타입: 초대 링크 확인용 팝업
+    // 프로토타입: 초대 링크 확인용
     setTimeout(function() {
-      if (confirm('[프로토타입 전용]\n초대받은 사람 화면을 미리 볼까요?\n\n실제 서비스에서는 수신자 이메일로 링크가 발송됩니다.')) {
-        window.open('invite.html?email=' + encodeURIComponent(email) + '&role=' + role.value, '_blank');
-      }
+      var inviteUrl = 'invite.html?email=' + encodeURIComponent(email) + '&role=' + role.value;
+      openModal(
+        '🔗 초대 링크 미리보기',
+        '[프로토타입 전용] 초대받은 사람 화면을 미리 볼까요?<br><span style="font-size:12px;color:#9CA3AF">실제 서비스에서는 수신자 이메일로 링크가 발송됩니다.</span>',
+        function() { window.open(inviteUrl, '_blank'); },
+        '미리보기', 'btn-primary'
+      );
     }, 500);
   }, 1500);
 }
@@ -409,16 +414,20 @@ function openModal(title, bodyHtml, onConfirm, confirmLabel, confirmClass) {
 }
 function closeModal(){ var m=document.getElementById('__modal'); if(m) m.remove(); }
 
-function showToast(msg) {
+function showToast(msg, type) {
+  var existing = document.getElementById('__toast');
+  if (existing) existing.remove();
+  var bg = type === 'success' ? '#059669' : type === 'error' ? '#DC2626' : 'var(--navy)';
   var toast = document.createElement('div');
-  toast.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:2000;animation:slideUp .25s ease;white-space:nowrap';
+  toast.id = '__toast';
+  toast.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;white-space:nowrap';
   toast.textContent = msg;
   document.body.appendChild(toast);
   setTimeout(function() {
     toast.style.opacity = '0';
     toast.style.transition = 'opacity .3s';
     setTimeout(function() { toast.remove(); }, 300);
-  }, 3500);
+  }, 2500);
 }
 
 
@@ -564,6 +573,7 @@ function requestDelete() {
   );
 }
 function showSec(key, btn) {
+  window._currentSec = key;
   document.querySelectorAll('.sn-item').forEach(function(i){ i.classList.remove('active'); });
   if (btn) btn.classList.add('active');
   if (key === 'plan') {

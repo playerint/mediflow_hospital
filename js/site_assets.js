@@ -10,8 +10,8 @@ function renderGrid(id, items) {
       + (item.isNew ? '<div class="img-badge badge-new" style="top:' + (item.badge ? '24px' : '6px') + '">NEW</div>' : '')
       + '<div class="img-thumb">' + item.em + '</div>'
       + '<div class="img-actions">'
-      + '<button class="img-btn" onclick="event.stopPropagation();alert(\'' + item.lb + ' 교체\')" title="교체">↺</button>'
-      + '<button class="img-btn" onclick="event.stopPropagation();alert(\'' + item.lb + ' 삭제\')" title="삭제">✕</button>'
+      + '<button class="img-btn" onclick="event.stopPropagation();replaceAsset(this,\'' + item.lb.replace(/'/g,"\\'") + '\')" title="교체">↺</button>'
+      + '<button class="img-btn" onclick="event.stopPropagation();deleteAsset(this,\'' + item.lb.replace(/'/g,"\\'") + '\')" title="삭제">✕</button>'
       + '</div>'
       + '<div class="img-meta"><div class="img-name">' + item.lb + '</div><div class="img-size">' + item.sz + '</div></div>'
       + '</div>';
@@ -58,6 +58,26 @@ function handleDrop(e) {
   var zone = document.getElementById('drop-zone');
   if (zone) zone.classList.remove('dragging');
   if (e.dataTransfer && e.dataTransfer.files.length) handleUpload({ files: e.dataTransfer.files });
+}
+
+/* ── 자산 교체 / 삭제 ────────────────────────────────────────── */
+function replaceAsset(btn, label) {
+  showToast('↺ 파일을 선택하면 ' + label + ' 이(가) 교체됩니다.', '');
+  var fi = document.getElementById('file-input');
+  if (fi) fi.click();
+}
+
+function deleteAsset(btn, label) {
+  var card = btn.closest('.img-card');
+  openModal(
+    '🗑 자산 삭제',
+    '<strong>' + label + '</strong>을(를) 삭제하시겠습니까?<br><span style="font-size:12px;color:#9CA3AF">삭제 후 복구할 수 없습니다.</span>',
+    function() {
+      if (card) card.remove();
+      showToast('✓ ' + label + ' 이(가) 삭제되었습니다.', '');
+    },
+    '삭제', 'btn-danger'
+  );
 }
 
 /* ── 초기화 ──────────────────────────────────────────────────── */

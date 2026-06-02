@@ -276,10 +276,10 @@ function submitBooking() {
   var doctor  = document.getElementById('doctor').value;
   var sendLine = document.getElementById('send-line').checked;
 
-  if (!nameJa)  { alert('환자 성명(일본어)을 입력해주세요.'); return; }
-  if (!type)    { alert('예약 유형을 선택해주세요.'); return; }
-  if (!dateVal) { alert('예약 날짜를 선택해주세요.'); return; }
-  if (!time)    { alert('예약 시간을 선택해주세요.'); return; }
+  if (!nameJa)  { showToast('환자 성명(일본어)을 입력해주세요.', 'error'); return; }
+  if (!type)    { showToast('예약 유형을 선택해주세요.', 'error'); return; }
+  if (!dateVal) { showToast('예약 날짜를 선택해주세요.', 'error'); return; }
+  if (!time)    { showToast('예약 시간을 선택해주세요.', 'error'); return; }
 
   var parts   = dateVal.split('-');
   var dateKey = parseInt(parts[1]) + '/' + parseInt(parts[2]);
@@ -296,8 +296,17 @@ function submitBooking() {
     status: '확정',
   });
 
-  alert('✓ 예약이 등록되었습니다.\n' + dateKey + ' ' + time + ' — ' + (nameKo || nameJa));
-  location.href = 'hospital_crm_booking.html';
+  showToast('✓ ' + dateKey + ' ' + time + ' — ' + (nameKo || nameJa) + ' 예약 등록 완료', 'success');
+  setTimeout(function() { location.href = 'hospital_crm_booking.html'; }, 1200);
+}
+
+function showToast(msg, type) {
+  var e = document.getElementById('__toast'); if (e) e.remove();
+  var bg = type==='success'?'#059669':type==='error'?'#DC2626':'#0D1B3E';
+  var t = document.createElement('div'); t.id='__toast';
+  t.style.cssText='position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:11px 22px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;white-space:nowrap';
+  t.textContent=msg; document.body.appendChild(t);
+  setTimeout(function(){t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(function(){t.remove();},300);},2500);
 }
 </script>
 </body></html>

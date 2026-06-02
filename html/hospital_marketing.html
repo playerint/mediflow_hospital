@@ -195,10 +195,43 @@ function requestAIStrategy() {
 }
 
 function addKeyword() {
-  var kw = prompt('추가할 롱테일 키워드 (일본어):');
-  if (!kw) return;
+  var prev = document.getElementById('__kw-add-modal');
+  if (prev) prev.remove();
+  var m = document.createElement('div');
+  m.id = '__kw-add-modal';
+  m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9500;display:flex;align-items:center;justify-content:center;padding:20px';
+  m.innerHTML = '<div style="background:#fff;border-radius:16px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden">'
+    + '<div style="padding:20px 24px;border-bottom:1px solid var(--gray-100)">'
+    + '<div style="font-size:15px;font-weight:700;color:var(--navy)">➕ 롱테일 키워드 추가</div>'
+    + '</div>'
+    + '<div style="padding:20px 24px;display:flex;flex-direction:column;gap:14px">'
+    + '<div>'
+    + '<div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">키워드 <span style="color:var(--red)">*</span> <span style="font-weight:400;color:var(--gray-400)">(일본어로 입력)</span></div>'
+    + '<input id="__kw-input" type="text" placeholder="例) 韓国 二重整形 モニター" style="width:100%;font-size:13px;padding:10px;border:1.5px solid var(--gray-200);border-radius:8px;font-family:inherit;outline:none;box-sizing:border-box">'
+    + '</div>'
+    + '<div>'
+    + '<div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">한국어 번역 <span style="font-weight:400;color:var(--gray-400)">(내부 참고용)</span></div>'
+    + '<input id="__kw-ko" type="text" placeholder="예) 한국 쌍꺼풀 모니터" style="width:100%;font-size:13px;padding:10px;border:1.5px solid var(--gray-200);border-radius:8px;font-family:inherit;outline:none;box-sizing:border-box">'
+    + '</div>'
+    + '</div>'
+    + '<div style="padding:16px 24px;background:var(--gray-50);display:flex;gap:8px;justify-content:flex-end">'
+    + '<button class="btn" onclick="document.getElementById(\'__kw-add-modal\').remove()">취소</button>'
+    + '<button class="btn btn-primary" onclick="submitAddKeyword()">추가</button>'
+    + '</div>'
+    + '</div>';
+  m.addEventListener('click', function(e){ if (e.target === m) m.remove(); });
+  document.body.appendChild(m);
+  var inp = document.getElementById('__kw-input');
+  inp.focus();
+  inp.addEventListener('keydown', function(e){ if (e.key === 'Enter') submitAddKeyword(); });
+}
+
+function submitAddKeyword() {
+  var kw = document.getElementById('__kw-input').value.trim();
+  if (!kw) { showToast('키워드를 입력해주세요.', 'error'); return; }
   SITE_MARKETING.keywords.longTail.push({ kw: kw, aeoIdx: [] });
   renderKeywords();
+  document.getElementById('__kw-add-modal').remove();
   showToast('✓ 키워드가 추가되었습니다.', 'success');
 }
 

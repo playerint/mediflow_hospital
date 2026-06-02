@@ -11,7 +11,7 @@
 <main class="main">
   <div class="topbar">
     <div class="topbar-left"><a class="topbar-back" href="../index.html">← 대시보드</a><span style="color:var(--gray-300)">/</span><span class="topbar-title">퍼널·자동화 설정</span></div>
-    <div class="topbar-right"><button class="btn" onclick="location.href='hospital_funnel_history.html'">🕐 변경 이력</button><button class="btn btn-primary" onclick="showToast('✓ 저장되었습니다.','success')">💾 저장</button></div>
+    <div class="topbar-right"><button class="btn" onclick="location.href='hospital_funnel_history.html'">🕐 변경 이력</button><button class="btn btn-primary" onclick="saveFunnelSettings()">💾 저장</button></div>
   </div>
   <div class="content">
     <div class="grid2">
@@ -36,30 +36,30 @@
           <div style="font-size:12px;font-weight:600;color:var(--gray-500);margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em">LINE 설정</div>
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
             <span style="font-size:12px;color:var(--gray-600);min-width:72px">LINE ID</span>
-            <input type="text" value="@oleps" style="flex:1;font-size:12px">
+            <input type="text" id="line-id-input" value="@oleps" style="flex:1;font-size:12px">
           </div>
           <div style="display:flex;align-items:center;gap:8px">
             <span style="font-size:12px;color:var(--gray-600);min-width:72px">버튼 텍스트</span>
-            <input type="text" value="LINEで相談する" style="flex:1;font-size:12px">
+            <input type="text" id="line-btn-input" value="LINEで相談する" style="flex:1;font-size:12px">
           </div>
         </div>
         <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--gray-100)">
           <div style="font-size:12px;font-weight:600;color:var(--gray-500);margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em">인스타그램 설정</div>
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
             <span style="font-size:12px;color:var(--gray-600);min-width:72px">계정 ID</span>
-            <input type="text" value="@oleps_official" style="flex:1;font-size:12px">
+            <input type="text" id="insta-id-input" value="@oleps_official" style="flex:1;font-size:12px">
           </div>
           <div style="display:flex;align-items:center;gap:8px">
             <span style="font-size:12px;color:var(--gray-600);min-width:72px">버튼 텍스트</span>
-            <input type="text" value="Instagramで見る" style="flex:1;font-size:12px">
+            <input type="text" id="insta-btn-input" value="Instagramで見る" style="flex:1;font-size:12px">
           </div>
         </div>
       </div>
       <div class="card">
         <div class="card-title" style="margin-bottom:14px">🔗 CRM 웹훅 연결</div>
-        <div class="wh-row"><div style="flex:1"><div style="font-size:12px;font-weight:500;color:var(--gray-700)">웹훅 URL</div><input type="text" value="https://crm.example.com/webhook/oleps" style="margin-top:6px"></div></div>
+        <div class="wh-row"><div style="flex:1"><div style="font-size:12px;font-weight:500;color:var(--gray-700)">웹훅 URL</div><input type="text" id="webhook-url-input" value="https://crm.example.com/webhook/oleps" style="margin-top:6px"></div></div>
         <div class="wh-row"><div style="flex:1;font-size:12px;font-weight:500;color:var(--gray-700)">연결 상태</div><span><span class="st-dot" style="background:var(--green)"></span><span style="font-size:12px;color:var(--green);font-weight:500">정상 연결</span></span></div>
-        <div style="display:flex;gap:6px;margin-top:12px"><button class="btn" style="flex:1;justify-content:center;font-size:12px" onclick="testFunnelSend()">테스트 발송</button><button class="btn btn-primary" style="flex:1;justify-content:center;font-size:12px" onclick="showToast('✓ 저장되었습니다.','success')">저장</button></div>
+        <div style="display:flex;gap:6px;margin-top:12px"><button class="btn" style="flex:1;justify-content:center;font-size:12px" onclick="testFunnelSend()">테스트 발송</button><button class="btn btn-primary" style="flex:1;justify-content:center;font-size:12px" onclick="saveFunnelSettings()">저장</button></div>
       </div>
     </div>
     <div class="card" style="margin-bottom:14px">
@@ -168,7 +168,97 @@ function closeModal(){var m=document.getElementById('__modal');if(m)m.remove();}
 function testFunnelSend(){showToast('📤 테스트 발송 중...','');setTimeout(function(){showToast('✓ 테스트 메시지가 담당자 LINE으로 발송되었습니다.','success');},1500);}
 function addRule(){openModal('➕ 자동화 규칙 추가','<select style="width:100%;padding:8px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;font-family:inherit"><option>예약 확정 시</option><option>예약 D-1</option><option>폼 제출 시</option></select>',function(){showToast('✓ 자동화 규칙이 추가되었습니다.','success');},'추가','btn-primary');}
 function confirmRollback(el){var what=el.previousElementSibling?el.previousElementSibling.textContent:'이전 버전';openModal('↩ 롤백 확인','"'+what+'" 시점으로 롤백하시겠습니까?',function(){showToast('✓ 롤백이 완료되었습니다.','success');},'롤백','btn-warning');}
-function editRetarget(btn){showToast('✏ 편집 모달을 열었습니다.','');}
+/* ── 💾 퍼널 설정 저장 ── */
+function saveFunnelSettings() {
+  try {
+    // CTA 순서 + 토글 상태
+    var cta = [];
+    document.querySelectorAll('.cta-item').forEach(function(item) {
+      cta.push({
+        name:    item.querySelector('.cta-name').textContent,
+        enabled: item.querySelector('input[type=checkbox]').checked
+      });
+    });
+    // 리타게팅 메시지
+    var rt = {};
+    document.querySelectorAll('.rt-item').forEach(function(item) {
+      var day = item.getAttribute('data-day');
+      var msg = item.querySelector('.rt-msg');
+      if (msg) rt[day] = { ja: msg.getAttribute('data-ja'), ko: msg.getAttribute('data-ko') };
+    });
+    var now = new Date();
+    sessionStorage.setItem('funnel_settings', JSON.stringify({
+      cta: cta,
+      lineId:     (document.getElementById('line-id-input')    || {}).value || '',
+      lineBtn:    (document.getElementById('line-btn-input')   || {}).value || '',
+      instaId:    (document.getElementById('insta-id-input')   || {}).value || '',
+      instaBtn:   (document.getElementById('insta-btn-input')  || {}).value || '',
+      webhookUrl: (document.getElementById('webhook-url-input')|| {}).value || '',
+      retargeting: rt,
+      savedAt: now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0')
+    }));
+    showToast('✓ 설정이 저장되었습니다.', 'success');
+  } catch(e) {
+    showToast('저장에 실패했습니다.', 'error');
+  }
+}
+
+/* ── ✏ 리타게팅 메시지 편집 ── */
+function editRetarget(btn) {
+  var item = btn.closest('.rt-item');
+  var day  = item.getAttribute('data-day');
+  var labels = {d3:'D+3 발송', d7:'D+7 발송', d14:'D+14 발송'};
+  var msgEl  = item.querySelector('.rt-msg');
+  var jaText = msgEl.getAttribute('data-ja') || msgEl.textContent;
+  var koText = msgEl.getAttribute('data-ko') || '';
+
+  var prev = document.getElementById('__edit-rt-modal');
+  if (prev) prev.remove();
+
+  var m = document.createElement('div');
+  m.id = '__edit-rt-modal';
+  m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9500;display:flex;align-items:center;justify-content:center;padding:20px';
+  m.innerHTML = '<div style="background:#fff;border-radius:16px;width:100%;max-width:540px;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden">'
+    + '<div style="padding:20px 24px;border-bottom:1px solid var(--gray-100)">'
+    + '<div style="font-size:15px;font-weight:700;color:var(--navy)">✏ 리타게팅 메시지 편집 — ' + (labels[day]||day) + '</div>'
+    + '</div>'
+    + '<div style="padding:20px 24px;display:flex;flex-direction:column;gap:14px">'
+    + '<div>'
+    + '<div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">🇯🇵 일본어 메시지 <span style="color:var(--red)">*</span></div>'
+    + '<textarea id="__edit-ja" rows="3" style="width:100%;font-size:13px;padding:10px;border:1.5px solid var(--gray-200);border-radius:8px;resize:vertical;font-family:inherit;line-height:1.6;outline:none;box-sizing:border-box">' + jaText.replace(/</g,'&lt;') + '</textarea>'
+    + '</div>'
+    + '<div>'
+    + '<div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">🇰🇷 한국어 메시지 <span style="font-weight:400;color:var(--gray-400)">(내부 참고용)</span></div>'
+    + '<textarea id="__edit-ko" rows="2" style="width:100%;font-size:13px;padding:10px;border:1.5px solid var(--gray-200);border-radius:8px;resize:vertical;font-family:inherit;line-height:1.6;outline:none;box-sizing:border-box">' + koText.replace(/</g,'&lt;') + '</textarea>'
+    + '</div>'
+    + '</div>'
+    + '<div style="padding:16px 24px;background:var(--gray-50);display:flex;gap:8px;justify-content:flex-end">'
+    + '<button class="btn" onclick="document.getElementById(\'__edit-rt-modal\').remove()">취소</button>'
+    + '<button class="btn btn-primary" onclick="saveRetarget()">저장</button>'
+    + '</div>'
+    + '</div>';
+  m._targetItem = item;
+  m.addEventListener('click', function(e){ if (e.target === m) m.remove(); });
+  document.body.appendChild(m);
+  document.getElementById('__edit-ja').focus();
+}
+
+function saveRetarget() {
+  var modal = document.getElementById('__edit-rt-modal');
+  if (!modal) return;
+  var jaVal = document.getElementById('__edit-ja').value.trim();
+  var koVal = document.getElementById('__edit-ko').value.trim();
+  if (!jaVal) { showToast('일본어 메시지를 입력해주세요.', 'error'); return; }
+
+  var item  = modal._targetItem;
+  var msgEl = item.querySelector('.rt-msg');
+  msgEl.setAttribute('data-ja', jaVal);
+  msgEl.setAttribute('data-ko', koVal);
+  msgEl.textContent = (typeof rtLangMode !== 'undefined' && rtLangMode === 'ko' && koVal) ? koVal : jaVal;
+
+  modal.remove();
+  showToast('✓ 메시지가 저장되었습니다.', 'success');
+}
 
 /* ── A/B 테스트 ── */
 var _abItem = null;   // 현재 테스트 중인 rt-item element
@@ -181,7 +271,14 @@ function openABTest(btn) {
   var dayLabel = {d3:'D+3', d7:'D+7', d14:'D+14'}[day] || day;
 
   var existing = _abItem.querySelector('.ab-panel');
-  if (existing) { showABResult(); return; }
+  if (existing) {
+    var body = _abItem.querySelector('.rt-body');
+    if (body) body.style.display = 'block';
+    existing.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    existing.style.outline = '2px solid #7C3AED';
+    setTimeout(function() { existing.style.outline = ''; }, 1200);
+    return;
+  }
 
   var m = document.createElement('div');
   m.id = '__ab-modal';

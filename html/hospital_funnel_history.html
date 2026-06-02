@@ -80,7 +80,24 @@ function toggle(id,row){
   arrow.style.color=isOpen?'var(--gray-300)':'var(--blue)';
 }
 function setFilter(f,btn){curFilter=f;document.querySelectorAll('.pill').forEach(p=>p.classList.remove('on'));btn.classList.add('on');render(f);}
-function rollback(action){if(confirm('"'+action+'" 이전 버전으로 롤백하시겠습니까?')){alert('롤백이 완료되었습니다.');}}
+function rollback(action){
+  var prev=document.getElementById('__modal');if(prev)prev.remove();
+  var m=document.createElement('div');m.id='__modal';
+  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center';
+  m.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.2)">'
+    +'<div style="font-size:16px;font-weight:700;color:#0D1B3E;margin-bottom:10px">↩ 롤백 확인</div>'
+    +'<div style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:20px">"'+action+'" 이전 버전으로 롤백하시겠습니까?</div>'
+    +'<div style="display:flex;gap:8px;justify-content:flex-end">'
+    +'<button class="btn" onclick="document.getElementById(\'__modal\').remove()">취소</button>'
+    +'<button class="btn btn-warning" id="__modal-confirm">롤백</button>'
+    +'</div></div>';
+  document.body.appendChild(m);
+  document.getElementById('__modal-confirm').addEventListener('click',function(){
+    document.getElementById('__modal').remove();
+    showToast('✓ 롤백이 완료되었습니다.','success');
+  });
+}
+function showToast(msg,type){var e=document.getElementById('__toast');if(e)e.remove();var bg=type==='success'?'#059669':type==='error'?'#DC2626':'#0D1B3E';var t=document.createElement('div');t.id='__toast';t.style.cssText='position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:11px 22px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;white-space:nowrap';t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(function(){t.remove();},300);},2500);}
 render('all');
 </script>
 </body></html>

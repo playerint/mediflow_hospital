@@ -74,7 +74,18 @@ function openModal(title, bodyHtml, onConfirm, confirmLabel, confirmClass) {
 function closeModal(){ var m=document.getElementById('__modal'); if(m) m.remove(); }
 
 function saveSettings() {
-  showToast('✓ 설정이 저장되었습니다.', 'success');
+  try {
+    var inputs = {};
+    document.querySelectorAll('#sec-content input[type=text], #sec-content input[type=email], #sec-content input[type=tel], #sec-content textarea').forEach(function(el, i) {
+      if (!el.readOnly) inputs['field_' + i] = el.value;
+    });
+    var now = new Date();
+    var key = 'settings_' + (window._currentSec || 'hospital');
+    sessionStorage.setItem(key, JSON.stringify({ fields: inputs, savedAt: now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0') }));
+    showToast('✓ 설정이 저장되었습니다.', 'success');
+  } catch(e) {
+    showToast('저장에 실패했습니다.', 'error');
+  }
 }
 </script>
 <script src="../js/settings.js"></script>
