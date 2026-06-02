@@ -234,12 +234,115 @@ function startComplianceCheck() {
   checkNext();
 }
 
+/* ── 💾 임시 저장 ────────────────────────────────────────────── */
+function tempSave() {
+  try {
+    var now = new Date();
+    var timeStr = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+    sessionStorage.setItem('site_content_draft', JSON.stringify({
+      sections: SITE_SECTIONS,
+      savedAt: '오늘 ' + timeStr,
+      curSec: curSec
+    }));
+    showToast('✓ 임시 저장되었습니다.', 'success');
+  } catch(e) {
+    showToast('임시 저장에 실패했습니다.', 'error');
+  }
+}
+
+/* ── 🚀 게시 확인 ────────────────────────────────────────────── */
+function confirmPublish() {
+  var pendingSecs = Object.keys(SITE_SECTIONS).filter(function(k) {
+    return SITE_SECTIONS[k].status === 'warn' || SITE_SECTIONS[k].status === 'error';
+  });
+  var body = '현재 콘텐츠를 일본어 사이트에 배포합니다.';
+  if (pendingSecs.length > 0) {
+    body += '<br><br><span style="color:#D97706;font-weight:600">⚠ 미완료 섹션 ' + pendingSecs.length + '개:</span><br>'
+      + pendingSecs.map(function(k){ return '· ' + SITE_SECTIONS[k].title; }).join('<br>');
+  }
+  if (typeof openModal === 'function') {
+    openModal('🚀 게시하기', body, function() {
+      showToast('✓ 배포가 시작되었습니다.', 'success');
+      setTimeout(function(){ location.href = 'hospital_site_preview.html'; }, 1200);
+    }, '게시하기', 'btn-navy');
+  }
+}
+
+/* ── ↩ 버전 롤백 ─────────────────────────────────────────────
+   _siteVersions: 페이지 로드 시 섹션별 원본을 스냅샷으로 보관
+   v2 = 현재 site-data.js 저장값 (김지현 수정 이전)
+   v1 = 텍스트 앞 60% + 마침표 (최초 AI 생성 시뮬레이션)
+──────────────────────────────────────────────────────────────── */
+var _siteVersions = {};
+function initVersionSnapshots() {
+  Object.keys(SITE_SECTIONS).forEach(function(k) {
+    var ja = SITE_SECTIONS[k].ja || '';
+    _siteVersions[k] = {
+      v2: ja,
+      v1: ja.slice(0, Math.floor(ja.length * 0.65)) + (ja.length > 20 ? '。' : '')
+    };
+  });
+}
+
+function rollbackVersion(v) {
+  var labels = { v2:'어제 10:05 (김지현 수정)', v1:'5월 18일 (최초 AI 생성)' };
+  if (typeof openModal !== 'function') return;
+  openModal('↩ 버전 롤백',
+    '"' + labels[v] + '" 버전으로 되돌리겠습니까?<br>현재 편집 중인 내용은 사라집니다.',
+    function() {
+      var restored = (_siteVersions[curSec] && _siteVersions[curSec][v]) || SITE_SECTIONS[curSec].ja;
+      var jaEl = document.getElementById('ja-text');
+      if (!jaEl) return;
+      jaEl.value = restored;
+      jaEl.style.background  = '#FFF9C4';
+      setTimeout(function(){ jaEl.style.background = ''; }, 1200);
+      var saveInfo = document.getElementById('save-info');
+      if (saveInfo) saveInfo.textContent = '마지막 저장: ' + (v === 'v2' ? '어제 10:05' : '5월 18일');
+      showToast('✓ ' + (v === 'v2' ? 'v2' : 'v1') + '로 롤백되었습니다.', 'success');
+    }, '롤백', 'btn-warning');
+}
+
+/* ── 임시저장 복원 배너 ──────────────────────────────────────── */
+function checkAndShowDraftBanner() {
+  var draft = null;
+  try { draft = JSON.parse(sessionStorage.getItem('site_content_draft')); } catch(e) {}
+  if (!draft || !draft.sections) return;
+  var content = document.querySelector('.content');
+  if (!content) return;
+  var banner = document.createElement('div');
+  banner.id = '__draft-banner';
+  banner.style.cssText = 'background:#FEF3C7;border:1px solid #FCD34D;border-radius:var(--r);padding:10px 16px;font-size:12px;color:#92400E;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px';
+  banner.innerHTML = '📂 임시 저장된 콘텐츠가 있습니다 (' + draft.savedAt + ')&nbsp;&nbsp;'
+    + '<div style="display:flex;gap:6px">'
+    + '<button class="btn" style="font-size:12px;background:#F59E0B;color:#fff;border-color:#F59E0B" onclick="restoreDraft()">복원</button>'
+    + '<button class="btn" style="font-size:12px" onclick="document.getElementById(\'__draft-banner\').remove()">무시</button>'
+    + '</div>';
+  content.insertBefore(banner, content.firstChild);
+}
+
+function restoreDraft() {
+  var draft = null;
+  try { draft = JSON.parse(sessionStorage.getItem('site_content_draft')); } catch(e) {}
+  if (!draft || !draft.sections) return;
+  Object.keys(draft.sections).forEach(function(k) {
+    if (SITE_SECTIONS[k]) SITE_SECTIONS[k].ja = draft.sections[k].ja;
+  });
+  var activeItem = document.querySelector('.section-item.active');
+  if (activeItem) selectSection(curSec, activeItem);
+  var banner = document.getElementById('__draft-banner');
+  if (banner) banner.remove();
+  showToast('✓ 임시 저장 콘텐츠가 복원되었습니다.', 'success');
+}
+
 /* ── 초기화 ───────────────────────────────────────────────────── */
 renderCompliance(null);
 renderKPI();
 updateComplianceCount();
+initVersionSnapshots();
 // 첫 섹션 로드
 (function() {
   var firstItem = document.querySelector('.section-item.active');
   if (firstItem) selectSection('hero', firstItem);
 })();
+// 임시저장 복원 배너 (DOMContentLoaded 이후)
+document.addEventListener('DOMContentLoaded', checkAndShowDraftBanner);
