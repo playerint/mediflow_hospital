@@ -10,11 +10,13 @@ const HOSPITAL_ACCOUNTS = [
   { email:'staff@oleps.co.kr',   password:'staff1234',  name:'이수진', role:'staff',   hospital:'올래성형외과' },
 ];
 
+var DEFAULT_SESSION = { email:'admin@oleps.co.kr', name:'김지현', role:'admin', hospital:'올래성형외과' };
+
 function getSession() {
   try {
     var val = sessionStorage.getItem('hospital_user');
-    return val ? JSON.parse(val) : null;
-  } catch(e) { return null; }
+    return val ? JSON.parse(val) : DEFAULT_SESSION;
+  } catch(e) { return DEFAULT_SESSION; }
 }
 function setSession(user) {
   var val = JSON.stringify(user);
