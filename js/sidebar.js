@@ -15,16 +15,18 @@ function doLogout() {
     {t:'l'},{t:'h'},
     {t:'s',lb:'메인'},
     {t:'a',k:'dashboard', hr:home,                                ic:'⊞',lb:'홈 대시보드'},
-    {t:'p',ks:['site_content','site_assets','site_preview'],
+    {t:'p',ks:['site_content','site_assets','site_seo','site_preview'],
       hr:p+'hospital_site_content.html',ic:'🌐',lb:'사이트 관리',ch:[
         {k:'site_content',hr:p+'hospital_site_content.html',ic:'✏',lb:'콘텐츠 편집'},
         {k:'site_assets', hr:p+'hospital_site_assets.html', ic:'🖼',lb:'자산 관리'},
+        {k:'site_seo',    hr:p+'hospital_seo_aeo.html',     ic:'🔍',lb:'SEO·AEO'},
         {k:'site_preview',hr:p+'hospital_site_preview.html',ic:'👁',lb:'미리보기 & 게시'},
       ]},
     {t:'a',k:'crm',     hr:p+'hospital_crm_inbox.html',  ic:'💬',lb:'문의·상담 CRM',bg:'3'},
     {t:'a',k:'booking',  hr:p+'hospital_crm_booking.html', ic:'📅',lb:'예약 관리'},
     {t:'a',k:'line',    hr:p+'hospital_line_auto.html',  ic:'🤖',lb:'LINE 자동상담',bg:'ON',tl:true},
     {t:'s',lb:'설정'},
+    {t:'a',k:'marketing',hr:p+'hospital_marketing.html', ic:'📣',lb:'마케팅 전략'},
     {t:'a',k:'funnel',   hr:p+'hospital_funnel.html',   ic:'⚡',lb:'퍼널·자동화'},
     {t:'a',k:'reports',  hr:p+'hospital_reports.html',  ic:'📊',lb:'리포트'},
     {t:'a',k:'settings', hr:p+'hospital_settings.html', ic:'⚙', lb:'설정'},
@@ -32,7 +34,7 @@ function doLogout() {
   ];
 
   var CRM  = ['crm','crm_inquiry'];
-  var SITE = ['site_content','site_assets','site_preview'];
+  var SITE = ['site_content','site_assets','site_seo','site_preview'];
 
   function build(active, user) {
     var name     = user ? user.name     : '김지현';

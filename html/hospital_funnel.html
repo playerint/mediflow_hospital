@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>퍼널·자동화 설정 — Hospital Site OS</title>
@@ -15,9 +15,45 @@
   </div>
   <div class="content">
     <div class="grid2">
-            <div class="card">
-        <div class="card-title" style="margin-bottom:14px">📱 CTA 버튼</div><div class="toggle-thumb" style="width:12px;height:12px"></div></label></div>
-      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:6px">📱 CTA 버튼</div>
+        <div style="font-size:12px;color:var(--gray-400);margin-bottom:12px">드래그로 순서 변경 · 토글로 ON/OFF</div>
+        <div class="cta-item" draggable="true">
+          <span class="cta-handle">⠿</span>
+          <span style="font-size:18px">💬</span>
+          <span class="cta-name">LINE 채팅</span>
+          <span class="cta-cnt">月 12건</span>
+          <label class="toggle-wrap" style="width:32px;height:18px"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb" style="width:12px;height:12px"></div></label>
+        </div>
+        <div class="cta-item" draggable="true">
+          <span class="cta-handle">⠿</span>
+          <span style="font-size:18px">📸</span>
+          <span class="cta-name">인스타그램</span>
+          <span class="cta-cnt">月 11건</span>
+          <label class="toggle-wrap" style="width:32px;height:18px"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb" style="width:12px;height:12px"></div></label>
+        </div>
+        <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--gray-100)">
+          <div style="font-size:12px;font-weight:600;color:var(--gray-500);margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em">LINE 설정</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:12px;color:var(--gray-600);min-width:72px">LINE ID</span>
+            <input type="text" value="@oleps" style="flex:1;font-size:12px">
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:12px;color:var(--gray-600);min-width:72px">버튼 텍스트</span>
+            <input type="text" value="LINEで相談する" style="flex:1;font-size:12px">
+          </div>
+        </div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--gray-100)">
+          <div style="font-size:12px;font-weight:600;color:var(--gray-500);margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em">인스타그램 설정</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:12px;color:var(--gray-600);min-width:72px">계정 ID</span>
+            <input type="text" value="@oleps_official" style="flex:1;font-size:12px">
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:12px;color:var(--gray-600);min-width:72px">버튼 텍스트</span>
+            <input type="text" value="Instagramで見る" style="flex:1;font-size:12px">
+          </div>
+        </div>
       </div>
       <div class="card">
         <div class="card-title" style="margin-bottom:14px">🔗 CRM 웹훅 연결</div>
@@ -30,18 +66,18 @@
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
         <div class="card-title">⚡ D+3/7/14 리타게팅 메시지</div>
         <div style="display:flex;border-radius:8px;overflow:hidden;border:1px solid var(--gray-200)">
-          <button id="rt-lang-ja" onclick="setRtLang('ja')" style="padding:4px 12px;font-size:11px;font-family:inherit;cursor:pointer;border:none;background:var(--navy);color:#fff;font-weight:500;transition:all .15s">日</button>
-          <button id="rt-lang-ko" onclick="setRtLang('ko')" style="padding:4px 12px;font-size:11px;font-family:inherit;cursor:pointer;border:none;background:#fff;color:var(--gray-500);transition:all .15s">한</button>
+          <button id="rt-lang-ja" onclick="setRtLang('ja')" style="padding:4px 12px;font-size:12px;font-family:inherit;cursor:pointer;border:none;background:var(--navy);color:#fff;font-weight:500;transition:all .15s">日</button>
+          <button id="rt-lang-ko" onclick="setRtLang('ko')" style="padding:4px 12px;font-size:12px;font-family:inherit;cursor:pointer;border:none;background:#fff;color:var(--gray-500);transition:all .15s">한</button>
         </div>
       </div>
-      <div class="rt-item"><div class="rt-head" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='block'?'none':'block'"><div class="rt-day">D+3 발송</div><div class="rt-stats"><span>발송 18건</span><span>클릭률 44%</span><span>전환율 11%</span><span>▾</span></div></div><div class="rt-body" style="display:none"><div class="rt-msg" data-ja="先日のカウンセリングはいかがでしたか？ご不明な点がございましたら、いつでもお気軽にご相談ください。" data-ko="지난번 상담은 어떠셨나요? 궁금한 점이 있으시면 언제든지 편하게 상담해 주세요.">先日のカウンセリングはいかがでしたか？ご不明な点がございましたら、いつでもお気軽にご相談ください。</div><div style="display:flex;gap:6px"><button class="btn" style="font-size:12px" onclick="editRetarget(this)">✏ 편집</button><button class="btn" style="font-size:12px" onclick="openABTest()">🔀 A/B</button></div></div></div>
-      <div class="rt-item"><div class="rt-head" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='block'?'none':'block'"><div class="rt-day">D+7 발송</div><div class="rt-stats"><span>발송 15건</span><span>클릭률 38%</span><span>전환율 13%</span><span>▾</span></div></div><div class="rt-body" style="display:none"><div class="rt-msg" data-ja="二重整形のビフォーアフター症例をご用意しました。ご参考にぜひご覧ください。" data-ko="쌍꺼풀 성형 Before&After 사례를 준비했습니다.">二重整形のビフォーアフター症例をご用意しました。ご参考にぜひご覧ください。</div><div style="display:flex;gap:6px"><button class="btn" style="font-size:12px" onclick="editRetarget(this)">✏ 편집</button></div></div></div>
-      <div class="rt-item"><div class="rt-head" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='block'?'none':'block'"><div class="rt-day">D+14 발송</div><div class="rt-stats"><span>발송 12건</span><span>클릭률 29%</span><span>전환율 8%</span><span>▾</span></div></div><div class="rt-body" style="display:none"><div class="rt-msg" data-ja="今月末まで初回カウンセリング割引キャンペーン実施中！お早めにご予約ください。" data-ko="이달 말까지 첫 상담 할인 캠페인 진행 중!">今月末まで初回カウンセリング割引キャンペーン実施中！お早めにご予約ください。</div><div style="display:flex;gap:6px"><button class="btn" style="font-size:12px" onclick="editRetarget(this)">✏ 편집</button></div></div></div>
+      <div class="rt-item" data-day="d3"><div class="rt-head" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='block'?'none':'block'"><div class="rt-day">D+3 발송</div><div class="rt-stats"><span>발송 18건</span><span>클릭률 44%</span><span>전환율 11%</span><span>▾</span></div></div><div class="rt-body" style="display:none"><div class="rt-msg" data-ja="先日のカウンセリングはいかがでしたか？ご不明な点がございましたら、いつでもお気軽にご相談ください。" data-ko="지난번 상담은 어떠셨나요? 궁금한 점이 있으시면 언제든지 편하게 상담해 주세요.">先日のカウンセリングはいかがでしたか？ご不明な点がございましたら、いつでもお気軽にご相談ください。</div><div style="display:flex;gap:6px"><button class="btn" style="font-size:12px" onclick="editRetarget(this)">✏ 편집</button><button class="btn" style="font-size:12px" onclick="openABTest(this)">🔀 A/B</button></div></div></div>
+      <div class="rt-item" data-day="d7"><div class="rt-head" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='block'?'none':'block'"><div class="rt-day">D+7 발송</div><div class="rt-stats"><span>발송 15건</span><span>클릭률 38%</span><span>전환율 13%</span><span>▾</span></div></div><div class="rt-body" style="display:none"><div class="rt-msg" data-ja="二重整形のビフォーアフター症例をご用意しました。ご参考にぜひご覧ください。" data-ko="쌍꺼풀 성형 Before&After 사례를 준비했습니다.">二重整形のビフォーアフター症例をご用意しました。ご参考にぜひご覧ください。</div><div style="display:flex;gap:6px"><button class="btn" style="font-size:12px" onclick="editRetarget(this)">✏ 편집</button><button class="btn" style="font-size:12px" onclick="openABTest(this)">🔀 A/B</button></div></div></div>
+      <div class="rt-item" data-day="d14"><div class="rt-head" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='block'?'none':'block'"><div class="rt-day">D+14 발송</div><div class="rt-stats"><span>발송 12건</span><span>클릭률 29%</span><span>전환율 8%</span><span>▾</span></div></div><div class="rt-body" style="display:none"><div class="rt-msg" data-ja="今月末まで初回カウンセリング割引キャンペーン実施中！お早めにご予約ください。" data-ko="이달 말까지 첫 상담 할인 캠페인 진행 중!">今月末まで初回カウンセリング割引キャンペーン実施中！お早めにご予約ください。</div><div style="display:flex;gap:6px"><button class="btn" style="font-size:12px" onclick="editRetarget(this)">✏ 편집</button><button class="btn" style="font-size:12px" onclick="openABTest(this)">🔀 A/B</button></div></div></div>
     </div>
     <div class="card" style="margin-bottom:14px">
       <div class="card-title" style="margin-bottom:14px">🤖 노코드 자동화 규칙 <button class="btn" style="font-size:12px;padding:4px 10px" onclick="addRule()">+ 추가</button></div>
-      <div class="rule-item"><span style="font-size:16px">⚡</span><span class="rule-tr">폼 제출</span><span class="rule-ar">→</span><span class="rule-ac">LINE 환영 메시지 발송</span><span style="font-size:11px;color:var(--gray-400);margin-left:auto">즉시</span><label class="toggle-wrap" style="width:32px;height:18px"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb" style="width:12px;height:12px"></div></label></div>
-      <div class="rule-item"><span style="font-size:16px">⚡</span><span class="rule-tr">예약 D-1</span><span class="rule-ar">→</span><span class="rule-ac">리마인더 LINE 발송</span><span style="font-size:11px;color:var(--gray-400);margin-left:auto">전일 10:00</span><label class="toggle-wrap" style="width:32px;height:18px"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb" style="width:12px;height:12px"></div></label></div>
+      <div class="rule-item"><span style="font-size:16px">⚡</span><span class="rule-tr">폼 제출</span><span class="rule-ar">→</span><span class="rule-ac">LINE 환영 메시지 발송</span><span style="font-size:12px;color:var(--gray-400);margin-left:auto">즉시</span><label class="toggle-wrap" style="width:32px;height:18px"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb" style="width:12px;height:12px"></div></label></div>
+      <div class="rule-item"><span style="font-size:16px">⚡</span><span class="rule-tr">예약 D-1</span><span class="rule-ar">→</span><span class="rule-ac">리마인더 LINE 발송</span><span style="font-size:12px;color:var(--gray-400);margin-left:auto">전일 10:00</span><label class="toggle-wrap" style="width:32px;height:18px"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb" style="width:12px;height:12px"></div></label></div>
     </div>
     <div class="card">
       <div class="card-title" style="margin-bottom:12px">🕐 설정 변경 이력</div>
@@ -56,6 +92,62 @@
 <script src="../js/sidebar.js"></script>
 <script src="../js/funnel.js"></script>
 <script>
+/* ── CTA 드래그 순서 변경 ── */
+(function() {
+  var dragged = null;
+
+  function getItems() {
+    return Array.from(document.querySelectorAll('.cta-item'));
+  }
+
+  document.addEventListener('dragstart', function(e) {
+    var item = e.target.closest('.cta-item');
+    if (!item) return;
+    dragged = item;
+    setTimeout(function() { item.classList.add('dragging'); }, 0);
+    e.dataTransfer.effectAllowed = 'move';
+  });
+
+  document.addEventListener('dragend', function(e) {
+    var item = e.target.closest('.cta-item');
+    if (!item) return;
+    item.classList.remove('dragging');
+    getItems().forEach(function(el) { el.classList.remove('drag-over'); });
+    dragged = null;
+  });
+
+  document.addEventListener('dragover', function(e) {
+    var item = e.target.closest('.cta-item');
+    if (!item || item === dragged) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    getItems().forEach(function(el) { el.classList.remove('drag-over'); });
+    item.classList.add('drag-over');
+  });
+
+  document.addEventListener('dragleave', function(e) {
+    var item = e.target.closest('.cta-item');
+    if (item) item.classList.remove('drag-over');
+  });
+
+  document.addEventListener('drop', function(e) {
+    var target = e.target.closest('.cta-item');
+    if (!target || !dragged || target === dragged) return;
+    e.preventDefault();
+    target.classList.remove('drag-over');
+    var parent = target.parentNode;
+    var items = getItems();
+    var fromIdx = items.indexOf(dragged);
+    var toIdx   = items.indexOf(target);
+    if (fromIdx < toIdx) {
+      parent.insertBefore(dragged, target.nextSibling);
+    } else {
+      parent.insertBefore(dragged, target);
+    }
+    showToast('순서가 변경되었습니다.', 'success');
+  });
+})();
+
 var rtLangMode = 'ja';
 function setRtLang(mode) {
   rtLangMode = mode;
@@ -77,6 +169,151 @@ function testFunnelSend(){showToast('📤 테스트 발송 중...','');setTimeou
 function addRule(){openModal('➕ 자동화 규칙 추가','<select style="width:100%;padding:8px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;font-family:inherit"><option>예약 확정 시</option><option>예약 D-1</option><option>폼 제출 시</option></select>',function(){showToast('✓ 자동화 규칙이 추가되었습니다.','success');},'추가','btn-primary');}
 function confirmRollback(el){var what=el.previousElementSibling?el.previousElementSibling.textContent:'이전 버전';openModal('↩ 롤백 확인','"'+what+'" 시점으로 롤백하시겠습니까?',function(){showToast('✓ 롤백이 완료되었습니다.','success');},'롤백','btn-warning');}
 function editRetarget(btn){showToast('✏ 편집 모달을 열었습니다.','');}
-function openABTest(){showToast('🔀 A/B 테스트 설정을 열었습니다.','');}
+
+/* ── A/B 테스트 ── */
+var _abItem = null;   // 현재 테스트 중인 rt-item element
+var _abRatio = 50;    // A안 발송 비율
+
+function openABTest(btn) {
+  _abItem = btn.closest('.rt-item');
+  var currentMsg = _abItem.querySelector('.rt-msg').getAttribute('data-ja') || _abItem.querySelector('.rt-msg').textContent;
+  var day = _abItem.getAttribute('data-day');
+  var dayLabel = {d3:'D+3', d7:'D+7', d14:'D+14'}[day] || day;
+
+  var existing = _abItem.querySelector('.ab-panel');
+  if (existing) { showABResult(); return; }
+
+  var m = document.createElement('div');
+  m.id = '__ab-modal';
+  m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9500;display:flex;align-items:center;justify-content:center;padding:20px';
+  m.innerHTML = '<div style="background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:640px;box-shadow:0 20px 60px rgba(0,0,0,.25);max-height:90vh;overflow-y:auto">'
+    + '<div style="font-size:16px;font-weight:700;color:#0D1B3E;margin-bottom:4px">🔀 A/B 테스트 — ' + dayLabel + '</div>'
+    + '<div style="font-size:12px;color:#6B7280;margin-bottom:20px">두 메시지를 나눠 발송하고 클릭률·전환율을 비교합니다</div>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px">'
+    + '<div>'
+    + '<div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:6px">A안 <span style="font-weight:400;color:#9CA3AF">(현재 메시지)</span></div>'
+    + '<textarea id="ab-ta-a" rows="5" style="width:100%;font-size:12px;padding:10px;border:1.5px solid #E5E7EB;border-radius:8px;resize:vertical;font-family:inherit;line-height:1.6;box-sizing:border-box">' + currentMsg + '</textarea>'
+    + '</div>'
+    + '<div>'
+    + '<div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:6px">B안 <span style="font-weight:400;color:#9CA3AF">(새 메시지)</span></div>'
+    + '<textarea id="ab-ta-b" rows="5" style="width:100%;font-size:12px;padding:10px;border:1.5px solid #E5E7EB;border-radius:8px;resize:vertical;font-family:inherit;line-height:1.6;box-sizing:border-box" placeholder="새 메시지를 입력하세요..."></textarea>'
+    + '</div>'
+    + '</div>'
+    + '<div style="margin-bottom:20px">'
+    + '<div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:8px">발송 비율</div>'
+    + '<div style="display:flex;gap:8px;margin-bottom:8px">'
+    + '<button class="ab-ratio-btn on" id="ab-r50" onclick="setABRatio(50)">50 : 50</button>'
+    + '<button class="ab-ratio-btn" id="ab-r70" onclick="setABRatio(70)">70 : 30</button>'
+    + '<button class="ab-ratio-btn" id="ab-r30" onclick="setABRatio(30)">30 : 70</button>'
+    + '</div>'
+    + '<div id="ab-ratio-desc" style="font-size:12px;color:#6B7280">A안 50% · B안 50% 발송</div>'
+    + '</div>'
+    + '<div style="display:flex;gap:8px;justify-content:flex-end">'
+    + '<button class="btn" onclick="closeABModal()">취소</button>'
+    + '<button class="btn btn-primary" onclick="startABTest()">테스트 시작</button>'
+    + '</div>'
+    + '</div>';
+  m.addEventListener('click', function(e){ if (e.target === m) closeABModal(); });
+  document.body.appendChild(m);
+  _abRatio = 50;
+}
+
+function closeABModal() {
+  var m = document.getElementById('__ab-modal');
+  if (m) m.remove();
+}
+
+function setABRatio(r) {
+  _abRatio = r;
+  ['50','70','30'].forEach(function(v) {
+    var btn = document.getElementById('ab-r' + v);
+    if (btn) btn.classList.toggle('on', String(r) === v);
+  });
+  var desc = document.getElementById('ab-ratio-desc');
+  if (desc) desc.textContent = 'A안 ' + r + '% · B안 ' + (100 - r) + '% 발송';
+}
+
+function startABTest() {
+  var taA = document.getElementById('ab-ta-a');
+  var taB = document.getElementById('ab-ta-b');
+  if (!taA || !taB) return;
+  var textA = taA.value.trim();
+  var textB = taB.value.trim();
+  if (!textB) { showToast('B안 메시지를 입력해주세요.', 'error'); return; }
+
+  closeABModal();
+
+  // rt-stats에 A/B 배지 추가
+  var stats = _abItem.querySelector('.rt-stats');
+  if (stats && !stats.querySelector('.ab-badge')) {
+    var badge = document.createElement('span');
+    badge.className = 'ab-badge';
+    badge.textContent = '🔀 A/B 진행 중';
+    stats.insertBefore(badge, stats.firstChild);
+  }
+
+  // rt-body 열기 + ab-panel 삽입
+  var body = _abItem.querySelector('.rt-body');
+  body.style.display = 'block';
+  if (body.querySelector('.ab-panel')) body.querySelector('.ab-panel').remove();
+
+  var ratioB = 100 - _abRatio;
+  // 데모 통계: B안이 우세한 상황 시뮬레이션
+  var sentA = Math.round(18 * _abRatio / 100);
+  var sentB = 18 - sentA;
+  var clickA = 44, clickB = Math.min(99, clickA + Math.floor(Math.random() * 20) + 8);
+  var convA  = 11, convB  = Math.min(99, convA  + Math.floor(Math.random() * 6)  + 2);
+  var bWins  = clickB > clickA;
+
+  var panel = document.createElement('div');
+  panel.className = 'ab-panel';
+  panel.innerHTML = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">'
+    + '<span class="ab-badge">🔀 A/B 테스트 진행 중</span>'
+    + '<span style="font-size:11px;color:#6B7280">오늘 시작 · 총 18건 발송</span>'
+    + '</div>'
+    + '<div class="ab-grid">'
+    + '<div class="ab-variant' + (!bWins ? ' ab-winning' : '') + '">'
+    + '<div class="ab-variant-label">A안 (' + _abRatio + '%)' + (!bWins ? '<span style="color:#059669">★ 우세</span>' : '') + '</div>'
+    + '<div class="ab-variant-msg">' + textA + '</div>'
+    + '<div class="ab-stat' + (!bWins ? ' win' : '') + '">발송 ' + sentA + '건 · <b>클릭률 ' + clickA + '%</b> · 전환 ' + convA + '%</div>'
+    + '</div>'
+    + '<div class="ab-variant' + (bWins ? ' ab-winning' : '') + '">'
+    + '<div class="ab-variant-label">B안 (' + ratioB + '%)' + (bWins ? '<span style="color:#059669">★ 우세</span>' : '') + '</div>'
+    + '<div class="ab-variant-msg">' + textB + '</div>'
+    + '<div class="ab-stat' + (bWins ? ' win' : '') + '">발송 ' + sentB + '건 · <b>클릭률 ' + clickB + '%</b> · 전환 ' + convB + '%</div>'
+    + '</div>'
+    + '</div>'
+    + '<div style="display:flex;gap:6px;align-items:center">'
+    + '<button class="btn" style="font-size:12px" onclick="adoptVariant(\'a\', this, \'' + textA.replace(/'/g, "\\'") + '\')">A안 채택</button>'
+    + '<button class="btn btn-primary" style="font-size:12px" onclick="adoptVariant(\'b\', this, \'' + textB.replace(/'/g, "\\'") + '\')">B안 채택' + (bWins ? ' ★' : '') + '</button>'
+    + '<button class="btn" style="font-size:12px;margin-left:auto;color:var(--gray-400)" onclick="stopABTest(this)">중단</button>'
+    + '</div>';
+
+  body.insertBefore(panel, body.firstChild);
+  showToast('🔀 A/B 테스트가 시작되었습니다.', 'success');
+}
+
+function adoptVariant(v, btn, text) {
+  var item = btn.closest('.rt-item');
+  var msgEl = item.querySelector('.rt-msg');
+  if (msgEl && text) {
+    msgEl.textContent = text;
+    msgEl.setAttribute('data-ja', text);
+  }
+  var panel = item.querySelector('.ab-panel');
+  if (panel) panel.remove();
+  var badge = item.querySelector('.rt-stats .ab-badge');
+  if (badge) badge.remove();
+  showToast('✓ ' + (v === 'a' ? 'A안' : 'B안') + '이 채택되었습니다.', 'success');
+}
+
+function stopABTest(btn) {
+  var item = btn.closest('.rt-item');
+  var panel = item.querySelector('.ab-panel');
+  if (panel) panel.remove();
+  var badge = item.querySelector('.rt-stats .ab-badge');
+  if (badge) badge.remove();
+  showToast('A/B 테스트가 중단되었습니다.', '');
+}
 </script>
 </body></html>

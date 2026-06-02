@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -15,7 +15,7 @@
   <div class="topbar">
     <div class="topbar-left">
       <span class="topbar-title">홈 대시보드</span>
-      <span class="topbar-period">2026년 5월 1일 ~ 20일</span>
+      <span class="topbar-period" id="dashboard-period"></span>
     </div>
     <div class="topbar-right">
       <select style="font-size:12px;padding:5px 10px;border-radius:10px;border:1px solid var(--gray-200);background:#fff;color:var(--gray-700)">
@@ -26,56 +26,14 @@
     </div>
   </div>
   <div class="content">
-    <div class="kpi-grid">
-      <!-- ZENO v2: teal→navy, purple→blue, amber→gray -->
-      <div class="kpi-card navy" onclick="location.href='html/hospital_crm_inquiry_detail.html'" style="cursor:pointer">
-        <div class="kpi-label">💬 이번 달 문의</div>
-        <div class="kpi-value">23</div>
-        <div class="kpi-delta up">↑ 전월 대비 +8건</div>
-      </div>
-      <div class="kpi-card blue" onclick="location.href='html/hospital_reports.html'" style="cursor:pointer">
-        <div class="kpi-label">🔗 LINE 클릭률</div>
-        <div class="kpi-value">12.4%</div>
-        <div class="kpi-delta up">↑ +1.2%p</div>
-      </div>
-      <div class="kpi-card blue" onclick="location.href='html/hospital_crm_booking.html'" style="cursor:pointer">
-        <div class="kpi-label">📅 예약 전환율</div>
-        <div class="kpi-value">34%</div>
-        <div class="kpi-delta neu">업계 평균 21%</div>
-      </div>
-      <div class="kpi-card gray" onclick="location.href='html/hospital_reports.html'" style="cursor:pointer">
-        <div class="kpi-label">👥 사이트 방문자</div>
-        <div class="kpi-value">1,847</div>
-        <div class="kpi-delta up">↑ +23%</div>
-      </div>
-    </div>
+    <div class="kpi-grid" id="kpi-grid"></div>
     <div class="mid-grid">
       <div class="card">
         <div class="card-head"><div class="card-title">⚠ 지금 처리할 항목</div><a class="see-all" href="html/hospital_notifications.html">전체 보기</a></div>
-        <div class="alert-item" onclick="location.href='html/hospital_site_content.html'">
-          <div class="alert-dot" style="background:var(--red)"></div>
-          <div class="alert-body"><div class="alert-title">컴플라이언스 경고 1건</div><div class="alert-sub">쌍꺼풀 페이지 — "絶対に自然" 표현 감지</div></div>
-          <div class="alert-meta"><span class="alert-time">방금</span><span class="alert-arrow">›</span></div>
-        </div>
-        <div class="alert-item" onclick="location.href='html/hospital_crm_inbox.html'">
-          <!-- ZENO v2: amber dot → red (미확인 = 긴급) -->
-          <div class="alert-dot" style="background:var(--red)"></div>
-          <div class="alert-body"><div class="alert-title">미확인 LINE 문의 3건</div><div class="alert-sub">최근 접수 2시간 경과</div></div>
-          <div class="alert-meta"><span class="alert-time">2시간 전</span><span class="alert-arrow">›</span></div>
-        </div>
-        <div class="alert-item" onclick="location.href='html/hospital_site_content.html'">
-          <div class="alert-dot" style="background:var(--blue)"></div>
-          <div class="alert-body"><div class="alert-title">카피 검수 대기 — 눈 성형 섹션</div><div class="alert-sub">AI 재집필 완료, 검수 필요</div></div>
-          <div class="alert-meta"><span class="alert-time">어제</span><span class="alert-arrow">›</span></div>
-        </div>
-        <div class="alert-item">
-          <div class="alert-dot" style="background:var(--gray-300)"></div>
-          <div class="alert-body"><div class="alert-title">D+7 리타게팅 발송 예정 5명</div><div class="alert-sub">내일 오전 10시 자동 발송</div></div>
-          <div class="alert-meta"><span class="alert-time">내일</span><span class="alert-arrow">›</span></div>
-        </div>
+        <div id="alert-list"></div>
       </div>
       <div class="card">
-        <div class="card-head"><div class="card-title">▤ 빌드 진행 현황</div><span style="font-size:11px;color:var(--gray-400)">9단계 중 7완료</span></div>
+        <div class="card-head"><div class="card-title">▤ 빌드 진행 현황</div><span id="build-header-sub" style="font-size:12px;color:var(--gray-400)"></span></div>
         <div id="build-steps"></div>
       </div>
     </div>
@@ -83,7 +41,7 @@
       <div class="card">
         <div class="card-head"><div class="card-title">⬇ 문의 퍼널</div><a class="see-all" href="html/hospital_crm_inquiry_detail.html">상세 보기</a></div>
         <div class="funnel-row" id="funnel-row"></div>
-        <div style="font-size:11px;color:var(--gray-400)">방문→내원 전환율 <span style="color:var(--green);font-weight:600">0.76%</span> · 업계 평균 0.41%</div>
+        <div id="funnel-summary" style="font-size:12px;color:var(--gray-400)"></div>
       </div>
       <div class="card">
         <div class="card-head"><div class="card-title">📡 채널별 문의</div><a class="see-all" href="html/hospital_crm_inquiry_detail.html">비교 분석</a></div>
@@ -98,14 +56,14 @@
       <div class="card">
         <div class="card-head"><div class="card-title">🧠 AEO 인용 현황</div><a class="see-all" href="html/hospital_reports.html">상세</a></div>
         <div id="aeo-list"></div>
-        <div style="font-size:11px;color:var(--gray-400);margin-top:8px">이번 달 총 <span style="color:var(--navy);font-weight:600">19회</span> · <span style="color:var(--green);font-weight:500">+7회</span></div>
+        <div id="aeo-summary" style="font-size:12px;color:var(--gray-400);margin-top:8px"></div>
       </div>
       <div class="card">
         <div class="card-head"><div class="card-title">🤖 LINE 자동상담</div><a class="see-all" href="html/hospital_line_auto.html">설정</a></div>
         <div class="line-stat-grid" style="margin-bottom:12px">
-          <div class="line-stat"><div class="line-stat-v">94%</div><div class="line-stat-l">AI 해결률</div></div>
-          <div class="line-stat"><div class="line-stat-v">8초</div><div class="line-stat-l">평균 응답</div></div>
-          <div class="line-stat"><div class="line-stat-v">41%</div><div class="line-stat-l">예약 전환</div></div>
+          <div class="line-stat"><div class="line-stat-v" id="line-ai-rate"></div><div class="line-stat-l">AI 해결률</div></div>
+          <div class="line-stat"><div class="line-stat-v" id="line-avg-resp"></div><div class="line-stat-l">평균 응답</div></div>
+          <div class="line-stat"><div class="line-stat-v" id="line-conv-rate"></div><div class="line-stat-l">예약 전환</div></div>
         </div>
         <div style="position:relative;width:100%;height:80px"><canvas id="lineChart" role="img" aria-label="LINE 일별 처리">LINE 일별 처리 건수.</canvas></div>
       </div>
@@ -118,6 +76,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/sidebar.js"></script>
+<script src="js/dashboard-data.js"></script>
 <script src="js/dashboard.js"></script>
 </body>
 </html>

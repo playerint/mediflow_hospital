@@ -1,4 +1,4 @@
-
+﻿
 // ── 환자 데이터 ──────────────────────────────────────────────────
 
 /* ══════════════════════════════════════════════════════
@@ -59,7 +59,7 @@ function selectLang(code, flag, name) {
     renderAISuggests(patients[curId]);
     renderManual(patients[curId]);
     if(code !== 'ja') {
-      setTimeout(function(){ renderAISuggestsWithLang(patients[curId]); renderManualWithLang(patients[curId]); }, 100);
+      setTimeout(function(){ regenSuggests(); renderManualWithLang(patients[curId]); }, 100);
     }
   }
 }
@@ -67,17 +67,12 @@ function selectLang(code, flag, name) {
 var _translateTimer = null;
 
 /* ══════════════════════════════════════════════════════
-   번역 함수 — 현재: MyMemory API (무료)
-   추후 Claude API로 교체 시 이 함수만 수정하면 됨.
-   언어쌍(pair)은 LANG_CONFIG[currentLang].pair 에서 가져옴.
+   번역 함수 — Gemini API (의료 상담 문맥 반영)
+   Next.js 전환 시 gemini.js → /api/gemini 로 프록시
 ══════════════════════════════════════════════════════ */
 function translateKoToJa(text, callback) {
   if(!text || !text.trim()) { callback(''); return; }
-  var pair = getLang().pair;
-  fetch('https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) + '&langpair=' + pair)
-    .then(function(r){ return r.json(); })
-    .then(function(d){ callback(d.responseData && d.responseData.translatedText ? d.responseData.translatedText : ''); })
-    .catch(function(){ callback(''); });
+  geminiTranslate(text, currentLang, callback);
 }
 
 function onKoInput() {
@@ -111,7 +106,7 @@ function renderAISuggestsWithLang(p) {
         var lastMsg = null;
         for(var j = p.msgs.length-1; j >= 0; j--) { if(p.msgs[j].from==='patient') { lastMsg=p.msgs[j]; break; } }
         var html = '';
-        if(lastMsg) html += '<div style="background:var(--gray-50);border-radius:8px;padding:8px 10px;margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--gray-400);margin-bottom:4px">환자 마지막 질문</div><div style="font-size:11px;color:var(--navy);line-height:1.6">'+lastMsg.ja+'</div><div style="font-size:10px;color:var(--gray-500);margin-top:2px">'+lastMsg.ko+'</div></div>';
+        if(lastMsg) html += '<div style="background:var(--gray-50);border-radius:8px;padding:8px 10px;margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--gray-400);margin-bottom:4px">환자 마지막 질문</div><div style="font-size:12px;color:var(--navy);line-height:1.6">'+lastMsg.ja+'</div><div style="font-size:10px;color:var(--gray-500);margin-top:2px">'+lastMsg.ko+'</div></div>';
         html += '<div style="font-size:10px;font-weight:600;color:var(--gray-400);margin-bottom:6px">추천 답변 '+results.length+'개</div>';
         results.forEach(function(s2, idx) {
           html += '<div class="ai-suggest-item" id="sug-'+idx+'" onclick="selectSuggest('+idx+',this)"><div class="ai-suggest-tone" style="background:'+s2.toneBg+';color:'+s2.toneTc+'">'+s2.tone+'</div><div class="ai-suggest-text">'+s2.ko+'</div><div class="ai-suggest-ja">'+li.abbr+' '+s2.jaLang+'</div></div>';
@@ -129,113 +124,28 @@ function renderManualWithLang(p) {
   var el = document.getElementById('manual-content');
   if(!el) return;
   var li = getLang();
-  el.querySelectorAll('.manual-item-body').forEach(function(item) {
-    var orig = item.textContent;
-    item.style.opacity = '0.5';
-    translateKoToJa(orig, function(t) {
-      if(t) item.innerHTML = orig + '<div style="margin-top:4px;font-size:10px;color:var(--gray-500)">'+li.abbr+' '+t+'</div>';
-      item.style.opacity = '1';
+  var items = el.querySelectorAll('.manual-item-body');
+  if(!items.length) return;
+
+  // 모든 항목을 구분자로 이어 1회 Gemini 호출
+  var texts = Array.prototype.map.call(items, function(item){ return item.textContent.trim(); });
+  var combined = texts.join('\n<<<SEP>>>\n');
+  items.forEach(function(item){ item.style.opacity = '0.5'; });
+
+  geminiTranslate(combined, currentLang, function(result) {
+    items.forEach(function(item){ item.style.opacity = '1'; });
+    if(!result) return;
+    var translated = result.split(/<<<SEP>>>/);
+    items.forEach(function(item, i) {
+      var t = translated[i] ? translated[i].trim() : '';
+      if(t) item.innerHTML = texts[i]
+        + '<div style="margin-top:4px;font-size:10px;color:var(--gray-500)">'
+        + li.abbr + ' ' + t + '</div>';
     });
   });
 }
 
-const patients = [
-  {id:0, name:'야마다 사오리', nameJa:'山田 沙織', init:'야마', bg:'#EEEDFE', tc:'#3C3489',
-   proc:'쌍꺼풀', ch:'LINE', chColor:'#2563EB', status:'new', statusLabel:'신규', elapsed:'2시간', unread:true,
-   msgs:[
-     {from:'patient', ja:'はじめまして！二重整形について聞きたいのですが、カウンセリングは無料ですか？', ko:'안녕하세요! 쌍꺼풀 성형에 대해 궁금한데요, 상담은 무료인가요?', time:'10:23'},
-     {from:'ai',      ja:'はじめまして！カウンセリングは無料です。埋没法は₩400,000〜が目安です。', ko:'안녕하세요! 상담은 무료입니다. 매몰법은 ₩400,000~이 기준입니다.', time:'10:23 (AI はな)'},
-   ],
-   draft:{ja:'はじめまして、オーレ整形外科です。\nカウンセリングは無料で承っております。\nご来院のご希望日時をお聞かせください。', ko:'안녕하세요, 올래성형외과입니다.\n상담은 무료로 진행하고 있습니다.\n방문 희망 일시를 알려주세요.'}},
-
-  {id:1, name:'스즈키 미카', nameJa:'鈴木 美花', init:'스즈', bg:'#E1F5EE', tc:'#085041',
-   proc:'코 성형', ch:'LINE', chColor:'#2563EB', status:'new', statusLabel:'신규', elapsed:'1시간', unread:true,
-   msgs:[
-     {from:'patient', ja:'鼻のプチ整形を考えています。ダウンタイムはどのくらいですか？', ko:'코 프티 성형을 고려 중입니다. 다운타임은 어느 정도인가요?', time:'11:14'},
-   ],
-   draft:{ja:'こんにちは、オーレ整形外科です。\nヒアルロン酸注入のダウンタイムは1〜3日程度です。', ko:'안녕하세요, 올래성형외과입니다.\n히알루론산 주입의 다운타임은 1~3일 정도입니다.'}},
-
-  {id:2, name:'다나카 유키', nameJa:'田中 雪', init:'다나', bg:'#FAEEDA', tc:'#412402',
-   proc:'첫 방문', ch:'LINE', chColor:'#2563EB', status:'new', statusLabel:'신규', elapsed:'40분', unread:true,
-   msgs:[
-     {from:'patient', ja:'韓国の病院は初めてで不安です。日本語対応はしていますか？', ko:'한국 병원은 처음이라 걱정됩니다. 일본어 대응이 되나요?', time:'11:37'},
-   ],
-   draft:{ja:'はじめまして。当院には日本語対応スタッフが常駐しております。', ko:'안녕하세요. 저희 병원에는 일본어 대응 스탭이 상주하고 있습니다.'}},
-
-  {id:3, name:'사토 하루카', nameJa:'佐藤 春花', init:'사토', bg:'#E6F1FB', tc:'#0C447C',
-   proc:'윤곽', ch:'LINE', chColor:'#2563EB', status:'consulting', statusLabel:'상담중', elapsed:'', unread:false,
-   msgs:[
-     {from:'patient', ja:'輪郭整形に興味があります。', ko:'윤곽 성형에 관심이 있습니다.', time:'5/18'},
-     {from:'staff',   ja:'当院では顎骨切り・頬骨縮小・エラボトックスなどをご提供しております。', ko:'저희 병원에서는 턱뼈절제·광대축소·에라보톡스 등을 제공하고 있습니다.', time:'5/18'},
-   ],
-   draft:{ja:'', ko:''}},
-
-  {id:4, name:'이토 나나미', nameJa:'伊藤 七海', init:'이토', bg:'#FBEAF0', tc:'#4B1528',
-   proc:'쌍꺼풀', ch:'LINE', chColor:'#2563EB', status:'booked', statusLabel:'예약완료', elapsed:'', unread:false,
-   msgs:[
-     {from:'patient', ja:'二重整形を予約したいです。', ko:'쌍꺼풀 성형을 예약하고 싶습니다.', time:'5/17'},
-     {from:'staff',   ja:'6月5日14:00はいかがでしょうか？', ko:'6월 5일 14:00은 어떠신가요?', time:'5/17'},
-     {from:'ai',      ja:'【予約確認】6月5日(金) 14:00 二重整形カウンセリング。', ko:'[예약 확인] 6월 5일(금) 14:00 쌍꺼풀 성형 상담.', time:'5/17 (AI はな)'},
-   ],
-   draft:{ja:'', ko:''}},
-
-  {id:5, name:'나카무라 리나', nameJa:'中村 里奈', init:'나카', bg:'#EEEDFE', tc:'#3C3489',
-   proc:'코 성형', ch:'LINE', chColor:'#2563EB', status:'closed', statusLabel:'종료', elapsed:'', unread:false,
-   msgs:[
-     {from:'patient', ja:'鼻整形で内院しました。ありがとうございました！', ko:'코 성형으로 내원했습니다. 감사했습니다!', time:'5/10'},
-   ],
-   draft:{ja:'', ko:''}},
-  // ── Instagram 유입 환자 ──
-  {id:6, name:'하야시 유이', nameJa:'林 結衣', init:'하야', bg:'#FCE7F3', tc:'#9D174D',
-   proc:'쌍꺼풀', ch:'Instagram', chColor:'#E1306C', status:'new', statusLabel:'신규', elapsed:'30분', unread:true,
-   msgs:[
-     {from:'patient', ja:'インスタのビフォーアフターを見て気になりました！二重整形の料金を教えてください😊', ko:'인스타 B/A 보고 궁금해졌어요! 쌍꺼풀 가격 알려주세요😊', time:'오늘 14:52'},
-     {from:'ai',      ja:'ご連絡ありがとうございます🌸 埋没法は₩400,000〜、切開法は₩800,000〜となります。無料カウンセリングもございます！', ko:'연락 주셔서 감사합니다🌸 매몰법 ₩400,000~, 절개법 ₩800,000~ 입니다. 무료 상담도 있어요!', time:'오늘 14:52'},
-   ]},
-  {id:7, name:'오가와 사키', nameJa:'小川 咲', init:'오가', bg:'#FDF4FF', tc:'#7E22CE',
-   proc:'코 필러', ch:'Instagram', chColor:'#E1306C', status:'consulting', statusLabel:'상담중', elapsed:null, unread:false,
-   msgs:[
-     {from:'patient', ja:'鼻のフィラーに興味があります。ダウンタイムはどのくらいですか？', ko:'코 필러에 관심 있어요. 다운타임이 얼마나 돼요?', time:'어제 20:11'},
-     {from:'ai',      ja:'鼻フィラーのダウンタイムは1〜3日程度です。お仕事されながらでも施術可能ですよ！', ko:'코 필러 다운타임은 1~3일 정도예요. 출근하면서 시술 가능해요!', time:'어제 20:12'},
-   ]},
-  {id:8, name:'마츠이 노노카', nameJa:'松井 乃々花', init:'마츠', bg:'#FFF7ED', tc:'#C2410C',
-   proc:'윤곽', ch:'Instagram', chColor:'#E1306C', status:'booked', statusLabel:'예약완료', elapsed:null, unread:false,
-   msgs:[
-     {from:'patient', ja:'輪郭整形について詳しく教えてもらえますか？', ko:'윤곽 성형에 대해 자세히 알려주세요.', time:'5/20 19:44'},
-     {from:'ai',      ja:'輪郭整形には小顔手術、エラ削り、顎形成などがあります。', ko:'윤곽 성형에는 소안면, 광대축소, 턱 성형 등이 있어요.', time:'5/20 19:45'},
-     {from:'patient', ja:'カウンセリング予約したいです！', ko:'상담 예약하고 싶어요!', time:'5/20 20:01'},
-     {from:'ai',      ja:'6月3日(火)14:00はいかがでしょうか？', ko:'6월 3일(화) 14:00 어떠세요?', time:'5/20 20:02'},
-   ]},
-
-  // ── 중국어 간체 ──
-  {id:9, name:'왕 메이링', nameJa:'王 美玲', init:'왕', bg:'#FEF2F2', tc:'#991B1B',
-   proc:'쌍꺼풀', ch:'Instagram', chColor:'#E1306C', status:'new', statusLabel:'신규', elapsed:'1시간', unread:true,
-   msgs:[
-     {from:'patient', ja:'你好！我在网上看到了双眼皮手术的信息，请问咨询是免费的吗？', ko:'안녕하세요! 쌍꺼풀 상담은 무료인가요?', time:'오늘 13:20'},
-     {from:'ai',      ja:'您好！咨询是免费的🌸 埋没法₩400,000起，切开法₩800,000起。', ko:'안녕하세요! 상담 무료🌸 매몰법 ₩400,000~, 절개법 ₩800,000~.', time:'오늘 13:20'},
-   ]},
-  // ── 중국어 번체 ──
-  {id:10, name:'천 샤오후이', nameJa:'陳 曉慧', init:'천', bg:'#F0FDF4', tc:'#166534',
-   proc:'코 성형', ch:'LINE', chColor:'#2563EB', status:'consulting', statusLabel:'상담중', elapsed:null, unread:false,
-   msgs:[
-     {from:'patient', ja:'你好，我想詢問鼻子整形，恢復期大概多久？', ko:'코 성형 회복 기간이 얼마나 걸리나요?', time:'어제 16:45'},
-     {from:'ai',      ja:'您好！恢復期填充1〜3天，手術7〜14天。提供免費諮詢！', ko:'코 필러 1~3일, 수술 7~14일. 무료 상담 가능!', time:'어제 16:46'},
-   ]},
-  // ── 영어 ──
-  {id:11, name:'에밀리 박', nameJa:'Emily Park', init:'EM', bg:'#EFF6FF', tc:'#1D4ED8',
-   proc:'피부레이저', ch:'Instagram', chColor:'#E1306C', status:'new', statusLabel:'신규', elapsed:'45분', unread:true,
-   msgs:[
-     {from:'patient', ja:"Hi! I'm interested in skin laser. Do you have English-speaking staff?", ko:'피부 레이저 관심있어요. 영어 가능한 스탭 계신가요?', time:'오늘 14:10'},
-     {from:'ai',      ja:"Hello! Yes, we have English coordinators! Free consultation available!", ko:'네, 영어 코디네이터 있어요! 무료 상담 예약 가능해요!', time:'오늘 14:10'},
-   ]},
-  // ── 태국어 ──
-  {id:12, name:'나파폰 씨리', nameJa:'นภาพร ศิริ', init:'나파', bg:'#FFF7ED', tc:'#9A3412',
-   proc:'윤곽', ch:'LINE', chColor:'#2563EB', status:'consulting', statusLabel:'상담중', elapsed:null, unread:false,
-   msgs:[
-     {from:'patient', ja:'สวัสดีค่ะ สนใจเรื่องการศัลยกรรมกรอบหน้า ราคาเท่าไหร่คะ', ko:'윤곽 성형 가격이 얼마인가요?', time:'어제 19:30'},
-     {from:'ai',      ja:'สวัสดีค่ะ การปรึกษาฟรี! ราคาเริ่มต้น 3,000,000 วอน', ko:'안녕하세요! 상담 무료! ₩3,000,000~입니다.', time:'어제 19:31'},
-   ]}
-];
+// patients, COACHING_DATA, MANUAL_DATA → js/data.js 참조
 
 const statusColors = {
   new:       {bg:'#FEE2E2', tc:'#991B1B'},
@@ -309,6 +219,7 @@ function selectPatient(id) {
   if(typeof updateRightPanel === 'function') updateRightPanel(p);
   p.unread = false;
   renderList(curFilter, document.querySelector('.inbox-search') ? document.querySelector('.inbox-search').value : '');
+  updateKPICards();
 
   // ── 발송폼 — 종료만 숨김 ──
   var da = document.getElementById('ai-draft');
@@ -344,7 +255,7 @@ function renderMessages(p) {
     if (isAI) {
       avatarHtml = '<div style="width:28px;height:28px;border-radius:50%;background:var(--navy-l);font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0">🌸</div>';
     } else if (isPatient) {
-      avatarHtml = '<div style="width:28px;height:28px;border-radius:50%;background:' + p.bg + ';color:' + p.tc + ';font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">' + p.init[0] + '</div>';
+      avatarHtml = '<div style="width:28px;height:28px;border-radius:50%;background:' + p.bg + ';color:' + p.tc + ';font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">' + p.init[0] + '</div>';
     } else {
       var chIcon = p.ch === 'Instagram' ? '📸' : '💬';
       var chBg   = p.ch === 'Instagram' ? '#FDF2F8' : '#EFF6FF';
@@ -355,11 +266,11 @@ function renderMessages(p) {
     // 발신자 레이블
     var senderLabel = '';
     if (isAI) {
-      senderLabel = '<div style="font-size:11px;font-weight:600;color:var(--navy);margin-bottom:3px;display:flex;align-items:center;gap:4px">AI はな <span style="font-size:9px;background:#EEF2FF;color:var(--navy);padding:1px 5px;border-radius:4px;font-weight:400">자동응답</span></div>';
+      senderLabel = '<div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:3px;display:flex;align-items:center;gap:4px">AI はな <span style="font-size:9px;background:#EEF2FF;color:var(--navy);padding:1px 5px;border-radius:4px;font-weight:400">자동응답</span></div>';
     } else if (isStaff) {
       var chName = p.ch === 'Instagram' ? 'Instagram' : 'LINE';
-      var _li2 = getLang();
-      senderLabel = '<div style="font-size:11px;font-weight:600;color:var(--gray-500);margin-bottom:3px;display:flex;align-items:center;gap:4px">' + chName + ' <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:13px;background:'+_li2.bg+';color:#fff;border-radius:2px;font-size:9px;font-weight:700">'+_li2.abbr+'</span> <span style="font-size:9px;background:#D1FAE5;color:#065F46;padding:1px 5px;border-radius:4px;font-weight:400">발송</span></div>';
+      var _li2 = LANG_CONFIG[m.lang] || getLang();
+      senderLabel = '<div style="font-size:12px;font-weight:600;color:var(--gray-500);margin-bottom:3px;display:flex;align-items:center;gap:4px">' + chName + ' <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:13px;background:'+_li2.bg+';color:#fff;border-radius:2px;font-size:9px;font-weight:700">'+_li2.abbr+'</span> <span style="font-size:9px;background:#D1FAE5;color:#065F46;padding:1px 5px;border-radius:4px;font-weight:400">발송</span></div>';
     }
 
     // 말풍선
@@ -368,12 +279,12 @@ function renderMessages(p) {
     if (isPatient) {
       bubbleBg = '#F3F4F6'; bubbleTc = '#111827';
       bubbleContent += '<div style="font-size:13px;line-height:1.7">' + m.ja + '</div>';
-      if (m.ko) bubbleContent += '<div style="margin-top:5px;padding:5px 8px;background:rgba(0,0,0,.05);border-radius:6px;font-size:11px;color:#374151;line-height:1.6">KR ' + m.ko + '</div>';
+      if (m.ko) bubbleContent += '<div style="margin-top:5px;padding:5px 8px;background:rgba(0,0,0,.05);border-radius:6px;font-size:12px;color:#374151;line-height:1.6">KR ' + m.ko + '</div>';
     } else {
       bubbleBg = isAI ? '#0D1B3E' : (p.ch === 'Instagram' ? '#E1306C' : '#06C755');
       bubbleTc = '#fff';
       if (m.ko) bubbleContent += '<div style="font-size:13px;line-height:1.7">' + m.ko + '</div>';
-      if (m.ja) bubbleContent += '<div style="margin-top:5px;padding:5px 8px;background:rgba(255,255,255,.2);border-radius:6px;font-size:11px;line-height:1.6">' + getLang().abbr + ' ' + m.ja + '</div>';
+      if (m.ja) bubbleContent += '<div style="margin-top:5px;padding:5px 8px;background:rgba(255,255,255,.2);border-radius:6px;font-size:12px;line-height:1.6">' + getLang().abbr + ' ' + m.ja + '</div>';
     }
 
     var isOut = !isPatient;
@@ -404,10 +315,10 @@ function renderMessages(p) {
 function sendMsg() {
   var koTxt = document.getElementById('draft-text-ko').value;
   var jaTxt = document.getElementById('draft-text-ja').value;
-  if (!jaTxt.trim()) { showToastInbox('일본어 발송 내용을 입력해주세요.', 'error'); return; }
+  if (!jaTxt.trim()) { showToastInbox(getLang().name + ' 발송 내용을 입력해주세요.', 'error'); return; }
 
   var p = patients[curId];
-  p.msgs.push({ from:'staff', ja: jaTxt, ko: koTxt || jaTxt, time:'지금' });
+  p.msgs.push({ from:'staff', ja: jaTxt, ko: koTxt || jaTxt, time:'지금', lang: currentLang });
   p.unread = false;
 
   renderMessages(p);
@@ -427,6 +338,35 @@ function sendMsg() {
   renderList(curFilter, '');
 }
 
+function updateKPICards() {
+  var total   = patients.length;
+  var unread  = patients.filter(function(p){ return p.unread; }).length;
+  var booked  = patients.filter(function(p){ return p.status === 'booked'; }).length;
+  var aiCount = patients.filter(function(p){ return p.msgs.some(function(m){ return m.from === 'ai'; }); }).length;
+  var rate    = total ? (booked / total * 100).toFixed(1) : '0';
+  var aiRate  = total ? (aiCount / total * 100).toFixed(1) : '0';
+
+  var t = document.getElementById('kpi-total');    if(t) t.textContent = total + '건';
+  var u = document.getElementById('kpi-unread');   if(u) u.textContent = unread + '건';
+  var b = document.getElementById('kpi-booked');   if(b) b.textContent = booked + '건';
+  var a = document.getElementById('kpi-ai');       if(a) a.textContent = aiCount + '건';
+  var r = document.getElementById('kpi-rate');     if(r) r.textContent = '전환율 ' + rate + '%';
+  var ar = document.getElementById('kpi-ai-rate'); if(ar) ar.textContent = aiRate + '%';
+
+  var us = document.getElementById('kpi-unread-sub');
+  if(us) us.textContent = unread > 0 ? '미응대 ' + unread + '건' : '모두 확인됨';
+}
+
+function updateFilterCounts() {
+  var labels = { all:'전체', new:'신규', consulting:'상담중', booked:'예약완료', closed:'종료' };
+  var counts = { all: patients.length, new:0, consulting:0, booked:0, closed:0 };
+  patients.forEach(function(p){ if(counts[p.status] !== undefined) counts[p.status]++; });
+  document.querySelectorAll('.pill[data-status]').forEach(function(btn) {
+    var s = btn.getAttribute('data-status');
+    if(labels[s] !== undefined) btn.textContent = labels[s] + ' ' + counts[s];
+  });
+}
+
 function setFilter(f, btn) {
   curFilter = f;
   document.querySelectorAll('.pill').forEach(p => p.classList.remove('on'));
@@ -435,6 +375,14 @@ function setFilter(f, btn) {
 }
 function filterList(v) { renderList(curFilter, v); }
 
+
+function cancelDraft() {
+  var koEl = document.getElementById('draft-text-ko');
+  var jaEl = document.getElementById('draft-text-ja');
+  if (koEl) koEl.value = '';
+  if (jaEl) jaEl.value = '';
+  document.querySelectorAll('.ai-suggest-item').forEach(function(e){ e.classList.remove('selected'); });
+}
 
 function regenDraft() {
   const koEl = document.getElementById('draft-text-ko');
@@ -552,6 +500,8 @@ function changeStatus() {
 
   if(typeof updateRightPanel === 'function') updateRightPanel(p);
   renderList(curFilter, '');
+  updateFilterCounts();
+  updateKPICards();
   showToastInbox('✓ 상태가 ' + labels[p.status] + '(으)로 변경되었습니다.', 'success');
 }
 
@@ -617,14 +567,14 @@ function updateRightPanel(p) {
     var closedHtml = '<div style="text-align:center;padding:24px 16px;color:var(--gray-400)">'
       + '<div style="font-size:24px;margin-bottom:8px">✓</div>'
       + '<div style="font-size:13px;font-weight:600;color:var(--gray-500)">상담 종료</div>'
-      + '<div style="font-size:11px;margin-top:4px;line-height:1.6">이 상담은 종료되었습니다.</div>'
+      + '<div style="font-size:12px;margin-top:4px;line-height:1.6">이 상담은 종료되었습니다.</div>'
       + '</div>';
     if (aiEl) aiEl.innerHTML = closedHtml;
     if (manEl) manEl.innerHTML = closedHtml;
   } else {
     renderAISuggests(p);
     renderManual(p);
-    if(currentLang !== 'ja') setTimeout(function(){ renderAISuggestsWithLang(p); renderManualWithLang(p); }, 50);
+    if(currentLang !== 'ja') setTimeout(function(){ regenSuggests(); renderManualWithLang(p); }, 50);
   }
 }
 
@@ -635,28 +585,12 @@ function renderAISuggests(p) {
   for (var i = p.msgs.length - 1; i >= 0; i--) {
     if (p.msgs[i].from === 'patient') { lastMsg = p.msgs[i]; break; }
   }
-  var coaching = {
-    '쌍꺼풀': [
-      {tone:'친절',toneBg:'#D1FAE5',toneTc:'#065F46',ko:'상담은 무료예요! 매몰법 ₩400,000~, 절개법 ₩800,000~입니다.',ja:'カウンセリングは無料です! 埋没法は₩400,000~、切開法は₩800,000~です。'},
-      {tone:'전문적',toneBg:'#EEF2FF',toneTc:'#0D1B3E',ko:'상담은 무료로 진행합니다. 매몰법과 절개법을 눈 상태에 따라 안내드립니다.',ja:'カウンセリングは無料です。埋没法と切開法を目の状態に応じてご提案します。'},
-      {tone:'간결',toneBg:'#F3F4F6',toneTc:'#374151',ko:'상담 무료. 매몰법 ₩400,000~, 절개법 ₩800,000~.',ja:'カウンセリング無料。埋没法₩400,000~、切開法₩800,000~。'},
-    ],
-    '코 성형': [
-      {tone:'친절',toneBg:'#D1FAE5',toneTc:'#065F46',ko:'코 필러 다운타임은 1~3일 정도예요! 출근하면서도 시술 가능해요!',ja:'鼻フィラーのダウンタイムは1~3日程度です！お仕事しながら施術できますよ！'},
-      {tone:'전문적',toneBg:'#EEF2FF',toneTc:'#0D1B3E',ko:'히알루론산 코 필러는 다운타임 1~3일, 효과 6~12개월 지속됩니다.',ja:'ヒアルロン酸鼻フィラーはダウンタイム1~3日、効果6~12ヶ月持続します。'},
-      {tone:'간결',toneBg:'#F3F4F6',toneTc:'#374151',ko:'다운타임 1~3일. 효과 6~12개월. 무료 상담 예약 가능.',ja:'ダウンタイム1~3日。効果6~12ヶ月。無料カウンセリング予約可能。'},
-    ],
-  };
-  var suggests = coaching[p.proc] || [
-    {tone:'친절',toneBg:'#D1FAE5',toneTc:'#065F46',ko:'어떤 시술이든 편하게 상담해 주세요! 무료 상담 진행 중입니다.',ja:'どんな施術でもお気軽にご相談ください！無料カウンセリングございます。'},
-    {tone:'전문적',toneBg:'#EEF2FF',toneTc:'#0D1B3E',ko:'관심 시술을 알려주시면 자세한 안내를 드리겠습니다.',ja:'ご関心の施術をお知らせいただければ詳しくご案内します。'},
-    {tone:'간결',toneBg:'#F3F4F6',toneTc:'#374151',ko:'무료 상담 예약 가능합니다.',ja:'無料カウンセリング予約可能です。'},
-  ];
-  var html = '';
+  var suggests = COACHING_DATA[p.proc] || COACHING_DATA['default'];
+    var html = '';
   if (lastMsg) {
     html += '<div style="background:var(--gray-50);border-radius:8px;padding:8px 10px;margin-bottom:10px">'
       + '<div style="font-size:10px;font-weight:600;color:var(--gray-400);margin-bottom:4px">환자 마지막 질문</div>'
-      + '<div style="font-size:11px;color:var(--navy);line-height:1.6">' + lastMsg.ja + '</div>'
+      + '<div style="font-size:12px;color:var(--navy);line-height:1.6">' + lastMsg.ja + '</div>'
       + '<div style="font-size:10px;color:var(--gray-500);margin-top:2px">' + lastMsg.ko + '</div>'
       + '</div>';
   }
@@ -690,45 +624,63 @@ function selectSuggest(idx, el) {
 function regenSuggests() {
   var el = document.getElementById('ai-suggests');
   if (!el) return;
+  var p = patients[curId];
+  if (!p) return;
+
+  // 로딩 상태
   el.style.opacity = '0.4';
-  showToastInbox('🤖 AI 코칭 재생성 중...');
-  setTimeout(function(){
+  el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--gray-400);font-size:12px">🤖 Gemini가 답변을 생성 중...</div>';
+  showToastInbox('🤖 AI가 추천 답변을 생성 중입니다...');
+
+  // 환자 마지막 메시지 추출
+  var lastMsg = null;
+  for (var i = p.msgs.length - 1; i >= 0; i--) {
+    if (p.msgs[i].from === 'patient') { lastMsg = p.msgs[i]; break; }
+  }
+  var patientMsgOrig = lastMsg ? lastMsg.ja : '';
+  var patientMsgKo   = lastMsg ? lastMsg.ko : '';
+
+  geminiGenerateCoaching(patientMsgOrig, patientMsgKo, p.proc, currentLang, function(suggests) {
     el.style.opacity = '1';
-    var p = patients[curId];
-    if (!p) return;
-    renderAISuggests(p);
-    if (currentLang !== 'ja') {
-      setTimeout(function(){ renderAISuggestsWithLang(p); }, 50);
+    if (!suggests) {
+      // Gemini 실패 시 하드코딩 fallback (JP로 표시)
+      renderAISuggests(p);
+      showToastInbox('⚠ AI 생성 실패 — 기본 답변을 표시합니다.', 'error');
+      return;
     }
-    showToastInbox('✓ AI 코칭이 업데이트되었습니다.', 'success');
-  }, 800);
+    // Gemini 결과 렌더링
+    var html = '';
+    if (lastMsg) {
+      html += '<div style="background:var(--gray-50);border-radius:8px;padding:8px 10px;margin-bottom:10px">'
+        + '<div style="font-size:10px;font-weight:600;color:var(--gray-400);margin-bottom:4px">환자 마지막 질문</div>'
+        + '<div style="font-size:12px;color:var(--navy);line-height:1.6">' + patientMsgOrig + '</div>'
+        + '<div style="font-size:10px;color:var(--gray-500);margin-top:2px">' + patientMsgKo + '</div>'
+        + '</div>';
+    }
+    html += '<div style="font-size:10px;font-weight:600;color:var(--gray-400);margin-bottom:6px">🤖 Gemini 추천 답변 ' + suggests.length + '개</div>';
+    suggests.forEach(function(s, i) {
+      html += '<div class="ai-suggest-item" id="sug-' + i + '" onclick="selectSuggest(' + i + ',this)">'
+        + '<div class="ai-suggest-tone" style="background:' + s.toneBg + ';color:' + s.toneTc + '">' + s.tone + '</div>'
+        + '<div class="ai-suggest-text">' + s.ko + '</div>'
+        + '<div class="ai-suggest-ja">' + getLang().abbr + ' ' + s.ja + '</div>'
+        + '</div>';
+    });
+    el.innerHTML = html;
+    el._suggests = suggests;
+    showToastInbox('✓ Gemini가 추천 답변을 생성했습니다.', 'success');
+  });
 }
 
 function renderManual(p) {
   var el = document.getElementById('manual-content');
   if (!el) return;
-  var data = {
-    '쌍꺼풀': [
-      {title:'매몰법',badge:'비절개',bg:'#D1FAE5',tc:'#065F46',body:'절개 없이 실로 고정. 다운타임 1~3일. ₩400,000~'},
-      {title:'절개법',badge:'영구적',bg:'#EEF2FF',tc:'#0D1B3E',body:'피부 절개 후 지방·근육 조정. 다운타임 7~14일. ₩800,000~'},
-      {title:'컴플라이언스',badge:'⚠ 주의',bg:'#FEF2F2',tc:'#991B1B',body:'효과 보장 표현 금지. 회복 기간 개인차 명시.'},
-    ],
-    '코 성형': [
-      {title:'코 필러',badge:'비수술',bg:'#D1FAE5',tc:'#065F46',body:'히알루론산 주입. 다운타임 1~3일. 효과 6~12개월. ₩300,000~'},
-      {title:'코 수술',badge:'수술',bg:'#EEF2FF',tc:'#0D1B3E',body:'실리콘 보형물. 반영구. 다운타임 7~14일. ₩2,500,000~'},
-      {title:'컴플라이언스',badge:'⚠ 주의',bg:'#FEF2F2',tc:'#991B1B',body:'수술 결과 보장 표현 금지. 부작용 안내 필수.'},
-    ],
-  };
   var key = null;
-  var keys = Object.keys(data);
+  var keys = Object.keys(MANUAL_DATA).filter(function(k){ return k !== 'default'; });
   for (var i = 0; i < keys.length; i++) {
     if (p.proc && p.proc.includes(keys[i])) { key = keys[i]; break; }
   }
-  var points = key ? data[key] : [
-    {title:'무료 카운슬링',badge:'기본',bg:'#EEF2FF',tc:'#0D1B3E',body:'모든 시술 전 무료 카운슬링. 일본어 스탭 상주.'},
-    {title:'컴플라이언스',badge:'⚠ 주의',bg:'#FEF2F2',tc:'#991B1B',body:'효과 보장 표현 금지. 부작용 안내 필수.'},
-  ];
-  el.innerHTML = '<div style="font-size:11px;font-weight:600;color:var(--gray-400);margin-bottom:8px">' + (p.proc || '기본') + ' 핵심 정보</div>'
+  var points = key ? MANUAL_DATA[key] : MANUAL_DATA['default'];
+  el.innerHTML = '<div style="font-size:12px;font-weight:600;color:var(--gray-400);margin-bottom:8px">' + (p.proc || '기본') + ' 핵심 정보</div>'
     + points.map(function(m){
       return '<div class="manual-item"><div class="manual-item-title">'+m.title
         +' <span class="manual-badge" style="background:'+m.bg+';color:'+m.tc+'">'+m.badge+'</span></div>'
@@ -825,6 +777,8 @@ function submitBookingModal() {
     p.statusLabel = '예약완료';
     applyStatusBtn(p);
     renderList(curFilter, '');
+    updateFilterCounts();
+    updateKPICards();
     if(typeof updateRightPanel === 'function') updateRightPanel(p);
   }
   closeBookingModal();
@@ -842,5 +796,7 @@ function copyText(text) {
   }
 }
 
+updateKPICards();
+updateFilterCounts();
 renderList('all', '');
 selectPatient(0);

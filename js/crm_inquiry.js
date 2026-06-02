@@ -1,4 +1,4 @@
-
+﻿
 const channels=[{name:'LINE',cnt:12,pct:63,color:'#2563EB',delta:'+4'},{name:'Instagram',cnt:7,pct:37,color:'#E1306C',delta:'+7'},];
 const cr=document.getElementById('ch-rows');
 channels.forEach(c=>{
@@ -7,7 +7,7 @@ channels.forEach(c=>{
     <span style="font-size:13px;min-width:80px">${c.name}</span>
     <div style="flex:1;height:6px;background:var(--gray-100);border-radius:3px;overflow:hidden"><div style="height:100%;border-radius:3px;width:${c.pct}%;background:${c.color}"></div></div>
     <span style="font-size:12px;font-weight:600;min-width:28px;text-align:right">${c.cnt}건</span>
-    <span style="font-size:11px;color:var(--green);min-width:36px;text-align:right">${c.delta}</span>
+    <span style="font-size:12px;color:var(--green);min-width:36px;text-align:right">${c.delta}</span>
   </div>`;
 });
 new Chart(document.getElementById('timeChart'),{type:'bar',data:{
@@ -32,12 +32,12 @@ function renderList(){
   const el=document.getElementById('inq-list');
   const fd=activeFilter==='all'?inquiries:inquiries.filter(i=>i.ch===activeFilter);
   el.innerHTML=fd.map(i=>`<a href="hospital_crm_inbox.html" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border:1px solid var(--gray-200);border-radius:var(--r);margin-bottom:6px;cursor:pointer;text-decoration:none;color:inherit;transition:all .15s">
-    <div style="width:30px;height:30px;border-radius:50%;background:${i.bg};color:${i.tc};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0">${i.init}</div>
+    <div style="width:30px;height:30px;border-radius:50%;background:${i.bg};color:${i.tc};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0">${i.init}</div>
     <span style="font-size:13px;font-weight:500;color:var(--gray-900);min-width:100px">${i.name}</span>
-    <span style="font-size:11px;padding:2px 7px;border-radius:5px;background:${i.pbc};color:${i.ptc}">${i.proc}</span>
-    <span style="font-size:11px;padding:2px 7px;border-radius:5px;margin-left:4px;color:${i.chColor}">${i.ch}</span>
+    <span style="font-size:12px;padding:2px 7px;border-radius:5px;background:${i.pbc};color:${i.ptc}">${i.proc}</span>
+    <span style="font-size:12px;padding:2px 7px;border-radius:5px;margin-left:4px;color:${i.chColor}">${i.ch}</span>
     <span style="font-size:10px;padding:2px 7px;border-radius:5px;margin-left:auto;background:${i.sbc};color:${i.stc}">${i.status}</span>
-    <span style="font-size:11px;color:var(--gray-400);min-width:60px;text-align:right">${i.time}</span>
+    <span style="font-size:12px;color:var(--gray-400);min-width:60px;text-align:right">${i.time}</span>
   </a>`).join('');
 }
 function setFilter(f,btn){activeFilter=f;renderPills();renderList();}

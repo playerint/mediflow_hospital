@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>사이트 관리 — 미리보기 — Hospital Site OS</title>
@@ -36,12 +36,12 @@
         <div class="preview-wrap" id="pw">
           <div class="preview-bar">
             <div class="preview-dots"><span></span><span></span><span></span></div>
-            <div class="preview-url">jp.oleps.co.kr</div>
+            <div class="preview-url"><span id="deploy-url">-</span></div>
           </div>
           <div style="padding:0">
             <div style="background:var(--navy);padding:12px 24px;display:flex;align-items:center;justify-content:space-between">
               <span style="font-size:14px;font-weight:600;color:#fff;letter-spacing:.06em">オーレ整形外科</span>
-              <div style="display:flex;gap:20px"><a style="font-size:11px;color:rgba(255,255,255,.6);text-decoration:none" href="#">施術案内</a><a style="font-size:11px;color:rgba(255,255,255,.6);text-decoration:none" href="#">医師紹介</a><a style="font-size:11px;color:rgba(255,255,255,.6);text-decoration:none" href="#">アクセス</a></div>
+              <div style="display:flex;gap:20px"><a style="font-size:12px;color:rgba(255,255,255,.6);text-decoration:none" href="#">施術案内</a><a style="font-size:12px;color:rgba(255,255,255,.6);text-decoration:none" href="#">医師紹介</a><a style="font-size:12px;color:rgba(255,255,255,.6);text-decoration:none" href="#">アクセス</a></div>
             </div>
             <div style="background:#1E3A5F;padding:40px 24px;text-align:center">
               <!-- ZENO v2: 배지 blue 계열 -->
@@ -70,9 +70,9 @@
           <div class="card-title" style="margin-bottom:10px">🌐 배포 상태</div>
           <div class="deploy-status"><div class="ds-dot"></div><div class="ds-text">게시 중 · 정상 운영</div><a class="ds-url" href="#">↗ 열기</a></div>
           <div style="font-size:12px;color:var(--gray-500);line-height:1.9">
-            <div style="display:flex;justify-content:space-between"><span>마지막 게시</span><span style="color:var(--gray-700)">오늘 14:23</span></div>
+            <div style="display:flex;justify-content:space-between"><span>마지막 게시</span><span style="color:var(--gray-700)"><span id="deploy-last">-</span></span></div>
             <div style="display:flex;justify-content:space-between"><span>SSL 인증서</span><span style="color:var(--green)">✓ 유효</span></div>
-            <div style="display:flex;justify-content:space-between"><span>Core Web Vitals</span><span style="color:var(--green)">✓ 98점</span></div>
+            <div style="display:flex;justify-content:space-between"><span>Core Web Vitals</span><span style="color:var(--green)">✓ <span id="deploy-cwv">-</span></span></div>
           </div>
         </div>
         <div class="card">
@@ -92,5 +92,5 @@
     <footer class="site-footer">© 2026 MEDIFLOW. All rights reserved.</footer>
   </div>
 </main>
-<script src="../js/auth.js"></script><script src="../js/sidebar.js"></script><script src="../js/site_preview.js"></script>
+<script src="../js/auth.js"></script><script src="../js/sidebar.js"></script><script src="../js/config.js"></script><script src="../js/gemini.js"></script><script src="../js/site-data.js"></script><script src="../js/site_preview.js"></script>
 </body></html>

@@ -1,4 +1,4 @@
-.mid-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+﻿.mid-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
 .bottom-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:20px;}
 .alert-item{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--gray-100);cursor:pointer;transition:background .1s;}
 .alert-item:last-child{border-bottom:none;padding-bottom:0;}
@@ -6,7 +6,7 @@
 .alert-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0;}
 .alert-body{flex:1;min-width:0;}
 .alert-title{font-size:12px;font-weight:500;color:var(--gray-900);margin-bottom:2px;}
-.alert-sub{font-size:11px;color:var(--gray-500);}
+.alert-sub{font-size:12px;color:var(--gray-500);}
 .alert-meta{display:flex;flex-direction:column;align-items:flex-end;gap:3px;}
 .alert-time{font-size:10px;color:var(--gray-400);white-space:nowrap;}
 .alert-arrow{font-size:12px;color:var(--gray-300);}
@@ -16,7 +16,7 @@
 .build-label{font-size:12px;color:var(--gray-700);min-width:110px;}
 .build-bar-wrap{flex:1;height:5px;background:var(--gray-100);border-radius:3px;overflow:hidden;}
 .build-bar{height:100%;border-radius:3px;transition:width .6s ease;}
-.build-pct{font-size:11px;color:var(--gray-400);min-width:30px;text-align:right;}
+.build-pct{font-size:12px;color:var(--gray-400);min-width:30px;text-align:right;}
 .funnel-row{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:10px;}
 .funnel-col{text-align:center;}
 .funnel-num{font-size:17px;font-weight:600;color:var(--navy);}
@@ -29,22 +29,22 @@
 .ch-name{font-size:12px;color:var(--gray-700);min-width:60px;}
 .ch-bar-wrap{flex:1;height:5px;background:var(--gray-100);border-radius:3px;overflow:hidden;}
 .ch-bar{height:100%;border-radius:3px;}
-.ch-cnt{font-size:11px;font-weight:500;color:var(--gray-700);min-width:24px;text-align:right;}
+.ch-cnt{font-size:12px;font-weight:500;color:var(--gray-700);min-width:24px;text-align:right;}
 .ch-pct{font-size:10px;color:var(--gray-400);min-width:30px;text-align:right;}
 .sched-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--gray-100);cursor:pointer;}
 .sched-item:last-child{border-bottom:none;}
-.sched-time{font-size:11px;color:var(--gray-400);min-width:38px;margin-top:1px;}
+.sched-time{font-size:12px;color:var(--gray-400);min-width:38px;margin-top:1px;}
 .sched-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0;}
 .sched-body{flex:1;}
 .sched-title{font-size:12px;font-weight:500;color:var(--gray-900);}
-.sched-sub{font-size:11px;color:var(--gray-500);margin-top:1px;}
+.sched-sub{font-size:12px;color:var(--gray-500);margin-top:1px;}
 .sched-badge{font-size:10px;padding:2px 8px;border-radius:8px;white-space:nowrap;margin-top:2px;}
 .aeo-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--gray-100);}
 .aeo-row:last-child{border-bottom:none;}
-.aeo-engine{font-size:11px;color:var(--gray-600);min-width:90px;}
+.aeo-engine{font-size:12px;color:var(--gray-600);min-width:90px;}
 .aeo-bar-wrap{flex:1;height:4px;background:var(--gray-100);border-radius:2px;overflow:hidden;}
 .aeo-bar{height:100%;border-radius:2px;}
-.aeo-cnt{font-size:11px;font-weight:500;color:var(--gray-900);min-width:28px;text-align:right;}
+.aeo-cnt{font-size:12px;font-weight:500;color:var(--gray-900);min-width:28px;text-align:right;}
 .aeo-delta{font-size:10px;color:var(--green);min-width:28px;text-align:right;}
 .line-stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
 .line-stat{background:var(--gray-50);border-radius:8px;padding:8px 10px;text-align:center;}
@@ -64,7 +64,7 @@
 .kpi-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.07);}
 .kpi-label{font-size:12px;color:var(--gray-500);margin-bottom:8px;font-weight:500;}
 .kpi-value{font-size:28px;font-weight:700;color:var(--navy);letter-spacing:-.5px;margin-bottom:6px;}
-.kpi-delta{font-size:11px;}
+.kpi-delta{font-size:12px;}
 
 /* navy — 문의 (1번 카드) */
 .kpi-card.navy{border-top:3px solid var(--navy);}

@@ -1,0 +1,236 @@
+﻿<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>마케팅 전략 — Hospital Site OS</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../css/common.css">
+<script src="../js/gate.js"></script>
+<style>
+.mkt-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.strategy-item{display:flex;flex-direction:column;gap:4px;padding:12px 0;border-bottom:1px solid var(--gray-100);}
+.strategy-item:last-child{border-bottom:none;}
+.strategy-label{font-size:10px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.04em;}
+.strategy-val{font-size:13px;color:var(--gray-800);line-height:1.6;}
+.kw-chip{display:inline-block;vertical-align:top;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500;line-height:1.6;margin:3px 4px 3px 0;border:1.5px solid var(--gray-200);background:#fff;color:var(--gray-700);transition:all .15s;white-space:nowrap;}
+.kw-chip:hover{border-color:var(--blue);color:var(--blue);}
+.kw-main-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--gray-100);}
+.kw-main-row:last-child{border-bottom:none;}
+.kw-badge{display:inline-flex;align-items:center;justify-content:center;width:30px;height:22px;border-radius:6px;background:var(--navy);color:#fff;font-size:12px;font-weight:700;flex-shrink:0;}
+.kw-badge.top{background:var(--blue);}
+.kw-name{flex:1;font-size:13px;color:var(--gray-800);font-weight:500;}
+.kw-vol{font-size:12px;color:var(--gray-400);flex-shrink:0;}
+.kw-arrow{font-size:12px;font-weight:700;flex-shrink:0;width:14px;text-align:center;}
+.comp-row{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--gray-100);}
+.comp-row:last-child{border-bottom:none;}
+.perf-item{text-align:center;padding:12px;}
+.perf-val{font-size:22px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.perf-lbl{font-size:12px;color:var(--gray-400);}
+.perf-delta{font-size:12px;font-weight:500;color:var(--green);margin-top:2px;}
+</style>
+</head><body>
+<div id="sidebar-mount" data-active="marketing"></div>
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <a class="topbar-back" href="../index.html">← 대시보드</a>
+      <span style="color:var(--gray-300)">/</span>
+      <span class="topbar-title">마케팅 전략</span>
+    </div>
+    <div class="topbar-right">
+      <span id="strategy-updated" style="font-size:12px;color:var(--gray-400)"></span>
+      <button class="btn" onclick="requestAIStrategy()">🤖 AI 전략 업데이트 요청</button>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- 성과 KPI -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-title" style="margin-bottom:14px">📊 이번 달 마케팅 성과</div>
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:4px" id="perf-grid"></div>
+    </div>
+
+    <div class="mkt-grid">
+      <!-- 전략 문서 -->
+      <div class="card">
+        <div class="card-title" style="margin-bottom:12px">🎯 마케팅 전략</div>
+        <div id="strategy-doc"></div>
+      </div>
+
+      <!-- 경쟁사 분석 -->
+      <div class="card">
+        <div class="card-title" style="margin-bottom:12px">🏆 경쟁사 분석</div>
+        <div id="comp-list"></div>
+      </div>
+    </div>
+
+    <!-- 키워드 -->
+    <div class="card" style="margin-bottom:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div class="card-title">🔑 타겟 키워드</div>
+        <button class="btn" style="font-size:12px;padding:3px 9px" onclick="addKeyword()">+ 추가</button>
+      </div>
+      <div style="margin-bottom:10px">
+        <div style="font-size:12px;font-weight:600;color:var(--gray-400);margin-bottom:6px">메인 키워드</div>
+        <div id="main-kws"></div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:600;color:var(--gray-400);margin-bottom:6px">롱테일 키워드</div>
+        <div id="longtail-kws"></div>
+      </div>
+    </div>
+
+    <footer class="site-footer">© 2026 MEDIFLOW. All rights reserved.</footer>
+  </div>
+</main>
+
+<script src="../js/auth.js"></script>
+<script src="../js/sidebar.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/gemini.js"></script>
+<script src="../js/site-data.js"></script>
+<script>
+/* ── 성과 KPI ────────────────────────────────────────────────── */
+function renderPerf() {
+  var p = SITE_MARKETING.performance;
+  var items = [
+    { val: p.monthlyVisitors.toLocaleString(), lbl:'월 방문자', delta:'↑ +23%' },
+    { val: p.inquiries + '건', lbl:'문의',      delta:'↑ +8건' },
+    { val: p.bookings + '건', lbl:'예약 전환',  delta:'전환율 ' + p.convRate },
+    { val: p.aeoScore + '회', lbl:'AEO 인용',  delta:'↑ +7회' },
+    { val: p.lineRate + '%',  lbl:'LINE 해결률',delta:'↑ +2%p' },
+    { val: p.convRate,        lbl:'예약 전환율',delta:'업계평균 21%' },
+  ];
+  document.getElementById('perf-grid').innerHTML = items.map(function(i) {
+    return '<div class="perf-item">'
+      + '<div class="perf-val">' + i.val + '</div>'
+      + '<div class="perf-lbl">' + i.lbl + '</div>'
+      + '<div class="perf-delta">' + i.delta + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+/* ── 전략 문서 ───────────────────────────────────────────────── */
+function renderStrategy() {
+  var s = SITE_MARKETING.strategy;
+  var updEl = document.getElementById('strategy-updated');
+  if (updEl) updEl.textContent = '최종 업데이트: ' + s.updatedAt;
+  var items = [
+    { label:'타겟 고객',  val: s.target },
+    { label:'포지셔닝',   val: s.positioning },
+    { label:'핵심 메시지', val: '「' + s.coreMessage + '」' },
+    { label:'주요 채널',   val: s.channels.join(' · ') },
+  ];
+  document.getElementById('strategy-doc').innerHTML = items.map(function(i) {
+    return '<div class="strategy-item">'
+      + '<div class="strategy-label">' + i.label + '</div>'
+      + '<div class="strategy-val">' + i.val + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+/* ── 경쟁사 분석 ─────────────────────────────────────────────── */
+function renderCompetitors() {
+  document.getElementById('comp-list').innerHTML = SITE_MARKETING.competitors.map(function(c) {
+    return '<div class="comp-row">'
+      + '<div style="width:80px;font-size:12px;font-weight:600;color:var(--gray-800);flex-shrink:0">' + c.name + '</div>'
+      + '<div style="flex:1;font-size:12px;color:var(--gray-500)">'
+      + '<div>강점: ' + c.strength + '</div>'
+      + '<div>약점: ' + c.weakness + '</div>'
+      + '</div>'
+      + '<div style="font-size:12px;color:var(--green);font-weight:500;text-align:right;flex-shrink:0;max-width:100px">우리: ' + c.ourEdge + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+/* ── 키워드 ──────────────────────────────────────────────────── */
+function renderKeywords() {
+  var seoMap = {};
+  SITE_SEO.keywords.forEach(function(k){ seoMap[k.kw] = k; });
+  var tc = { up:'var(--green)', down:'var(--red)', same:'var(--gray-400)' };
+  var ti = { up:'↑', down:'↓', same:'→' };
+
+  document.getElementById('main-kws').innerHTML = SITE_MARKETING.keywords.main.map(function(k) {
+    var s = seoMap[k];
+    var badge = s
+      ? '<span class="kw-badge' + (s.rank <= 3 ? ' top' : '') + '">' + s.rank + '위</span>'
+      : '<span class="kw-badge" style="background:var(--gray-300)">-</span>';
+    var vol   = s ? '<span class="kw-vol">' + s.vol + '</span>' : '';
+    var arrow = s ? '<span class="kw-arrow" style="color:' + tc[s.trend] + '">' + ti[s.trend] + '</span>' : '';
+    return '<div class="kw-main-row">' + badge + '<span class="kw-name">' + k + '</span>' + vol + arrow + '</div>';
+  }).join('');
+
+  document.getElementById('longtail-kws').innerHTML = SITE_MARKETING.keywords.longTail.map(function(item) {
+    var targets = item.aeoIdx.map(function(i){ return SITE_SEO.aeoTargets[i]; });
+    var cited   = targets.filter(function(t){ return t && t.cited; }).length;
+    var total   = targets.length;
+    var badge, badgeStyle;
+    if (total === 0) {
+      badge = '○ AEO 없음'; badgeStyle = 'background:var(--gray-100);color:var(--gray-400)';
+    } else if (cited === total) {
+      badge = '✓ AI 인용 ' + cited + '건'; badgeStyle = 'background:#D1FAE5;color:#065F46';
+    } else if (cited > 0) {
+      badge = '△ 부분 인용 ' + cited + '/' + total; badgeStyle = 'background:#FEF3C7;color:#92400E';
+    } else {
+      badge = '⚠ 미인용'; badgeStyle = 'background:#FEF2F2;color:var(--red)';
+    }
+    return '<div class="kw-main-row">'
+      + '<span class="kw-name" style="font-size:12px">' + item.kw + '</span>'
+      + '<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;flex-shrink:0;' + badgeStyle + '">' + badge + '</span>'
+      + '</div>';
+  }).join('');
+}
+
+/* ── AI 전략 업데이트 요청 (Gemini) ──────────────────────────── */
+function requestAIStrategy() {
+  showToast('🤖 Gemini가 마케팅 전략을 분석 중...', '');
+  var p = SITE_MARKETING.performance;
+  var prompt = '한국 성형외과(올래성형외과, 일본인 타겟) 마케팅 현황을 분석해주세요.\n'
+    + '현황: 월 방문자 ' + p.monthlyVisitors + '명, 문의 ' + p.inquiries + '건, 예약전환율 ' + p.convRate + ', AEO 인용 ' + p.aeoScore + '회\n'
+    + '경쟁사: バノバギ(브랜드 강), id병院(규모 강), ジョーウォン(코 성형 강)\n'
+    + '전략 개선 포인트 3가지와 다음 달 주력할 채널 1개를 추천해주세요. 한국어로 간결하게.';
+  callGemini(prompt, function(err, result) {
+    if (err || !result) { showToast('⚠ AI 제안 실패', 'error'); return; }
+    openModal('🤖 AI 전략 업데이트 제안', result.replace(/\n/g,'<br>'), null, '적용 요청', 'btn-primary');
+  });
+}
+
+function addKeyword() {
+  var kw = prompt('추가할 롱테일 키워드 (일본어):');
+  if (!kw) return;
+  SITE_MARKETING.keywords.longTail.push({ kw: kw, aeoIdx: [] });
+  renderKeywords();
+  showToast('✓ 키워드가 추가되었습니다.', 'success');
+}
+
+function showToast(msg, type) {
+  var e = document.getElementById('__toast'); if (e) e.remove();
+  var bg = type==='success'?'#059669':type==='error'?'#DC2626':'#0D1B3E';
+  var t = document.createElement('div'); t.id='__toast';
+  t.style.cssText='position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:11px 22px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;white-space:nowrap';
+  t.textContent=msg; document.body.appendChild(t);
+  setTimeout(function(){t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(function(){t.remove();},300);},2500);
+}
+
+function openModal(title, bodyHtml, onConfirm, confirmLabel, confirmClass) {
+  var e = document.getElementById('__modal'); if (e) e.remove();
+  var m = document.createElement('div'); m.id='__modal';
+  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center';
+  m.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:520px;box-shadow:0 20px 60px rgba(0,0,0,.2)">'
+    +'<div style="font-size:16px;font-weight:700;color:#0D1B3E;margin-bottom:14px">'+title+'</div>'
+    +'<div style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:20px">'+bodyHtml+'</div>'
+    +'<div style="display:flex;gap:8px;justify-content:flex-end">'
+    +'<button class="btn" onclick="document.getElementById(\'__modal\').remove()">닫기</button>'
+    +(onConfirm?'<button class="btn '+(confirmClass||'btn-primary')+'" id="__modal-confirm">'+(confirmLabel||'확인')+'</button>':'')
+    +'</div></div>';
+  document.body.appendChild(m);
+  var cb = document.getElementById('__modal-confirm');
+  if (cb && onConfirm) cb.addEventListener('click', function(){ document.getElementById('__modal').remove(); onConfirm(); });
+}
+
+/* ── 초기화 ─────────────────────────────────────────────────── */
+renderPerf();
+renderStrategy();
+renderCompetitors();
+renderKeywords();
+</script>
+</body></html>

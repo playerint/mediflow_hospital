@@ -1,0 +1,273 @@
+﻿<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SEO·AEO 관리 — Hospital Site OS</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../css/common.css">
+<link rel="stylesheet" href="../css/site.css">
+<script src="../js/gate.js"></script>
+<style>
+.seo-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.cwv-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+.cwv-card{background:var(--gray-50);border-radius:10px;padding:12px 14px;text-align:center;}
+.cwv-val{font-size:20px;font-weight:700;color:var(--navy);margin-bottom:2px;}
+.cwv-lbl{font-size:10px;color:var(--gray-400);text-transform:uppercase;letter-spacing:.04em;}
+.cwv-grade{font-size:10px;font-weight:600;padding:2px 7px;border-radius:8px;background:#D1FAE5;color:#065F46;margin-top:4px;display:inline-block;}
+.kw-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--gray-100);}
+.kw-row:last-child{border-bottom:none;}
+.kw-rank{width:28px;height:28px;border-radius:8px;background:var(--navy);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.kw-rank.top{background:var(--teal,#0D9488);}
+.kw-word{flex:1;font-size:13px;color:var(--gray-800);font-weight:500;}
+.kw-vol{font-size:12px;color:var(--gray-400);}
+.kw-trend{font-size:12px;font-weight:600;}
+.schema-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--gray-100);}
+.schema-row:last-child{border-bottom:none;}
+.aeo-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--gray-100);}
+.aeo-row:last-child{border-bottom:none;}
+.aeo-q{flex:1;font-size:12px;color:var(--gray-800);}
+.meta-row{display:flex;flex-direction:column;gap:6px;padding:12px 0;border-bottom:1px solid var(--gray-100);}
+.meta-row:last-child{border-bottom:none;}
+.meta-page{font-size:12px;font-weight:600;color:var(--gray-400);text-transform:uppercase;}
+.meta-title{font-size:12px;color:var(--navy);font-weight:500;}
+.meta-desc{font-size:12px;color:var(--gray-500);line-height:1.5;}
+.badge-ok{background:#D1FAE5;color:#065F46;font-size:10px;padding:2px 7px;border-radius:6px;font-weight:600;}
+.badge-warn{background:#FEF3C7;color:#92400E;font-size:10px;padding:2px 7px;border-radius:6px;font-weight:600;}
+</style>
+</head><body>
+<div id="sidebar-mount" data-active="site_seo"></div>
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <a class="topbar-back" href="../index.html">← 대시보드</a>
+      <span style="color:var(--gray-300)">/</span><span class="topbar-title">사이트 관리</span>
+      <span style="font-size:12px;color:var(--gray-400)">/</span>
+      <span style="font-size:14px;color:var(--gray-600)">SEO·AEO 관리</span>
+    </div>
+    <div class="topbar-right">
+      <button class="btn" onclick="requestAISEO()">🤖 AI SEO 개선 제안</button>
+      <button class="btn btn-primary" onclick="showToast('✓ 저장되었습니다.','success')">💾 저장</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="tab-bar">
+      <button class="tab" onclick="location.href='hospital_site_content.html'">콘텐츠 편집</button>
+      <button class="tab" onclick="location.href='hospital_site_assets.html'">자산 관리</button>
+      <button class="tab active">SEO·AEO</button>
+      <button class="tab" onclick="location.href='hospital_site_preview.html'">미리보기 & 게시</button>
+    </div>
+
+    <!-- Core Web Vitals -->
+    <div class="card" style="margin-bottom:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div class="card-title">⚡ Core Web Vitals</div>
+        <div id="cwv-score-badge" style="font-size:13px;font-weight:700;color:var(--green)"></div>
+      </div>
+      <div class="cwv-grid" id="cwv-grid"></div>
+    </div>
+
+    <div class="seo-grid">
+      <!-- 키워드 순위 -->
+      <div class="card">
+        <div class="card-title" style="margin-bottom:12px">🔍 SEO 키워드 순위</div>
+        <div id="kw-list"></div>
+      </div>
+
+      <!-- AEO 타겟 질문 -->
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div class="card-title">🧠 AEO 타겟 질문</div>
+          <button class="btn" style="font-size:12px;padding:3px 9px" onclick="addAEOTarget()">+ 추가</button>
+        </div>
+        <div id="aeo-list"></div>
+      </div>
+    </div>
+
+    <!-- 스키마 마크업 -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-title" style="margin-bottom:12px">📋 스키마 마크업 현황</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px" id="schema-grid"></div>
+    </div>
+
+    <!-- 메타태그 편집 -->
+    <div class="card" style="margin-bottom:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div class="card-title">🏷 메타태그 편집</div>
+        <button class="btn" style="font-size:12px;padding:3px 9px" onclick="requestAISEO()">✨ AI 최적화</button>
+      </div>
+      <div id="meta-list"></div>
+    </div>
+
+    <footer class="site-footer">© 2026 MEDIFLOW. All rights reserved.</footer>
+  </div>
+</main>
+
+<script src="../js/auth.js"></script>
+<script src="../js/sidebar.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/gemini.js"></script>
+<script src="../js/site-data.js"></script>
+<script>
+/* ── Core Web Vitals ─────────────────────────────────────────── */
+function renderCWV() {
+  var d = SITE_SEO.coreWebVitals;
+  var badge = document.getElementById('cwv-score-badge');
+  if (badge) badge.textContent = '종합 ' + d.score + '점 · ' + d.grade;
+  var items = [
+    { lbl:'LCP', val:d.lcp, note:'Largest Contentful Paint' },
+    { lbl:'FID', val:d.fid, note:'First Input Delay' },
+    { lbl:'CLS', val:d.cls, note:'Cumulative Layout Shift' },
+    { lbl:'종합', val:d.score + '점', note:'Performance Score' },
+  ];
+  var el = document.getElementById('cwv-grid');
+  el.innerHTML = items.map(function(i) {
+    return '<div class="cwv-card">'
+      + '<div class="cwv-val">' + i.val + '</div>'
+      + '<div class="cwv-lbl">' + i.lbl + '</div>'
+      + '<div class="cwv-grade">Good</div>'
+      + '</div>';
+  }).join('');
+}
+
+/* ── 키워드 순위 ──────────────────────────────────────────────── */
+function renderKeywords() {
+  var el = document.getElementById('kw-list');
+  var tc = { up:'var(--green)', down:'var(--red)', same:'var(--gray-400)' };
+  var ic = { up:'↑', down:'↓', same:'→' };
+
+  var mainRows = SITE_SEO.keywords.map(function(k) {
+    return '<div class="kw-row">'
+      + '<div class="kw-rank' + (k.rank <= 3 ? ' top' : '') + '">' + k.rank + '</div>'
+      + '<div class="kw-word">' + k.kw + '</div>'
+      + '<div class="kw-vol">' + k.vol + '</div>'
+      + '<div class="kw-trend" style="color:' + tc[k.trend] + '">' + ic[k.trend] + '</div>'
+      + '</div>';
+  }).join('');
+
+  var sep = '<div style="font-size:10px;font-weight:600;color:var(--gray-400);padding:8px 0 2px;margin-top:4px;border-top:1px solid var(--gray-100)">롱테일 목표 (마케팅 전략)</div>';
+
+  var longRows = SITE_MARKETING.keywords.longTail.map(function(k) {
+    return '<div class="kw-row">'
+      + '<div class="kw-rank" style="background:var(--gray-200);color:var(--gray-500)">·</div>'
+      + '<div class="kw-word">' + k + '</div>'
+      + '<div style="font-size:10px;padding:1px 6px;border-radius:5px;background:var(--blue-b);color:var(--blue);font-weight:600;flex-shrink:0">롱테일</div>'
+      + '<div class="kw-trend" style="color:var(--gray-300)">-</div>'
+      + '</div>';
+  }).join('');
+
+  el.innerHTML = mainRows + sep + longRows;
+}
+
+/* ── AEO 타겟 질문 ────────────────────────────────────────────── */
+function renderAEO() {
+  var el = document.getElementById('aeo-list');
+  el.innerHTML = SITE_SEO.aeoTargets.map(function(a, idx) {
+    var cited = a.cited
+      ? '<span class="badge-ok">인용됨 · ' + a.lastSeen + '</span>'
+      : '<span class="badge-warn">미인용</span>';
+    var linked = SITE_MARKETING.keywords.longTail
+      .filter(function(item){ return item.aeoIdx.indexOf(idx) > -1; })
+      .map(function(item){
+        return '<span style="font-size:10px;padding:1px 6px;border-radius:4px;background:var(--navy-l);color:var(--navy);margin-left:4px">' + item.kw + '</span>';
+      }).join('');
+    return '<div class="aeo-row" style="flex-wrap:wrap;gap:6px">'
+      + '<div class="aeo-q">' + a.q + (linked ? '<div style="margin-top:4px">' + linked + '</div>' : '') + '</div>'
+      + '<span style="font-size:10px;color:var(--gray-400);flex-shrink:0">' + a.engine + '</span>'
+      + cited
+      + '<button class="btn" style="font-size:10px;padding:2px 7px;flex-shrink:0" onclick="editAEOTarget(this)">편집</button>'
+      + '</div>';
+  }).join('');
+}
+
+/* ── 스키마 현황 ──────────────────────────────────────────────── */
+function renderSchema() {
+  var el = document.getElementById('schema-grid');
+  el.innerHTML = SITE_SEO.schema.map(function(s) {
+    var ok = s.status === 'ok';
+    return '<div style="background:' + (ok ? 'var(--gray-50)' : '#FEF3C7') + ';border-radius:8px;padding:10px 12px">'
+      + '<div style="font-size:12px;font-weight:600;color:' + (ok ? 'var(--navy)' : '#92400E') + '">'
+      + (ok ? '✓ ' : '⚡ ') + s.type + '</div>'
+      + '<div style="font-size:10px;color:var(--gray-400);margin-top:3px">' + s.note + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+/* ── 메타태그 ─────────────────────────────────────────────────── */
+function renderMeta() {
+  var el = document.getElementById('meta-list');
+  el.innerHTML = SITE_SEO.meta.map(function(m, i) {
+    return '<div class="meta-row">'
+      + '<div style="display:flex;align-items:center;gap:8px">'
+      + '<span class="meta-page">' + m.page + '</span>'
+      + '<span class="' + (m.status === 'ok' ? 'badge-ok' : 'badge-warn') + '">'
+      + (m.status === 'ok' ? '최적화됨' : '검토 필요') + '</span>'
+      + '<button class="btn" style="font-size:10px;padding:2px 7px;margin-left:auto" onclick="editMeta(' + i + ')">편집</button>'
+      + '</div>'
+      + '<div class="meta-title">' + m.title + '</div>'
+      + '<div class="meta-desc">' + m.desc + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+/* ── AI SEO 개선 제안 (Gemini) ────────────────────────────────── */
+function requestAISEO() {
+  showToast('🤖 Gemini가 SEO 개선 포인트를 분석 중...', '');
+  var prompt = '일본인 환자를 대상으로 하는 한국 성형외과(올래성형외과) 웹사이트의 SEO·AEO 개선점을 분석해주세요.\n'
+    + '현재 Core Web Vitals 98점, 키워드 순위 1~7위, AEO 인용 6개 중 4개.\n'
+    + '개선 우선순위 3가지를 간결하게 한국어로 제안해주세요.';
+  callGemini(prompt, function(err, result) {
+    if (err || !result) { showToast('⚠ AI 제안 실패', 'error'); return; }
+    openModal('🤖 AI SEO 개선 제안', result.replace(/\n/g,'<br>'), null, '닫기', '');
+  });
+}
+
+function addAEOTarget() {
+  var q = prompt('새 AEO 타겟 질문 (일본어로 입력):');
+  if (!q) return;
+  SITE_SEO.aeoTargets.push({ q:q, engine:'ChatGPT', cited:false, lastSeen:'-' });
+  renderAEO();
+  showToast('✓ AEO 타겟 질문이 추가되었습니다.', 'success');
+}
+
+function editAEOTarget(btn) {
+  var row = btn.closest('.aeo-row');
+  var qEl = row.querySelector('.aeo-q');
+  var q = prompt('질문 수정:', qEl.textContent);
+  if (q) { qEl.textContent = q; showToast('✓ 수정되었습니다.', 'success'); }
+}
+
+function editMeta(idx) {
+  var m = SITE_SEO.meta[idx];
+  var newTitle = prompt('Title 태그 수정:', m.title);
+  if (newTitle) { m.title = newTitle; renderMeta(); showToast('✓ 저장되었습니다.', 'success'); }
+}
+
+function showToast(msg, type) {
+  var e = document.getElementById('__toast'); if (e) e.remove();
+  var bg = type==='success'?'#059669':type==='error'?'#DC2626':'#0D1B3E';
+  var t = document.createElement('div'); t.id='__toast';
+  t.style.cssText='position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:11px 22px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;white-space:nowrap';
+  t.textContent=msg; document.body.appendChild(t);
+  setTimeout(function(){t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(function(){t.remove();},300);},2500);
+}
+
+function openModal(title, bodyHtml, onConfirm, confirmLabel, confirmClass) {
+  var e = document.getElementById('__modal'); if (e) e.remove();
+  var m = document.createElement('div'); m.id='__modal';
+  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center';
+  m.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:500px;box-shadow:0 20px 60px rgba(0,0,0,.2)">'
+    +'<div style="font-size:16px;font-weight:700;color:#0D1B3E;margin-bottom:14px">'+title+'</div>'
+    +'<div style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:20px">'+bodyHtml+'</div>'
+    +'<div style="display:flex;gap:8px;justify-content:flex-end">'
+    +'<button class="btn '+(confirmClass||'btn-primary')+'" onclick="document.getElementById(\'__modal\').remove()">'+(confirmLabel||'닫기')+'</button>'
+    +'</div></div>';
+  document.body.appendChild(m);
+}
+
+/* ── 초기화 ─────────────────────────────────────────────────── */
+renderCWV();
+renderKeywords();
+renderAEO();
+renderSchema();
+renderMeta();
+</script>
+</body></html>

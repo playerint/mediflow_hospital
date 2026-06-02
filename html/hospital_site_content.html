@@ -30,19 +30,29 @@
     <div class="layout-site">
       <div>
         <div class="section-list">
-          <div class="section-list-head">섹션 목록</div>
+          <div class="section-list-head">섹션 목록 <span style="font-size:10px;color:var(--gray-400);font-weight:400">(11개)</span></div>
           <div class="section-item active" onclick="selectSection('hero',this)"><span>🏠</span><span class="sec-name">히어로 (메인 비주얼)</span><span class="sec-status st-done">완료</span></div>
+          <div class="section-item" onclick="selectSection('decision_guide',this)"><span>🧭</span><span class="sec-name">DECISION GUIDE</span><span class="sec-status st-done">완료</span></div>
           <div class="section-item" onclick="selectSection('doctors',this)"><span>👨‍⚕️</span><span class="sec-name">의료진 소개</span><span class="sec-status st-done">완료</span></div>
           <div class="section-item" onclick="selectSection('treatments',this)"><span>💉</span><span class="sec-name">시술 안내</span><span class="sec-status st-wait">검수 대기</span></div>
-          <div class="section-item" onclick="selectSection('eye',this)"><span>👁</span><span class="sec-name">눈 성형 상세</span><span class="sec-status st-ai">AI 생성</span></div>
+          <div class="section-item" onclick="selectSection('eye',this)"><span>👁</span><span class="sec-name">눈 성형 상세</span><span class="sec-status st-ai">위반 감지</span></div>
           <div class="section-item" onclick="selectSection('nose',this)"><span>👃</span><span class="sec-name">코 성형 상세</span><span class="sec-status st-done">완료</span></div>
-          <div class="section-item" onclick="selectSection('faq',this)"><span>❓</span><span class="sec-name">FAQ</span><span class="sec-status st-done">완료</span></div>
+          <div class="section-item" onclick="selectSection('cases',this)"><span>📸</span><span class="sec-name">시술 사례</span><span class="sec-status st-done">완료</span></div>
+          <div class="section-item" onclick="selectSection('testimonials',this)"><span>⭐</span><span class="sec-name">환자 후기</span><span class="sec-status st-done">완료</span></div>
+          <div class="section-item" onclick="selectSection('contact',this)"><span>📞</span><span class="sec-name">연락처 & 운영시간</span><span class="sec-status st-done">완료</span></div>
+          <div class="section-item" onclick="selectSection('faq',this)"><span>❓</span><span class="sec-name">자주 묻는 질문</span><span class="sec-status st-done">완료</span></div>
           <div class="section-item" onclick="selectSection('access',this)"><span>📍</span><span class="sec-name">오시는 길</span><span class="sec-status st-done">완료</span></div>
         </div>
         <div style="margin-top:12px;background:#fff;border:1px solid var(--gray-200);border-radius:var(--rl);padding:14px 16px">
+          <div style="font-size:12px;font-weight:600;color:var(--gray-500);margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em">KPI 수치</div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;color:var(--gray-700)">누적 케이스</span><span style="font-size:13px;font-weight:600;color:var(--navy)" id="kpi-display-cases">-</span></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;color:var(--gray-700)">월 일본인 환자</span><span style="font-size:13px;font-weight:600;color:var(--navy)" id="kpi-display-monthly">-</span></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:12px"><span style="font-size:12px;color:var(--gray-700)">Google 평점</span><span style="font-size:13px;font-weight:600;color:var(--navy)" id="kpi-display-rating">-</span></div>
+        </div>
+        <div style="margin-top:12px;background:#fff;border:1px solid var(--gray-200);border-radius:var(--rl);padding:14px 16px">
           <div style="font-size:12px;font-weight:600;color:var(--gray-500);margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em">컴플라이언스</div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="font-size:12px;color:var(--gray-700)">전체 위반 건</span><span style="font-size:13px;font-weight:600;color:var(--red)">1건</span></div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:12px"><span style="font-size:12px;color:var(--gray-700)">회색지대</span><span style="font-size:13px;font-weight:600;color:var(--s500)">2건</span></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="font-size:12px;color:var(--gray-700)">전체 위반 건</span><span style="font-size:13px;font-weight:600;color:var(--red)" id="comp-violations">-</span></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:12px"><span style="font-size:12px;color:var(--gray-700)">회색지대</span><span style="font-size:13px;font-weight:600;color:var(--s500)" id="comp-grays">-</span></div>
           <button class="btn" style="width:100%;justify-content:center;font-size:12px" onclick="startComplianceCheck()">🔍 전체 재검사</button>
         </div>
       </div>
@@ -83,11 +93,11 @@
     <footer class="site-footer">© 2026 MEDIFLOW. All rights reserved.</footer>
   </div>
 </main>
-<script src="../js/auth.js"></script><script src="../js/sidebar.js"></script><script src="../js/site_content.js"></script>
+<script src="../js/auth.js"></script><script src="../js/sidebar.js"></script><script src="../js/config.js"></script><script src="../js/gemini.js"></script><script src="../js/site-data.js"></script><script src="../js/site_content.js"></script>
 <script>
 function showToast(msg,type){var e=document.getElementById('__toast');if(e)e.remove();var bg=type==='success'?'#059669':type==='error'?'#DC2626':'#0D1B3E';var t=document.createElement('div');t.id='__toast';t.style.cssText='position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:11px 22px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;white-space:nowrap';t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(function(){t.remove();},300);},2500);}
 function openModal(title,bodyHtml,onConfirm,confirmLabel,confirmClass){var e=document.getElementById('__modal');if(e)e.remove();var m=document.createElement('div');m.id='__modal';m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center';m.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.2)"><div style="font-size:16px;font-weight:700;color:#0D1B3E;margin-bottom:14px">'+title+'</div><div style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:20px">'+bodyHtml+'</div><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" onclick="closeModal()">취소</button><button class="btn '+(confirmClass||'btn-primary')+'" id="__modal-confirm">'+(confirmLabel||'확인')+'</button></div></div>';m.addEventListener('click',function(e){if(e.target===m)closeModal();});document.body.appendChild(m);document.getElementById('__modal-confirm').addEventListener('click',function(){closeModal();if(typeof onConfirm==='function')onConfirm();});}
 function closeModal(){var m=document.getElementById('__modal');if(m)m.remove();}
-function startComplianceCheck(){showToast('🔍 전체 컴플라이언스 검사를 시작합니다...','');setTimeout(function(){showToast('✓ 검사 완료 — 위반 표현 1건 감지','error');},2000);}
+// startComplianceCheck → site_content.js 에서 구현됨
 </script>
 </body></html>

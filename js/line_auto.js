@@ -1,8 +1,8 @@
-
+﻿
 function testLineSend() {
   var previewMsg = welcomeMsg.replace(/\n/g, '<br>');
   var btnPreview = quickBtns.map(function(b) {
-    return '<span style="display:inline-block;background:#fff;border:1px solid #E5E7EB;border-radius:6px;padding:2px 8px;font-size:11px;margin:2px">' + b + '</span>';
+    return '<span style="display:inline-block;background:#fff;border:1px solid #E5E7EB;border-radius:6px;padding:2px 8px;font-size:12px;margin:2px">' + b + '</span>';
   }).join('');
 
   var body = '<div style="margin-bottom:14px">'
@@ -18,7 +18,7 @@ function testLineSend() {
     + previewMsg + '<br><br>' + btnPreview
     + '</div>'
     + '</div>'
-    + '<div style="margin-top:12px;padding:10px 12px;background:#FEF3C7;border:1px solid #FCD34D;border-radius:8px;font-size:11px;color:#92400E;line-height:1.6">'
+    + '<div style="margin-top:12px;padding:10px 12px;background:#FEF3C7;border:1px solid #FCD34D;border-radius:8px;font-size:12px;color:#92400E;line-height:1.6">'
     + '⚠ 실제 LINE 발송은 설정 → LINE 연동에서 Channel ID / Secret 연결 후 가능합니다.'
     + '</div>';
 
@@ -77,8 +77,8 @@ var LBL = 'font-size:12px;font-weight:600;color:#374151;display:block;margin-bot
 function langToggleHtml(id) {
   return '<div style="display:flex;justify-content:flex-end;margin-bottom:12px">'
     + '<div style="display:flex;border-radius:8px;overflow:hidden;border:1px solid #E5E7EB">'
-    + '<button id="' + id + '-ja" onclick="modalSwitchLang(\'' + id + '\',\'ja\')" style="padding:4px 12px;font-size:11px;font-family:inherit;cursor:pointer;border:none;background:#1A2642;color:#fff;font-weight:500;transition:all .15s">日</button>'
-    + '<button id="' + id + '-ko" onclick="modalSwitchLang(\'' + id + '\',\'ko\')" style="padding:4px 12px;font-size:11px;font-family:inherit;cursor:pointer;border:none;background:#fff;color:#6B7280;transition:all .15s">한</button>'
+    + '<button id="' + id + '-ja" onclick="modalSwitchLang(\'' + id + '\',\'ja\')" style="padding:4px 12px;font-size:12px;font-family:inherit;cursor:pointer;border:none;background:#1A2642;color:#fff;font-weight:500;transition:all .15s">日</button>'
+    + '<button id="' + id + '-ko" onclick="modalSwitchLang(\'' + id + '\',\'ko\')" style="padding:4px 12px;font-size:12px;font-family:inherit;cursor:pointer;border:none;background:#fff;color:#6B7280;transition:all .15s">한</button>'
     + '</div></div>';
 }
 
@@ -121,7 +121,7 @@ function renderWelcomePreview() {
   var btns = welcomeLang === 'ko' ? quickBtnsKo  : quickBtns;
   var lines = msg.replace(/\n/g, '<br>');
   var btnHtml = btns.map(function(b) {
-    return '<span style="display:inline-block;background:#fff;border:1px solid #E5E7EB;border-radius:6px;padding:2px 8px;font-size:11px;margin:2px">' + b + '</span>';
+    return '<span style="display:inline-block;background:#fff;border:1px solid #E5E7EB;border-radius:6px;padding:2px 8px;font-size:12px;margin:2px">' + b + '</span>';
   }).join('');
   el.innerHTML = lines + '<br><br>' + btnHtml;
 }
@@ -142,8 +142,8 @@ function renderScenarios() {
       + '<div class="sc-msg">' + msg + '</div>'
       + '</div>'
       + '<div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">'
-      + '<button class="btn" style="font-size:11px;padding:3px 9px" onclick="editScenario(' + i + ')">✏</button>'
-      + '<button class="btn btn-danger" style="font-size:11px;padding:3px 9px" onclick="deleteScenario(' + i + ')">✕</button>'
+      + '<button class="btn" style="font-size:12px;padding:3px 9px" onclick="editScenario(' + i + ')">✏</button>'
+      + '<button class="btn btn-danger" style="font-size:12px;padding:3px 9px" onclick="deleteScenario(' + i + ')">✕</button>'
       + '</div>'
       + '</div>';
   }
@@ -160,7 +160,7 @@ function renderTriggers() {
     html += '<div class="tr-item" id="tr-item-' + i + '">'
       + '<div class="tr-dot" style="background:' + t.color + '"></div>'
       + '<span class="tr-text">' + t.text + '</span>'
-      + '<button class="btn btn-danger" style="font-size:11px;padding:3px 9px;flex-shrink:0;margin-left:auto" onclick="deleteTrigger(' + i + ')">✕</button>'
+      + '<button class="btn btn-danger" style="font-size:12px;padding:3px 9px;flex-shrink:0;margin-left:auto" onclick="deleteTrigger(' + i + ')">✕</button>'
       + '</div>';
   }
   el.innerHTML = html;
@@ -190,7 +190,7 @@ function editWelcomeMsg() {
     + '<div id="qbtn-list-ko">' + koBtnHtml + '</div>'
     + '<button onclick="addQBtn(\'ko\')" style="width:100%;padding:7px;border-radius:8px;border:1.5px dashed #E5E7EB;background:#fff;font-size:12px;font-family:inherit;cursor:pointer;color:#6B7280;margin-top:4px">+ 버튼 추가</button>'
     + '</div>'
-    + '<div style="margin-top:10px;padding:10px 12px;background:#F0FDFA;border-radius:8px;font-size:11px;color:#0F766E;line-height:1.7">🌸 환자에게는 🇯🇵 일본어로 발송됩니다. 🇰🇷 한국어는 상담사 참고용입니다.</div>';
+    + '<div style="margin-top:10px;padding:10px 12px;background:#F0FDFA;border-radius:8px;font-size:12px;color:#0F766E;line-height:1.7">🌸 환자에게는 🇯🇵 일본어로 발송됩니다. 🇰🇷 한국어는 상담사 참고용입니다.</div>';
 
   openModal('✏ 웰컴 메시지 & 버튼 편집', body, function() {
     var jaEl = document.getElementById('wm-ja');
@@ -237,7 +237,7 @@ function addScenario() {
     + '<textarea id="sc-add-ja" rows="4" placeholder="일본어로 입력" style="' + TA + '"></textarea></div>'
     + '<div class="mf-ko" style="display:none"><label style="' + LBL + '">🇰🇷 한국어 번역 (상담사 참고용)</label>'
     + '<textarea id="sc-add-ko" rows="4" placeholder="한국어 번역 입력" style="' + TA + '"></textarea></div>'
-    + '<div style="margin-top:10px;padding:8px 12px;background:#F0FDFA;border-radius:8px;font-size:11px;color:#0F766E">🌸 환자에게는 🇯🇵 일본어로 발송됩니다.</div>';
+    + '<div style="margin-top:10px;padding:8px 12px;background:#F0FDFA;border-radius:8px;font-size:12px;color:#0F766E">🌸 환자에게는 🇯🇵 일본어로 발송됩니다.</div>';
 
   openModal('➕ L2 시나리오 추가', body, function() {
     var name = document.getElementById('sc-add-name');

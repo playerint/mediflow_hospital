@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -10,21 +10,21 @@
 <style>
 /* ── 메시지 말풍선 ── */
 .msg-ja{font-size:13px;line-height:1.7;color:inherit;}
-.msg-ko-badge{margin-top:6px;padding:5px 8px;background:rgba(255,255,255,.5);border-radius:6px;font-size:11px;color:#374151;line-height:1.6;border-left:2px solid rgba(0,0,0,.1);}
+.msg-ko-badge{margin-top:6px;padding:5px 8px;background:rgba(255,255,255,.5);border-radius:6px;font-size:12px;color:#374151;line-height:1.6;border-left:2px solid rgba(0,0,0,.1);}
 .msg-ko-send{font-size:13px;line-height:1.7;color:inherit;}
-.msg-ja-send{margin-top:6px;padding:5px 8px;background:rgba(255,255,255,.25);border-radius:6px;font-size:11px;line-height:1.6;border-left:2px solid rgba(255,255,255,.5);}
+.msg-ja-send{margin-top:6px;padding:5px 8px;background:rgba(255,255,255,.25);border-radius:6px;font-size:12px;line-height:1.6;border-left:2px solid rgba(255,255,255,.5);}
 .msg-av-hana{flex-shrink:0;display:flex;align-items:flex-start;}
 .hana-badge-av{width:34px;height:34px;border-radius:50%;background:var(--navy-l);font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.hana-name{font-size:11px;font-weight:600;color:var(--navy);margin-bottom:4px;display:flex;align-items:center;gap:5px;}
+.hana-name{font-size:12px;font-weight:600;color:var(--navy);margin-bottom:4px;display:flex;align-items:center;gap:5px;}
 .hana-name::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--blue);}
 .hana-badge-mini{width:22px;height:22px;border-radius:50%;background:var(--navy-l);font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 
 /* ── 우측 패널 공통 ── */
 .rp-section{padding:14px 16px;border-bottom:1px solid var(--gray-100);}
 .rp-section:last-child{border-bottom:none;}
-.rp-title{font-size:11px;font-weight:700;color:var(--gray-400);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.rp-title{font-size:12px;font-weight:700;color:var(--gray-400);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
 .rp-tab-bar{display:flex;gap:2px;background:var(--gray-100);border-radius:8px;padding:2px;margin-bottom:12px;}
-.rp-tab{flex:1;padding:5px 0;font-size:11px;font-weight:500;text-align:center;border:none;background:transparent;border-radius:6px;cursor:pointer;color:var(--gray-500);transition:all .15s;font-family:inherit;}
+.rp-tab{flex:1;padding:5px 0;font-size:12px;font-weight:500;text-align:center;border:none;background:transparent;border-radius:6px;cursor:pointer;color:var(--gray-500);transition:all .15s;font-family:inherit;}
 .rp-tab.active{background:#fff;color:var(--navy);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.08);}
 
 /* ── 고객 프로필 카드 ── */
@@ -32,7 +32,7 @@
 .pc-top{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
 .pc-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;}
 .pc-name{font-size:14px;font-weight:700;color:var(--navy);}
-.pc-name-ja{font-size:11px;color:var(--gray-400);margin-top:2px;}
+.pc-name-ja{font-size:12px;color:var(--gray-400);margin-top:2px;}
 .pc-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;margin-top:4px;}
 .pc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
 .pc-item{background:var(--gray-50);border-radius:8px;padding:8px 10px;}
@@ -50,12 +50,12 @@
 .ai-suggest-item.selected{border-color:var(--navy);background:var(--navy-l);}
 .ai-suggest-tone{font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;margin-bottom:6px;display:inline-block;}
 .ai-suggest-text{font-size:12px;color:var(--gray-700);line-height:1.6;}
-.ai-suggest-ja{font-size:11px;color:var(--gray-400);margin-top:4px;line-height:1.5;padding-top:4px;border-top:1px dashed var(--gray-200);}
+.ai-suggest-ja{font-size:12px;color:var(--gray-400);margin-top:4px;line-height:1.5;padding-top:4px;border-top:1px dashed var(--gray-200);}
 
 /* ── 시술 매뉴얼 ── */
 .manual-item{padding:10px 12px;border-radius:10px;background:var(--gray-50);margin-bottom:8px;}
 .manual-item-title{font-size:12px;font-weight:600;color:var(--navy);margin-bottom:4px;display:flex;align-items:center;gap:6px;}
-.manual-item-body{font-size:11px;color:var(--gray-600);line-height:1.7;}
+.manual-item-body{font-size:12px;color:var(--gray-600);line-height:1.7;}
 .manual-badge{font-size:10px;padding:1px 6px;border-radius:4px;font-weight:500;}
 
 /* ── 번역 패널 ── */
@@ -83,10 +83,10 @@
   <div class="content">
     <!-- KPI -->
     <div class="kpi-grid" style="grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:12px">
-      <div style="background:var(--gray-50);border-radius:var(--r);padding:10px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:3px">전체 문의</div><div style="font-size:18px;font-weight:700;color:var(--navy)">23건</div><div class="up" style="font-size:11px">↑ +8 전월</div></div>
-      <div style="background:var(--gray-50);border-radius:var(--r);padding:10px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:3px">미확인</div><div style="font-size:18px;font-weight:700;color:var(--red)">3건</div><div style="font-size:11px;color:var(--red)">최대 2시간 경과</div></div>
-      <div style="background:var(--gray-50);border-radius:var(--r);padding:10px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:3px">예약 전환</div><div style="font-size:18px;font-weight:700;color:var(--navy)">8건</div><div class="neu" style="font-size:11px">전환율 34.8%</div></div>
-      <div style="background:var(--gray-50);border-radius:var(--r);padding:10px 14px"><div style="font-size:11px;color:var(--gray-400);margin-bottom:3px">AI 자동 해결</div><div style="font-size:18px;font-weight:700;color:var(--navy)">14건</div><div class="neu" style="font-size:11px">60.9%</div></div>
+      <div style="background:var(--gray-50);border-radius:var(--r);padding:10px 14px"><div style="font-size:12px;color:var(--gray-400);margin-bottom:3px">전체 문의</div><div id="kpi-total" style="font-size:18px;font-weight:700;color:var(--navy)">0건</div><div class="up" style="font-size:12px">↑ +8 전월</div></div>
+      <div style="background:var(--gray-50);border-radius:var(--r);padding:10px 14px"><div style="font-size:12px;color:var(--gray-400);margin-bottom:3px">미확인</div><div id="kpi-unread" style="font-size:18px;font-weight:700;color:var(--red)">0건</div><div id="kpi-unread-sub" style="font-size:12px;color:var(--red)">—</div></div>
+      <div style="background:var(--gray-50);border-radius:var(--r);padding:10px 14px"><div style="font-size:12px;color:var(--gray-400);margin-bottom:3px">예약 전환</div><div id="kpi-booked" style="font-size:18px;font-weight:700;color:var(--navy)">0건</div><div class="neu" id="kpi-rate" style="font-size:12px">전환율 0%</div></div>
+      <div style="background:var(--gray-50);border-radius:var(--r);padding:10px 14px"><div style="font-size:12px;color:var(--gray-400);margin-bottom:3px">AI 자동 해결</div><div id="kpi-ai" style="font-size:18px;font-weight:700;color:var(--navy)">0건</div><div class="neu" id="kpi-ai-rate" style="font-size:12px">0%</div></div>
     </div>
 
     <!-- 메인 3열 레이아웃 -->
@@ -97,11 +97,11 @@
         <div class="inbox-head">
           <input class="inbox-search" placeholder="환자 이름·시술·채널 검색..." oninput="filterList(this.value)">
           <div class="filter-pills" style="margin-top:8px">
-            <button class="pill on" onclick="setFilter('all',this)">전체 23</button>
-            <button class="pill" onclick="setFilter('new',this)">신규 3</button>
-            <button class="pill" onclick="setFilter('consulting',this)">상담중 6</button>
-            <button class="pill" onclick="setFilter('booked',this)">예약완료 8</button>
-            <button class="pill" onclick="setFilter('closed',this)">종료 6</button>
+            <button class="pill on" data-status="all" onclick="setFilter('all',this)">전체 0</button>
+            <button class="pill" data-status="new" onclick="setFilter('new',this)">신규 0</button>
+            <button class="pill" data-status="consulting" onclick="setFilter('consulting',this)">상담중 0</button>
+            <button class="pill" data-status="booked" onclick="setFilter('booked',this)">예약완료 0</button>
+            <button class="pill" data-status="closed" onclick="setFilter('closed',this)">종료 0</button>
           </div>
         </div>
         <div class="inbox-list" id="inbox-list"></div>
@@ -140,21 +140,21 @@
                 <div onclick="selectLang('en','🇬🇧','영어')" style="padding:8px 14px;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .1s" onmouseover="this.style.background='var(--gray-50)'" onmouseout="this.style.background=''"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:14px;background:#012169;color:#fff;border-radius:3px;font-size:9px;font-weight:700;letter-spacing:.5px">EN</span> <span>영어</span></div>
                 <div onclick="selectLang('th','🇹🇭','태국어')" style="padding:8px 14px;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .1s" onmouseover="this.style.background='var(--gray-50)'" onmouseout="this.style.background=''"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:14px;background:#A51931;color:#fff;border-radius:3px;font-size:9px;font-weight:700;letter-spacing:.5px">TH</span> <span>태국어</span></div>
               </div>
-              <button class="btn" style="font-size:11px;padding:3px 8px;white-space:nowrap;flex-shrink:0" onclick="regenSuggests()">↺ 재생성</button>
+              <button class="btn" style="font-size:12px;padding:3px 8px;white-space:nowrap;flex-shrink:0" onclick="regenSuggests()">↺ 재생성</button>
             </div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;padding:0 14px 10px;gap:8px">
             <div>
-              <div style="font-size:11px;font-weight:600;color:#6B7280;margin-bottom:4px">🇰🇷 한국어 입력</div>
+              <div style="font-size:12px;font-weight:600;color:#6B7280;margin-bottom:4px">🇰🇷 한국어 입력</div>
               <textarea id="draft-text-ko" rows="3" oninput="onKoInput()" style="width:100%;padding:8px 10px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;font-family:inherit;resize:none;outline:none;line-height:1.7" onfocus="this.style.borderColor='#2563EB'" onblur="this.style.borderColor='#E5E7EB'" placeholder="한국어로 답변 입력..."></textarea>
             </div>
             <div>
-              <div style="font-size:11px;font-weight:600;color:#6B7280;margin-bottom:4px" id="lang-label">🇯🇵 일본어 발송</div>
+              <div style="font-size:12px;font-weight:600;color:#6B7280;margin-bottom:4px" id="lang-label">🇯🇵 일본어 발송</div>
               <textarea id="draft-text-ja" rows="3" style="width:100%;padding:8px 10px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;font-family:inherit;resize:none;outline:none;line-height:1.7;background:#F9FAFB" onfocus="this.style.borderColor='#2563EB';this.style.background='#fff'" onblur="this.style.borderColor='#E5E7EB'" id="draft-ja-placeholder" placeholder="일본어 번역 결과..."></textarea>
             </div>
           </div>
           <div class="ai-draft-footer">
-            <button class="btn" onclick="document.getElementById('ai-draft').style.display='none'">취소</button>
+            <button class="btn" onclick="cancelDraft()">취소</button>
             <button class="send-btn" id="send-btn" onclick="sendMsg()">📤 LINE으로 발송</button>
           </div>
         </div>
@@ -173,7 +173,7 @@
                 <div class="pc-name-ja" id="rp-name-ja">山田 沙織</div>
                 <div id="rp-status-badge"></div>
               </div>
-              <button class="btn" style="font-size:11px;padding:4px 10px;flex-shrink:0" id="rp-booking-btn" onclick="goToBooking()">📅 예약 전환</button>
+              <button class="btn" style="font-size:12px;padding:4px 10px;flex-shrink:0" id="rp-booking-btn" onclick="goToBooking()">📅 예약 전환</button>
             </div>
             <div class="pc-grid">
               <div class="pc-item"><div class="pc-item-label">관심 시술</div><div class="pc-item-value" id="rp-proc">쌍꺼풀</div></div>
@@ -182,15 +182,15 @@
               <div class="pc-item"><div class="pc-item-label">방문 이력</div><div class="pc-item-value" id="rp-visit">첫 방문</div></div>
             </div>
             <div style="margin:10px 0 4px">
-              <div style="font-size:11px;font-weight:600;color:var(--gray-400);letter-spacing:.04em;margin-bottom:6px">📝 내부 메모</div>
+              <div style="font-size:12px;font-weight:600;color:var(--gray-400);letter-spacing:.04em;margin-bottom:6px">📝 내부 메모</div>
               <textarea id="rp-memo-input" rows="3"
                 style="width:100%;padding:8px 10px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:12px;font-family:inherit;resize:none;outline:none;line-height:1.6;color:var(--gray-700);background:#fff;transition:border .15s"
                 onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--gray-200)';saveMemo()"
                 placeholder="담당자 메모를 입력하세요... (자동저장)"></textarea>
             </div>
             <div class="pc-action-row" style="align-items:stretch;gap:8px">
-              <button class="btn" style="flex:1;justify-content:center;font-size:11px;white-space:nowrap;height:32px" onclick="goToBooking()">📅 예약 전환</button>
-              <button class="btn btn-primary" style="flex:1;justify-content:center;font-size:11px;white-space:nowrap;height:32px" id="rp-status-btn" onclick="changeStatus()">상담중으로</button>
+              <button class="btn" style="flex:1;justify-content:center;font-size:12px;white-space:nowrap;height:32px" onclick="goToBooking()">📅 예약 전환</button>
+              <button class="btn btn-primary" style="flex:1;justify-content:center;font-size:12px;white-space:nowrap;height:32px" id="rp-status-btn" onclick="changeStatus()">상담중으로</button>
             </div>
           </div>
         </div>
@@ -215,8 +215,6 @@
           <div id="manual-content"></div>
         </div>
 
-        <!-- 번역 탭 -->
-                </div>
 
       </div>
     </div>
@@ -226,6 +224,9 @@
 
 <script src="../js/auth.js"></script>
 <script src="../js/sidebar.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/gemini.js"></script>
+<script src="../js/data.js"></script>
 <script src="../js/crm_inbox.js"></script>
 
 <!-- 예약 전환 모달 -->
@@ -246,9 +247,9 @@
         <div id="bm-avatar" style="width:38px;height:38px;border-radius:50%;background:#EEF2FF;color:var(--navy);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">야마</div>
         <div style="flex:1">
           <div style="font-size:13px;font-weight:600;color:var(--navy)" id="bm-name">야마다 사오리</div>
-          <div style="font-size:11px;color:var(--gray-500)" id="bm-meta">LINE · 쌍꺼풀 · 신규</div>
+          <div style="font-size:12px;color:var(--gray-500)" id="bm-meta">LINE · 쌍꺼풀 · 신규</div>
         </div>
-        <span id="bm-ch-badge" style="font-size:11px;padding:3px 10px;border-radius:20px;background:#EFF6FF;color:#2563EB;font-weight:500">💬 LINE</span>
+        <span id="bm-ch-badge" style="font-size:12px;padding:3px 10px;border-radius:20px;background:#EFF6FF;color:#2563EB;font-weight:500">💬 LINE</span>
       </div>
 
       <!-- 예약 유형 -->

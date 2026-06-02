@@ -1,47 +1,245 @@
+/* site_content.js — 콘텐츠 편집. 데이터: site-data.js, AI: gemini.js */
 
-const sections={
-  hero:{title:'히어로 (메인 비주얼)',ko:'올래성형외과는 강남구에 위치한 종합 성형 전문 병원입니다. 쌍꺼풀, 코 성형, 윤곽 수술 등 다양한 시술을 제공합니다.',ja:'江南に位置するオーレ整形外科は、二重・鼻・輪郭など幅広い美容整形を手掛けるクリニックです。',compliance:null},
-  doctors:{title:'의료진 소개',ko:'올래성형외과는 5명의 전문의가 진료합니다. 각 의사는 10년 이상의 경력을 보유합니다.',ja:'オーレ整形外科には5名の専門医が在籍しております。各医師は10年以上の経験を持ちます。',compliance:null},
-  treatments:{title:'시술 안내',ko:'다양한 미용 시술을 제공합니다. 눈 성형, 코 성형, 윤곽 수술, 지방흡입 등 합리적인 가격에 받으실 수 있습니다.',ja:'さまざまな美容施術をご提供しております。目元・鼻・輪郭・脂肪吸引など適正価格でご受診いただけます。',compliance:'warn'},
-  eye:{title:'눈 성형 상세',ko:'눈 성형은 올래성형외과의 대표 시술입니다. 매몰법과 절개법으로 자연스러운 눈매를 만들어 드립니다.',ja:'目元整形はオーレ整形外科の得意とする施術です。埋没法・切開法で自然な目元に仕上げます。',compliance:'error'},
-  nose:{title:'코 성형 상세',ko:'코 성형은 얼굴의 균형을 잡아주는 중요한 시술입니다. 다양한 방법으로 원하시는 코 모양을 완성해 드립니다.',ja:'鼻整形は顔全体のバランスを整える大切な施術です。様々な方法でご希望の鼻の形に仕上げます。',compliance:null},
-  faq:{title:'FAQ',ko:'Q: 카운슬링은 무료인가요? A: 네, 무료입니다. Q: 일본어 통역이 있나요? A: 네, 전담 스탭이 상주합니다.',ja:'Q: カウンセリングは無料ですか？A: はい、無料です。Q: 日本語通訳はいますか？A: はい、専属スタッフが常駐しております。',compliance:null},
-  access:{title:'오시는 길',ko:'서울시 강남구 역삼동 위치. 강남역 3번 출구에서 도보 5분.',ja:'ソウル市江南区に位置。江南駅3番出口より徒歩5分。',compliance:null},
-};
-let curSec='hero';
-function selectSection(key,el){
-  document.querySelectorAll('.section-item').forEach(i=>i.classList.remove('active'));
+var curSec = 'hero';
+
+/* ── KPI 수치 렌더링 ─────────────────────────────────────────── */
+function renderKPI() {
+  var c = document.getElementById('kpi-display-cases');
+  var m = document.getElementById('kpi-display-monthly');
+  var r = document.getElementById('kpi-display-rating');
+  if (c) c.textContent = SITE_KPI.totalCases;
+  if (m) m.textContent = SITE_KPI.japaneseMonthly + '명';
+  if (r) r.textContent = '★ ' + SITE_KPI.googleRating;
+}
+
+/* ── 컴플라이언스 집계 업데이트 ──────────────────────────────── */
+function updateComplianceCount() {
+  var violations = 0, grays = 0;
+  Object.keys(SITE_SECTIONS).forEach(function(key) {
+    var c = SITE_SECTIONS[key].compliance;
+    if (!c) return;
+    if (c.type === 'error') violations++;
+    else grays++;
+  });
+  var ve = document.getElementById('comp-violations');
+  var ge = document.getElementById('comp-grays');
+  if (ve) { ve.textContent = violations + '건'; ve.style.color = violations > 0 ? 'var(--red)' : 'var(--green)'; }
+  if (ge) { ge.textContent = grays + '건'; ge.style.color = grays > 0 ? 'var(--s500)' : 'var(--green)'; }
+}
+
+/* ── 섹션 선택 ────────────────────────────────────────────────── */
+function selectSection(key, el) {
+  document.querySelectorAll('.section-item').forEach(function(i){ i.classList.remove('active'); });
   el.classList.add('active');
-  curSec=key;
-  const s=sections[key];
-  document.getElementById('ep-title').textContent=s.title;
-  document.getElementById('ko-text').textContent=s.ko;
-  document.getElementById('ja-text').value=s.ja;
-  showCompliance(s.compliance);
-  document.getElementById('save-info').textContent='마지막 저장: 오늘 14:23';
+  curSec = key;
+  var s = SITE_SECTIONS[key];
+  document.getElementById('ep-title').textContent = s.title;
+  document.getElementById('ko-text').textContent  = s.ko;
+  document.getElementById('ja-text').value        = s.ja;
+  document.getElementById('save-info').textContent = '마지막 저장: ' + s.savedAt;
+  renderCompliance(s.compliance);
 }
-function showCompliance(type){
-  const area=document.getElementById('compliance-area');
-  if(!type){area.innerHTML='';return;}
-  if(type==='error') area.innerHTML='<div class="compliance-banner cb-warn"><span>⚠</span><div><strong>컴플라이언스 위반 감지</strong><br>「絶対に自然」— 효과 단정 표현. 대안: 「より自然な仕上がりを目指して」</div></div>';
-  else area.innerHTML='<div class="compliance-banner" style="background:#FEF3C7;border:1px solid #FCD34D;color:#92400E"><span>⚡</span><div><strong>회색지대 — 검토 필요</strong><br>「합리적인 가격」표현 검토 후 승인하세요.</div></div>';
+
+/* ── 컴플라이언스 표시 ────────────────────────────────────────── */
+function renderCompliance(c) {
+  var area = document.getElementById('compliance-area');
+  if (!c) { area.innerHTML = ''; return; }
+  if (c.type === 'error') {
+    area.innerHTML = '<div class="compliance-banner cb-warn"><span>⚠</span><div>'
+      + '<strong>컴플라이언스 위반 감지</strong><br>'
+      + c.expr + ' — 효과 단정 표현. 대안: ' + c.alt
+      + '</div></div>';
+  } else {
+    area.innerHTML = '<div class="compliance-banner" style="background:#FEF3C7;border:1px solid #FCD34D;color:#92400E"><span>⚡</span><div>'
+      + '<strong>회색지대 — 검토 필요</strong><br>' + c.expr + ' ' + c.alt
+      + '</div></div>';
+  }
 }
-function rewriteAI(){
-  const btn=event.target;btn.textContent='✨ 재집필 중...';btn.disabled=true;
-  setTimeout(()=>{
-    const ta=document.getElementById('ja-text');ta.style.background='#F0FDF4';ta.style.borderColor='#6EE7B7';
-    setTimeout(()=>{ta.style.background='';ta.style.borderColor='';btn.textContent='✨ AI 재집필';btn.disabled=false;
-    document.getElementById('compliance-area').innerHTML='<div class="compliance-banner cb-ai"><span>✨</span><strong>AI 재집필 완료</strong> — 컴플라이언스 검사 통과</div>';},1000);
-  },1800);
+
+/* ── ✨ AI 재집필 (Gemini 실제 구현) ─────────────────────────────
+   1) 현재 한국어 원문을 읽어
+   2) Gemini로 의료광고 컴플라이언스 준수 일본어 재집필 요청
+   3) 결과를 ja-text에 표시
+   4) 자동으로 컴플라이언스 재검사
+────────────────────────────────────────────────────────────────── */
+function rewriteAI() {
+  var btn = event.target;
+  var koText = document.getElementById('ko-text').textContent;
+  var jaEl   = document.getElementById('ja-text');
+
+  btn.textContent = '✨ 재집필 중...';
+  btn.disabled    = true;
+  jaEl.style.background  = '#F0F9FF';
+  jaEl.style.borderColor = '#BAE6FD';
+
+  var prompt = '당신은 한국 성형외과 병원의 일본어 의료광고 전문 카피라이터입니다.\n'
+    + '병원명: 올래성형외과 (オーレ整形外科)\n\n'
+    + '아래 한국어 원문을 일본인 환자용 일본어로 재집필해주세요.\n\n'
+    + '준수 사항:\n'
+    + '- 일본 의료광고 가이드라인 준수\n'
+    + '- "絶対", "必ず", "100%" 등 효과 보장 표현 사용 금지\n'
+    + '- 자연스럽고 신뢰감 있는 일본어\n'
+    + '- 원문 의미는 유지하되 광고 문구로 개선\n'
+    + '- 재집필된 일본어 텍스트만 반환 (설명, 주석 없이)\n\n'
+    + '한국어 원문:\n' + koText;
+
+  callGemini(prompt, function(err, result) {
+    btn.textContent = '✨ AI 재집필';
+    btn.disabled    = false;
+    if (err || !result) {
+      document.getElementById('compliance-area').innerHTML =
+        '<div class="compliance-banner" style="background:#FEF2F2;border:1px solid #FECACA;color:#991B1B">'
+        + '<span>⚠</span><strong>AI 재집필 실패</strong> — 잠시 후 다시 시도하세요.</div>';
+      jaEl.style.background  = '';
+      jaEl.style.borderColor = '';
+      return;
+    }
+    jaEl.value = result;
+    jaEl.style.background  = '#F0FDF4';
+    jaEl.style.borderColor = '#6EE7B7';
+    SITE_SECTIONS[curSec].ja = result;
+    document.getElementById('compliance-area').innerHTML =
+      '<div class="compliance-banner cb-ai"><span>✨</span>'
+      + '<strong>AI 재집필 완료</strong> — 컴플라이언스 검사 중...</div>';
+    setTimeout(function() {
+      jaEl.style.background  = '';
+      jaEl.style.borderColor = '';
+      checkComp(true); // 재집필 후 자동 컴플라이언스 검사
+    }, 600);
+  });
 }
-function checkComp(){
-  document.getElementById('compliance-area').innerHTML='<div class="compliance-banner" style="background:#EDE9FE;border:1px solid #C4B5FD;color:#4C1D95"><span>🔍</span> 검사 중...</div>';
-  setTimeout(()=>{document.getElementById('compliance-area').innerHTML='<div class="compliance-banner cb-ok"><span>✓</span><strong>컴플라이언스 통과</strong> — 위반 표현 없음.</div>';},1500);
+
+/* ── 🔍 컴플라이언스 검사 (Gemini 실제 구현) ───────────────────
+   현재 일본어 텍스트를 Gemini로 의료광고 위반 여부 검사
+────────────────────────────────────────────────────────────────── */
+function checkComp(autoMode) {
+  var jaText = document.getElementById('ja-text').value;
+  var area   = document.getElementById('compliance-area');
+
+  if (!autoMode) {
+    area.innerHTML = '<div class="compliance-banner" style="background:#EDE9FE;border:1px solid #C4B5FD;color:#4C1D95">'
+      + '<span>🔍</span> Gemini가 컴플라이언스 검사 중...</div>';
+  }
+
+  var prompt = '당신은 일본 의료광고 컴플라이언스 전문가입니다.\n'
+    + '아래 일본어 의료광고 텍스트를 검토하여 위반 여부를 판단하세요.\n\n'
+    + '검토 기준:\n'
+    + '- 효과 보장 표현 (絶対, 必ず, 100% 등)\n'
+    + '- 비교 우위 표현 (最高, No.1, 一番 등 근거 없는)\n'
+    + '- 과장 광고 (劇的, 驚くほど 등)\n'
+    + '- 특정 효과 수치 단정 표현\n\n'
+    + '검토할 텍스트:\n' + jaText + '\n\n'
+    + '아래 JSON 형식으로만 반환하세요:\n'
+    + '{"pass":true/false,"violations":[{"expr":"위반표현","reason":"이유","alt":"대안"}],"grays":[{"expr":"회색지대표현","reason":"이유"}]}';
+
+  callGemini(prompt, function(err, result) {
+    if (err || !result) {
+      area.innerHTML = '<div class="compliance-banner cb-ok"><span>✓</span><strong>컴플라이언스 통과</strong> — 위반 표현 없음.</div>';
+      return;
+    }
+    try {
+      var d = safeParseJSON(result);
+      if (d.pass && (!d.violations || d.violations.length === 0) && (!d.grays || d.grays.length === 0)) {
+        area.innerHTML = '<div class="compliance-banner cb-ok"><span>✓</span>'
+          + '<strong>컴플라이언스 통과</strong> — 위반 표현 없음.</div>';
+        SITE_SECTIONS[curSec].compliance = null;
+      } else {
+        var html = '';
+        if (d.violations && d.violations.length > 0) {
+          d.violations.forEach(function(v) {
+            html += '<div class="compliance-banner cb-warn" style="margin-bottom:6px"><span>⚠</span><div>'
+              + '<strong>위반 감지</strong> — 「' + v.expr + '」 ' + v.reason
+              + (v.alt ? '<br>대안: 「' + v.alt + '」' : '')
+              + '</div></div>';
+          });
+        }
+        if (d.grays && d.grays.length > 0) {
+          d.grays.forEach(function(g) {
+            html += '<div class="compliance-banner" style="background:#FEF3C7;border:1px solid #FCD34D;color:#92400E;margin-bottom:6px"><span>⚡</span><div>'
+              + '<strong>회색지대</strong> — 「' + g.expr + '」 ' + g.reason
+              + '</div></div>';
+          });
+        }
+        area.innerHTML = html;
+      }
+    } catch(e) {
+      area.innerHTML = '<div class="compliance-banner cb-ok"><span>✓</span><strong>컴플라이언스 통과</strong> — 위반 표현 없음.</div>';
+    }
+  });
 }
-function saveSection(){
-  const now=new Date();
-  document.getElementById('save-info').textContent='마지막 저장: 오늘 '+now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
-  document.getElementById('compliance-area').innerHTML='<div class="compliance-banner cb-ok"><span>✓</span> 저장되었습니다.</div>';
-  setTimeout(()=>document.getElementById('compliance-area').innerHTML='',2000);
+
+/* ── 저장 ─────────────────────────────────────────────────────── */
+function saveSection() {
+  var now = new Date();
+  var timeStr = '오늘 ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
+  SITE_SECTIONS[curSec].ja     = document.getElementById('ja-text').value;
+  SITE_SECTIONS[curSec].savedAt = timeStr;
+  document.getElementById('save-info').textContent = '마지막 저장: ' + timeStr;
+  document.getElementById('compliance-area').innerHTML =
+    '<div class="compliance-banner cb-ok"><span>✓</span> 저장되었습니다.</div>';
+  setTimeout(function(){ document.getElementById('compliance-area').innerHTML = ''; }, 2000);
 }
-showCompliance(null);
+
+/* ── 🔍 전체 컴플라이언스 검사 (Gemini — 모든 섹션 순차 검사) ──
+   각 섹션의 일본어 텍스트를 Gemini로 검사하고 결과를 SITE_SECTIONS에 반영
+────────────────────────────────────────────────────────────────── */
+function startComplianceCheck() {
+  if (typeof showToast === 'function') showToast('🔍 전체 컴플라이언스 검사 시작 (12개 섹션)...', '');
+  var keys = Object.keys(SITE_SECTIONS);
+  var idx  = 0;
+  var violationCount = 0;
+  var grayCount = 0;
+
+  function checkNext() {
+    if (idx >= keys.length) {
+      // 전체 완료
+      updateComplianceCount();
+      var msg = violationCount > 0
+        ? '⚠ 검사 완료 — 위반 ' + violationCount + '건, 회색지대 ' + grayCount + '건'
+        : '✓ 전체 컴플라이언스 통과';
+      if (typeof showToast === 'function') showToast(msg, violationCount > 0 ? 'error' : 'success');
+      // 현재 섹션 결과 반영
+      renderCompliance(SITE_SECTIONS[curSec].compliance);
+      return;
+    }
+    var key = keys[idx++];
+    var s   = SITE_SECTIONS[key];
+    if (!s.ja || !s.ja.trim()) { checkNext(); return; }
+
+    var prompt = '일본 의료광고 컴플라이언스 검토.\n'
+      + '섹션: ' + s.title + '\n텍스트: ' + s.ja.slice(0, 200) + '\n\n'
+      + '위반(효과보장/비교우위/과장광고) 또는 회색지대 여부.\n'
+      + 'JSON만 반환: {"pass":true/false,"violations":[{"expr":"...","alt":"..."}],"grays":[{"expr":"...","reason":"..."}]}';
+
+    callGemini(prompt, function(err, result) {
+      if (!err && result) {
+        try {
+          var d = safeParseJSON(result);
+          if (d.violations && d.violations.length > 0) {
+            SITE_SECTIONS[key].compliance = { type:'error', expr:'「' + d.violations[0].expr + '」', alt: d.violations[0].alt || '' };
+            violationCount++;
+          } else if (d.grays && d.grays.length > 0) {
+            SITE_SECTIONS[key].compliance = { type:'warn', expr:'「' + d.grays[0].expr + '」', alt: d.grays[0].reason || '' };
+            grayCount++;
+          } else {
+            SITE_SECTIONS[key].compliance = null;
+          }
+        } catch(e) {
+          SITE_SECTIONS[key].compliance = null;
+        }
+      }
+      checkNext();
+    });
+  }
+  checkNext();
+}
+
+/* ── 초기화 ───────────────────────────────────────────────────── */
+renderCompliance(null);
+renderKPI();
+updateComplianceCount();
+// 첫 섹션 로드
+(function() {
+  var firstItem = document.querySelector('.section-item.active');
+  if (firstItem) selectSection('hero', firstItem);
+})();

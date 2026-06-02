@@ -1,4 +1,4 @@
-
+﻿
 const ROLE_PERMS = [
   { menu:'홈 대시보드',         admin:true,  editor:true,  viewer:true  },
   { menu:'사이트 — 콘텐츠 편집', admin:true,  editor:true,  viewer:false },
@@ -56,7 +56,7 @@ function renderMemberRoles() {
     html += '<div style="width:34px;height:34px;border-radius:50%;background:' + m.bg + ';color:' + m.tc + ';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0">' + m.av + '</div>';
     html += '<div style="flex:1">';
     html += '<div style="font-size:13px;font-weight:500;color:var(--gray-900)">' + m.name + '</div>';
-    html += '<div style="font-size:11px;color:var(--gray-400)">' + m.email + '</div>';
+    html += '<div style="font-size:12px;color:var(--gray-400)">' + m.email + '</div>';
     html += '</div>';
     html += '<select id="role-select-' + i + '" style="padding:6px 12px;border:1.5px solid var(--gray-200);border-radius:var(--r);font-size:13px;font-family:inherit;outline:none;color:var(--gray-700);background:#fff;cursor:pointer;height:34px">';
     html += '<option value="admin"'  + (m.role === 'admin'  ? ' selected' : '') + '>👑 관리자</option>';
@@ -119,7 +119,7 @@ const sections = {
           <div class="m-email">oleps@hospital.co.kr</div>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
-          <span style="background:var(--teal-l);color:var(--teal-d);font-size:11px;padding:3px 10px;border-radius:6px;font-weight:600">관리자</span>
+          <span style="background:var(--teal-l);color:var(--teal-d);font-size:12px;padding:3px 10px;border-radius:6px;font-weight:600">관리자</span>
           <span style="font-size:10px;color:var(--gray-300);background:var(--gray-50);padding:3px 8px;border-radius:6px;border:1px solid var(--gray-200)">🔒 변경 불가</span>
         </div>
       </div>
@@ -171,7 +171,7 @@ const sections = {
     <div class="card fade">
       <div style="font-size:15px;font-weight:600;color:var(--navy);margin-bottom:16px">💬 LINE 연동</div>
       <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--green-l);border:1px solid #6EE7B7;border-radius:var(--r);margin-bottom:16px">
-        <span style="font-size:20px">✅</span><div><div style="font-size:13px;font-weight:500;color:#065F46">LINE Official Account 연결됨</div><div style="font-size:11px;color:#065F46">@oleps_official · 팔로워 1,247명</div></div>
+        <span style="font-size:20px">✅</span><div><div style="font-size:13px;font-weight:500;color:#065F46">LINE Official Account 연결됨</div><div style="font-size:12px;color:#065F46">@oleps_official · 팔로워 1,247명</div></div>
       </div>
       <div class="field-group"><div class="f-label">Channel ID</div><input type="text" value="2006xxxxxxxx" readonly></div>
       <div class="field-group"><div class="f-label">Channel Secret</div><input type="text" value="••••••••••••••••" readonly></div>
@@ -186,7 +186,7 @@ const sections = {
       <div class="s-row"><div class="s-label">연결 상태</div><span style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--gray-400)"><span style="width:8px;height:8px;border-radius:50%;background:var(--gray-300);display:inline-block"></span>미연결 (MVP 단계)</span></div>
       <div style="margin-top:10px;padding:10px 12px;background:var(--navy-l);border-left:3px solid var(--navy);border-radius:var(--r);font-size:12px;color:var(--navy)">
         Instagram Graph API 연동은 MVP 개발 단계에서 구현 예정입니다.<br>
-        <span style="font-size:11px;color:var(--gray-400)">DM 수신 → MEDIFLOW CRM 자동 연동</span>
+        <span style="font-size:12px;color:var(--gray-400)">DM 수신 → MEDIFLOW CRM 자동 연동</span>
       </div>
     </div>`,
 
@@ -209,10 +209,10 @@ const sections = {
         <table style="width:100%;border-collapse:collapse">
           <thead>
             <tr style="background:var(--gray-50)">
-              <th style="font-size:11px;font-weight:600;color:var(--gray-400);text-align:left;padding:10px 14px;border-bottom:2px solid var(--gray-100)">메뉴 / 기능</th>
-              <th style="font-size:11px;font-weight:600;padding:10px 14px;border-bottom:2px solid var(--gray-100);text-align:center"><span style="background:var(--teal-l);color:var(--teal-d);padding:2px 10px;border-radius:6px">관리자</span></th>
-              <th style="font-size:11px;font-weight:600;padding:10px 14px;border-bottom:2px solid var(--gray-100);text-align:center"><span style="background:var(--purple-l);color:var(--purple);padding:2px 10px;border-radius:6px">편집자</span></th>
-              <th style="font-size:11px;font-weight:600;padding:10px 14px;border-bottom:2px solid var(--gray-100);text-align:center"><span style="background:var(--gray-100);color:var(--gray-500);padding:2px 10px;border-radius:6px">뷰어</span></th>
+              <th style="font-size:12px;font-weight:600;color:var(--gray-400);text-align:left;padding:10px 14px;border-bottom:2px solid var(--gray-100)">메뉴 / 기능</th>
+              <th style="font-size:12px;font-weight:600;padding:10px 14px;border-bottom:2px solid var(--gray-100);text-align:center"><span style="background:var(--teal-l);color:var(--teal-d);padding:2px 10px;border-radius:6px">관리자</span></th>
+              <th style="font-size:12px;font-weight:600;padding:10px 14px;border-bottom:2px solid var(--gray-100);text-align:center"><span style="background:var(--purple-l);color:var(--purple);padding:2px 10px;border-radius:6px">편집자</span></th>
+              <th style="font-size:12px;font-weight:600;padding:10px 14px;border-bottom:2px solid var(--gray-100);text-align:center"><span style="background:var(--gray-100);color:var(--gray-500);padding:2px 10px;border-radius:6px">뷰어</span></th>
             </tr>
           </thead>
           <tbody id="role-table-body"></tbody>
@@ -293,21 +293,21 @@ function openInviteModal() {
             <input type="radio" name="invite-role" value="admin" style="margin-top:2px;accent-color:var(--teal)">
             <div>
               <div style="font-size:13px;font-weight:600;color:var(--navy)">👑 관리자</div>
-              <div style="font-size:11px;color:var(--gray-400);margin-top:2px">모든 메뉴 접근 · 설정 변경 · 팀 관리</div>
+              <div style="font-size:12px;color:var(--gray-400);margin-top:2px">모든 메뉴 접근 · 설정 변경 · 팀 관리</div>
             </div>
           </label>
           <label style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:var(--r);cursor:pointer;background:#fff;transition:all .15s" id="opt-editor">
             <input type="radio" name="invite-role" value="editor" style="margin-top:2px;accent-color:var(--teal)">
             <div>
               <div style="font-size:13px;font-weight:600;color:var(--navy)">✏ 편집자</div>
-              <div style="font-size:11px;color:var(--gray-400);margin-top:2px">콘텐츠 편집 · CRM · 리포트 조회</div>
+              <div style="font-size:12px;color:var(--gray-400);margin-top:2px">콘텐츠 편집 · CRM · 리포트 조회</div>
             </div>
           </label>
           <label style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border:1.5px solid var(--teal);border-radius:var(--r);cursor:pointer;background:var(--teal-l);transition:all .15s" id="opt-viewer">
             <input type="radio" name="invite-role" value="viewer" checked style="margin-top:2px;accent-color:var(--teal)">
             <div>
               <div style="font-size:13px;font-weight:600;color:var(--navy)">👁 뷰어</div>
-              <div style="font-size:11px;color:var(--gray-400);margin-top:2px">대시보드 · 리포트 조회만 가능</div>
+              <div style="font-size:12px;color:var(--gray-400);margin-top:2px">대시보드 · 리포트 조회만 가능</div>
             </div>
           </label>
         </div>
@@ -521,7 +521,7 @@ function changePayment() {
     +   '<label style="'+labelStyle+'">카드 소유자 이름</label>'
     +   '<input type="text" id="card-name" placeholder="홍길동" style="'+inputStyle+'">'
     + '</div>'
-    + '<div style="padding:10px 12px;background:#F9FAFB;border-radius:8px;font-size:11px;color:#9CA3AF;line-height:1.7">'
+    + '<div style="padding:10px 12px;background:#F9FAFB;border-radius:8px;font-size:12px;color:#9CA3AF;line-height:1.7">'
     +   '🔒 카드 정보는 암호화되어 안전하게 처리됩니다.<br>실제 결제는 다음 결제일(6월 1일)부터 새 카드로 청구됩니다.'
     + '</div>';
 
@@ -590,7 +590,7 @@ function renderPlanSection() {
     html += badge;
     html += '<div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px;'+mt+'">'+name+'</div>';
     html += '<div style="font-size:22px;font-weight:800;color:var(--navy);margin-bottom:2px">₩'+price+'<span style="font-size:12px;font-weight:400;color:var(--gray-400)">/월</span></div>';
-    html += '<div style="font-size:11px;color:var(--gray-400);margin-bottom:14px">'+desc+'</div>';
+    html += '<div style="font-size:12px;color:var(--gray-400);margin-bottom:14px">'+desc+'</div>';
     html += '<div style="display:flex;flex-direction:column;gap:5px;margin-bottom:16px">';
     features.forEach(function(f){ html += pf(f[0], f[1]); });
     html += '</div>';
@@ -649,10 +649,10 @@ function renderPlanSection() {
   html += '<div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--rl);padding:16px 20px;margin-bottom:20px">';
   html += '<div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:12px">📄 결제 정보</div>';
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">';
-  html += '<div><div style="font-size:11px;color:var(--gray-400);margin-bottom:3px">다음 결제일</div><div style="font-size:13px;font-weight:500">2026년 6월 1일</div></div>';
-  html += '<div><div style="font-size:11px;color:var(--gray-400);margin-bottom:3px">결제 금액</div><div style="font-size:13px;font-weight:500">₩890,000</div></div>';
-  html += '<div><div style="font-size:11px;color:var(--gray-400);margin-bottom:3px">결제 수단</div><div style="font-size:13px;font-weight:500">신용카드 ****-1234</div></div>';
-  html += '<div><div style="font-size:11px;color:var(--gray-400);margin-bottom:3px">자동 갱신</div><div style="font-size:13px;font-weight:500;color:var(--green)">✓ 활성</div></div>';
+  html += '<div><div style="font-size:12px;color:var(--gray-400);margin-bottom:3px">다음 결제일</div><div style="font-size:13px;font-weight:500">2026년 6월 1일</div></div>';
+  html += '<div><div style="font-size:12px;color:var(--gray-400);margin-bottom:3px">결제 금액</div><div style="font-size:13px;font-weight:500">₩890,000</div></div>';
+  html += '<div><div style="font-size:12px;color:var(--gray-400);margin-bottom:3px">결제 수단</div><div style="font-size:13px;font-weight:500">신용카드 ****-1234</div></div>';
+  html += '<div><div style="font-size:12px;color:var(--gray-400);margin-bottom:3px">자동 갱신</div><div style="font-size:13px;font-weight:500;color:var(--green)">✓ 활성</div></div>';
   html += '</div>';
   html += '<button onclick="changePayment()" style="margin-top:12px;padding:6px 14px;border-radius:8px;border:1px solid var(--gray-200);background:#fff;font-size:12px;font-family:inherit;cursor:pointer;color:var(--gray-700)">💳 결제 수단 변경</button>';
   html += '</div>';
