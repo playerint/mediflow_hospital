@@ -41,6 +41,58 @@
 <script src="../js/reports.js"></script>
 <script>
 function showToast(msg,type){var e=document.getElementById('__toast');if(e)e.remove();var bg=type==='success'?'#059669':type==='error'?'#DC2626':'#0D1B3E';var t=document.createElement('div');t.id='__toast';t.style.cssText='position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:'+bg+';color:#fff;padding:11px 22px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;white-space:nowrap';t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(function(){t.remove();},300);},2500);}
-function generatePDF(){showToast('📄 PDF를 생성하는 중...','');setTimeout(function(){showToast('✓ 월간 리포트 PDF가 생성되었습니다.','success');},2000);}
+function generatePDF() {
+  var period = document.querySelector('select') ? document.querySelector('select').value : '2026년 5월';
+  var w = window.open('', '_blank');
+  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>월간 리포트 — ' + period + '</title>'
+    + '<style>body{font-family:"Pretendard Variable",sans-serif;padding:40px;color:#111;max-width:860px;margin:0 auto}'
+    + 'h1{font-size:20px;color:#0D1B3E;margin-bottom:4px}h2{font-size:13px;color:#6B7280;font-weight:400;margin-bottom:28px}'
+    + 'h3{font-size:12px;color:#6B7280;text-transform:uppercase;letter-spacing:.06em;margin:24px 0 10px;font-weight:600}'
+    + '.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}'
+    + '.kpi{background:#F9FAFB;border-radius:8px;padding:12px 14px;border-left:3px solid #0D1B3E}'
+    + '.kpi-val{font-size:22px;font-weight:700;color:#0D1B3E}.kpi-lbl{font-size:11px;color:#6B7280;margin-bottom:4px}'
+    + '.kpi-delta{font-size:11px;color:#059669;margin-top:2px}'
+    + 'table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:20px}'
+    + 'th{background:#F9FAFB;padding:8px 12px;border-bottom:2px solid #E5E7EB;text-align:left;font-size:11px;color:#6B7280;text-transform:uppercase;letter-spacing:.04em}'
+    + 'td{padding:9px 12px;border-bottom:1px solid #F3F4F6}'
+    + '.bar-wrap{background:#E5E7EB;border-radius:4px;height:6px;margin-top:3px}'
+    + '.bar{height:6px;border-radius:4px;background:#0D1B3E}'
+    + 'footer{margin-top:40px;font-size:10px;color:#9CA3AF;text-align:center;border-top:1px solid #E5E7EB;padding-top:16px}'
+    + '@media print{button{display:none}}</style>'
+    + '</head><body>'
+    + '<h1>📊 월간 리포트</h1>'
+    + '<h2>올래성형외과 · ' + period + ' · MEDIFLOW</h2>'
+    + '<div class="kpi-grid">'
+    + '<div class="kpi"><div class="kpi-lbl">사이트 방문자</div><div class="kpi-val">1,847</div><div class="kpi-delta">↑ +23%</div></div>'
+    + '<div class="kpi"><div class="kpi-lbl">전체 문의</div><div class="kpi-val">23건</div><div class="kpi-delta">↑ +53%</div></div>'
+    + '<div class="kpi"><div class="kpi-lbl">예약 전환</div><div class="kpi-val">8건</div><div class="kpi-delta">전환율 34.8%</div></div>'
+    + '<div class="kpi"><div class="kpi-lbl">AEO 인용</div><div class="kpi-val">19회</div><div class="kpi-delta">↑ +7회</div></div>'
+    + '</div>'
+    + '<h3>SEO 키워드 순위</h3>'
+    + '<table><thead><tr><th>순위</th><th>키워드</th><th>검색량</th><th>현재 순위</th><th>변동</th></tr></thead><tbody>'
+    + '<tr><td>1</td><td>韓国 二重整形</td><td>12.4K</td><td>3위</td><td style="color:#059669">↑ +2</td></tr>'
+    + '<tr><td>2</td><td>江南 整形外科</td><td>8.2K</td><td>5위</td><td style="color:#059669">↑ +1</td></tr>'
+    + '<tr><td>3</td><td>韓国 鼻整形</td><td>6.8K</td><td>7위</td><td style="color:#9CA3AF">→ 0</td></tr>'
+    + '<tr><td>4</td><td>ソウル 美容整形</td><td>5.1K</td><td>4위</td><td style="color:#059669">↑ +3</td></tr>'
+    + '<tr><td>5</td><td>オーレ整形外科</td><td>2.3K</td><td>1위</td><td style="color:#9CA3AF">→ 0</td></tr>'
+    + '</tbody></table>'
+    + '<h3>AEO · LLM 인용 현황</h3>'
+    + '<table><thead><tr><th>AI 엔진</th><th>인용 수</th><th>비율</th><th>전월 대비</th></tr></thead><tbody>'
+    + '<tr><td>Perplexity</td><td>9회</td><td><div class="bar-wrap"><div class="bar" style="width:47%;background:#6D28D9"></div></div></td><td style="color:#059669">+4</td></tr>'
+    + '<tr><td>ChatGPT / GPT-4o</td><td>6회</td><td><div class="bar-wrap"><div class="bar" style="width:32%;background:#059669"></div></div></td><td style="color:#059669">+2</td></tr>'
+    + '<tr><td>AI Overviews</td><td>4회</td><td><div class="bar-wrap"><div class="bar" style="width:21%;background:#2563EB"></div></div></td><td style="color:#059669">+1</td></tr>'
+    + '</tbody></table>'
+    + '<h3>LINE 자동상담 성과</h3>'
+    + '<table><thead><tr><th>지표</th><th>이번 달</th><th>전월</th></tr></thead><tbody>'
+    + '<tr><td>AI 자동 해결률</td><td>94%</td><td>91%</td></tr>'
+    + '<tr><td>처리 건수</td><td>142건</td><td>128건</td></tr>'
+    + '<tr><td>예약 전환율</td><td>41%</td><td>34%</td></tr>'
+    + '<tr><td>채널 1위</td><td colspan="2">LINE 52%</td></tr>'
+    + '</tbody></table>'
+    + '<footer>© 2026 MEDIFLOW · 올래성형외과 · ' + period + ' 월간 리포트</footer>'
+    + '<script>window.onload=function(){window.print();}<\/script>'
+    + '</body></html>');
+  w.document.close();
+}
 </script>
 </body></html>
