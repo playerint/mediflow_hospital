@@ -1,6 +1,8 @@
 /* site_content.js — 콘텐츠 편집. 데이터: site-data.js, AI: gemini.js */
 
 var curSec = 'hero';
+var curSecType = 'section'; // 'section' | 'treatment-item' | 'treatment-detail'
+var _pickerSelected = []; // 이미지 피커 선택 목록
 
 /* ── KPI 수치 렌더링 ─────────────────────────────────────────── */
 function renderKPI() {
@@ -21,10 +23,53 @@ function updateComplianceCount() {
     if (c.type === 'error') violations++;
     else grays++;
   });
+  if (typeof TREATMENTS !== 'undefined') {
+    TREATMENTS.forEach(function(t) {
+      var c = t.detail.compliance;
+      if (!c) return;
+      if (c.type === 'error') violations++;
+      else grays++;
+    });
+  }
   var ve = document.getElementById('comp-violations');
   var ge = document.getElementById('comp-grays');
   if (ve) { ve.textContent = violations + '건'; ve.style.color = violations > 0 ? 'var(--red)' : 'var(--green)'; }
   if (ge) { ge.textContent = grays + '건'; ge.style.color = grays > 0 ? 'var(--s500)' : 'var(--green)'; }
+}
+
+/* ── 시술 목록 렌더링 (3단계) ────────────────────────────────── */
+function renderTreatmentDetailList() {
+  var container = document.getElementById('treatment-detail-list');
+  if (!container || typeof TREATMENTS === 'undefined') return;
+  var statusMap   = { ok:'st-done', warn:'st-wait', error:'st-ai' };
+  var statusLabel = { ok:'완료', warn:'검수 대기', error:'위반 감지' };
+
+  container.innerHTML = TREATMENTS.map(function(t) {
+    var menuCls = statusMap[t.menuStatus] || 'st-done';
+    var menuLbl = statusLabel[t.menuStatus] || '완료';
+    var detCls  = statusMap[t.detail.status] || 'st-done';
+    var detLbl  = statusLabel[t.detail.status] || '완료';
+
+    /* 시술명 항목 (1단계 들여쓰기) */
+    var itemHtml = '<div class="section-item" onclick="selectTreatmentItem(\'' + t.id + '\',this)" style="padding-left:28px;border-left:2px solid var(--gray-200)">'
+      + '<span style="color:var(--gray-400);font-size:11px;margin-right:4px">└</span>'
+      + '<span>' + t.icon + '</span>'
+      + '<span class="sec-name" style="font-size:12px">' + t.name + '</span>'
+      + '<span style="font-size:9px;color:var(--gray-400);margin-right:4px">메뉴</span>'
+      + '<span class="sec-status ' + menuCls + '">' + menuLbl + '</span>'
+      + '</div>';
+
+    /* 시술 상세 (2단계 들여쓰기) */
+    var detailHtml = '<div class="section-item" onclick="selectTreatmentDetail(\'' + t.id + '\',this)" style="padding-left:44px;border-left:2px solid var(--gray-100)">'
+      + '<span style="color:var(--gray-300);font-size:11px;margin-right:4px">└</span>'
+      + '<span style="font-size:11px">📄</span>'
+      + '<span class="sec-name" style="font-size:11px;color:var(--gray-500)">' + t.detail.title + '</span>'
+      + '<span style="font-size:9px;color:var(--gray-400);margin-right:4px">상세</span>'
+      + '<span class="sec-status ' + detCls + '">' + detLbl + '</span>'
+      + '</div>';
+
+    return itemHtml + detailHtml;
+  }).join('');
 }
 
 /* ── 섹션 선택 ────────────────────────────────────────────────── */
@@ -32,12 +77,70 @@ function selectSection(key, el) {
   document.querySelectorAll('.section-item').forEach(function(i){ i.classList.remove('active'); });
   el.classList.add('active');
   curSec = key;
+  curSecIsDetail = false;
   var s = SITE_SECTIONS[key];
   document.getElementById('ep-title').textContent = s.title;
   document.getElementById('ko-text').textContent  = s.ko;
   document.getElementById('ja-text').value        = s.ja;
   document.getElementById('save-info').textContent = '마지막 저장: ' + s.savedAt;
   renderCompliance(s.compliance);
+  renderImages(s.images || []);
+}
+
+/* ── 시술명(메뉴 항목) 선택 ─────────────────────────────────── */
+function selectTreatmentItem(id, el) {
+  document.querySelectorAll('.section-item').forEach(function(i){ i.classList.remove('active'); });
+  el.classList.add('active');
+  curSec = id;
+  curSecType = 'treatment-item';
+  var t = TREATMENTS.find(function(x){ return x.id === id; });
+  if (!t) return;
+  document.getElementById('ep-title').textContent = t.icon + ' ' + t.name + ' (메뉴 항목)';
+  document.getElementById('ko-text').textContent  = t.menuKo || '';
+  document.getElementById('ja-text').value        = t.menuJa || '';
+  document.getElementById('save-info').textContent = '마지막 저장: ' + t.menuSavedAt;
+  renderCompliance(t.menuCompliance);
+  renderImages([]);
+}
+
+/* ── 시술 상세 선택 ─────────────────────────────────────────── */
+function selectTreatmentDetail(id, el) {
+  document.querySelectorAll('.section-item').forEach(function(i){ i.classList.remove('active'); });
+  el.classList.add('active');
+  curSec = id;
+  curSecType = 'treatment-detail';
+  var t = TREATMENTS.find(function(x){ return x.id === id; });
+  if (!t) return;
+  document.getElementById('ep-title').textContent = t.detail.title;
+  document.getElementById('ko-text').textContent  = t.detail.ko;
+  document.getElementById('ja-text').value        = t.detail.ja;
+  document.getElementById('save-info').textContent = '마지막 저장: ' + t.detail.savedAt;
+  renderCompliance(t.detail.compliance);
+  renderImages(t.detail.images || []);
+}
+
+/* ── 시술 추가 ──────────────────────────────────────────────── */
+function addTreatmentDetail() {
+  if (typeof openModal !== 'function') return;
+  var formHtml = '<div style="display:flex;flex-direction:column;gap:10px">'
+    + '<div><label style="font-size:12px;font-weight:600;color:var(--gray-700);display:block;margin-bottom:4px">시술명 (한국어)</label>'
+    + '<input id="new-td-name" type="text" placeholder="예: 리프팅" style="width:100%;padding:8px 10px;border:1px solid var(--gray-200);border-radius:6px;font-size:13px;font-family:inherit"></div>'
+    + '<div><label style="font-size:12px;font-weight:600;color:var(--gray-700);display:block;margin-bottom:4px">아이콘 이모지</label>'
+    + '<input id="new-td-icon" type="text" placeholder="예: ✨" maxlength="2" style="width:80px;padding:8px 10px;border:1px solid var(--gray-200);border-radius:6px;font-size:16px;text-align:center;font-family:inherit"></div>'
+    + '</div>';
+  openModal('➕ 시술 추가', formHtml, function() {
+    var name = document.getElementById('new-td-name') ? document.getElementById('new-td-name').value.trim() : '';
+    var icon = document.getElementById('new-td-icon') ? document.getElementById('new-td-icon').value.trim() : '💉';
+    if (!name) { showToast('시술명을 입력해주세요.', 'error'); return; }
+    var id = 'td_' + Date.now();
+    TREATMENTS.push({
+      id: id, name: name, icon: icon || '💉',
+      menuKo: '', menuJa: '', menuStatus: 'ok', menuSavedAt: '-', menuCompliance: null,
+      detail: { title: name + ' 상세', ko: '', ja: '', status: 'ok', savedAt: '-', compliance: null, images: [] },
+    });
+    renderTreatmentDetailList();
+    showToast('✓ "' + name + '" 시술이 추가되었습니다.', 'success');
+  }, '추가', 'btn-primary');
 }
 
 /* ── 컴플라이언스 표시 ────────────────────────────────────────── */
@@ -168,12 +271,154 @@ function checkComp(autoMode) {
   });
 }
 
+/* ── 섹션 이미지 렌더링 ─────────────────────────────────────── */
+function renderImages(images) {
+  var grid  = document.getElementById('sec-images');
+  var empty = document.getElementById('sec-images-empty');
+  if (!grid) return;
+  if (!images || images.length === 0) {
+    grid.innerHTML = '';
+    if (empty) empty.style.display = 'block';
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+  grid.innerHTML = images.map(function(img, i) {
+    return '<div style="width:90px;border:1px solid var(--gray-200);border-radius:8px;overflow:hidden;position:relative;background:var(--gray-50)">'
+      + '<div style="height:64px;display:flex;align-items:center;justify-content:center;font-size:26px">' + img.em + '</div>'
+      + '<div style="padding:4px 6px;border-top:1px solid var(--gray-100)">'
+      + (img.badge ? '<span style="font-size:9px;background:#EDE9FE;color:#4C1D95;padding:1px 5px;border-radius:3px;display:block;margin-bottom:2px">' + img.badge + '</span>' : '')
+      + '<div style="font-size:10px;color:var(--gray-600);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + img.lb + '</div>'
+      + '<div style="font-size:9px;color:var(--gray-400)">' + img.sz + '</div>'
+      + '</div>'
+      + '<button onclick="removeImage(' + i + ')" style="position:absolute;top:4px;right:4px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.5);color:#fff;border:none;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;line-height:1">✕</button>'
+      + '</div>';
+  }).join('');
+}
+
+/* ── 이미지 삭제 ────────────────────────────────────────────── */
+function removeImage(idx) {
+  var images;
+  if (curSecType === 'treatment-detail') {
+    var t = TREATMENTS.find(function(x){ return x.id === curSec; });
+    images = t ? t.detail.images : null;
+  } else {
+    images = SITE_SECTIONS[curSec] ? SITE_SECTIONS[curSec].images : null;
+  }
+  if (!images) return;
+  images.splice(idx, 1);
+  renderImages(images);
+}
+
+/* ── 이미지 피커 열기 ───────────────────────────────────────── */
+function openImagePicker() {
+  _pickerSelected = [];
+  var modal = document.getElementById('img-picker-modal');
+  if (!modal) return;
+  modal.style.display = 'flex';
+  renderPickerGrid();
+}
+
+function closeImagePicker() {
+  var modal = document.getElementById('img-picker-modal');
+  if (modal) modal.style.display = 'none';
+  _pickerSelected = [];
+}
+
+function renderPickerGrid() {
+  var grid = document.getElementById('img-picker-grid');
+  if (!grid || typeof SITE_ASSETS === 'undefined') return;
+  var allAssets = []
+    .concat(SITE_ASSETS.ba      || [])
+    .concat(SITE_ASSETS.doctor  || [])
+    .concat(SITE_ASSETS.facility|| []);
+  grid.innerHTML = allAssets.map(function(a, i) {
+    var isSelected = _pickerSelected.indexOf(i) > -1;
+    return '<div onclick="togglePickerItem(this,' + i + ')" style="border:2px solid ' + (isSelected ? 'var(--blue)' : 'var(--gray-200)') + ';border-radius:8px;overflow:hidden;cursor:pointer;background:' + (isSelected ? 'var(--blue-l)' : '#fff') + ';transition:all .1s;position:relative">'
+      + (isSelected ? '<div style="position:absolute;top:5px;right:5px;width:18px;height:18px;border-radius:50%;background:var(--blue);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center">✓</div>' : '')
+      + '<div style="height:72px;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:28px">' + a.em + '</div>'
+      + '<div style="padding:5px 7px">'
+      + (a.badge ? '<span style="font-size:9px;background:#EDE9FE;color:#4C1D95;padding:1px 5px;border-radius:3px;display:inline-block;margin-bottom:2px">' + a.badge + '</span>' : '')
+      + '<div style="font-size:10px;color:var(--gray-700);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + a.lb + '</div>'
+      + '<div style="font-size:9px;color:var(--gray-400)">' + a.sz + '</div>'
+      + '</div></div>';
+  }).join('');
+  updatePickerCount();
+}
+
+function togglePickerItem(el, idx) {
+  var pos = _pickerSelected.indexOf(idx);
+  if (pos > -1) _pickerSelected.splice(pos, 1);
+  else _pickerSelected.push(idx);
+  renderPickerGrid();
+}
+
+function updatePickerCount() {
+  var el = document.getElementById('img-picker-count');
+  if (!el) return;
+  el.textContent = _pickerSelected.length > 0
+    ? _pickerSelected.length + '개 선택됨'
+    : '선택된 이미지 없음';
+}
+
+function confirmImageSelection() {
+  if (_pickerSelected.length === 0) { closeImagePicker(); return; }
+  var allAssets = []
+    .concat(SITE_ASSETS.ba      || [])
+    .concat(SITE_ASSETS.doctor  || [])
+    .concat(SITE_ASSETS.facility|| []);
+  var s;
+  if (curSecType === 'treatment-detail') {
+    var t = TREATMENTS.find(function(x){ return x.id === curSec; });
+    s = t ? t.detail : null;
+  } else { s = SITE_SECTIONS[curSec]; }
+  if (!s) { closeImagePicker(); return; }
+  if (!s.images) s.images = [];
+  _pickerSelected.forEach(function(i) {
+    var asset = allAssets[i];
+    if (asset) s.images.push({ lb: asset.lb, sz: asset.sz, em: asset.em, badge: asset.badge || '' });
+  });
+  renderImages(s.images);
+  closeImagePicker();
+  showToast('✓ ' + _pickerSelected.length + '개 이미지가 추가되었습니다.', 'success');
+}
+
+function triggerImgUpload() {
+  var input = document.getElementById('img-upload-input');
+  if (input) input.click();
+}
+
+function handleImgUpload(input) {
+  if (!input.files || !input.files.length) return;
+  var s;
+  if (curSecType === 'treatment-detail') {
+    var t = TREATMENTS.find(function(x){ return x.id === curSec; });
+    s = t ? t.detail : null;
+  } else { s = SITE_SECTIONS[curSec]; }
+  if (!s) return;
+  if (!s.images) s.images = [];
+  Array.from(input.files).forEach(function(f) {
+    s.images.push({ lb: f.name, sz: (f.size/1024 < 1024 ? Math.round(f.size/1024)+'KB' : (f.size/1048576).toFixed(1)+'MB'), em: '🖼', badge: '' });
+  });
+  renderImages(s.images);
+  closeImagePicker();
+  showToast('✓ ' + input.files.length + '개 파일이 업로드되었습니다.', 'success');
+  input.value = '';
+}
+
 /* ── 저장 ─────────────────────────────────────────────────────── */
 function saveSection() {
   var now = new Date();
   var timeStr = '오늘 ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
-  SITE_SECTIONS[curSec].ja     = document.getElementById('ja-text').value;
-  SITE_SECTIONS[curSec].savedAt = timeStr;
+  if (curSecType === 'treatment-item') {
+    var t = TREATMENTS.find(function(x){ return x.id === curSec; });
+    if (t) { t.menuJa = document.getElementById('ja-text').value; t.menuSavedAt = timeStr; }
+  } else if (curSecType === 'treatment-detail') {
+    var t = TREATMENTS.find(function(x){ return x.id === curSec; });
+    if (t) { t.detail.ja = document.getElementById('ja-text').value; t.detail.savedAt = timeStr; }
+  } else {
+    SITE_SECTIONS[curSec].ja      = document.getElementById('ja-text').value;
+    SITE_SECTIONS[curSec].savedAt = timeStr;
+  }
   document.getElementById('save-info').textContent = '마지막 저장: ' + timeStr;
   document.getElementById('compliance-area').innerHTML =
     '<div class="compliance-banner cb-ok"><span>✓</span> 저장되었습니다.</div>';
@@ -339,6 +584,7 @@ renderCompliance(null);
 renderKPI();
 updateComplianceCount();
 initVersionSnapshots();
+renderTreatmentDetailList();
 // 첫 섹션 로드
 (function() {
   var firstItem = document.querySelector('.section-item.active');
