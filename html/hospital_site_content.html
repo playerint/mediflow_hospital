@@ -31,17 +31,81 @@
       <div>
         <div class="section-list">
           <div class="section-list-head">섹션 목록 <span style="font-size:10px;color:var(--gray-400);font-weight:400">(11개)</span></div>
-          <div class="section-item active" onclick="selectSection('hero',this)"><span>🏠</span><span class="sec-name">히어로 (메인 비주얼)</span><span class="sec-status st-done">완료</span></div>
-          <div class="section-item" onclick="selectSection('decision_guide',this)"><span>🧭</span><span class="sec-name">DECISION GUIDE</span><span class="sec-status st-done">완료</span></div>
-          <div class="section-item" onclick="selectSection('doctors',this)"><span>👨‍⚕️</span><span class="sec-name">의료진 소개</span><span class="sec-status st-done">완료</span></div>
-          <div class="section-item" onclick="selectSection('treatments',this)"><span>💉</span><span class="sec-name">시술 안내</span><span class="sec-status st-wait">검수 대기</span></div>
-          <div class="section-item" onclick="selectSection('eye',this)"><span>👁</span><span class="sec-name">눈 성형 상세</span><span class="sec-status st-ai">위반 감지</span></div>
-          <div class="section-item" onclick="selectSection('nose',this)"><span>👃</span><span class="sec-name">코 성형 상세</span><span class="sec-status st-done">완료</span></div>
-          <div class="section-item" onclick="selectSection('cases',this)"><span>📸</span><span class="sec-name">시술 사례</span><span class="sec-status st-done">완료</span></div>
-          <div class="section-item" onclick="selectSection('testimonials',this)"><span>⭐</span><span class="sec-name">환자 후기</span><span class="sec-status st-done">완료</span></div>
-          <div class="section-item" onclick="selectSection('contact',this)"><span>📞</span><span class="sec-name">연락처 & 운영시간</span><span class="sec-status st-done">완료</span></div>
-          <div class="section-item" onclick="selectSection('faq',this)"><span>❓</span><span class="sec-name">자주 묻는 질문</span><span class="sec-status st-done">완료</span></div>
-          <div class="section-item" onclick="selectSection('access',this)"><span>📍</span><span class="sec-name">오시는 길</span><span class="sec-status st-done">완료</span></div>
+
+          <!-- 히어로: 네비 없음 -->
+          <div class="section-item active" onclick="selectSection('hero',this)">
+            <span>🏠</span><span class="sec-name">히어로 (메인 비주얼)</span>
+            <span style="font-size:9px;color:var(--gray-400);margin-right:4px">네비 없음</span>
+            <span class="sec-status st-done">완료</span>
+          </div>
+
+          <!-- 네비게이션 섹션 구분 -->
+          <div style="font-size:9px;font-weight:700;color:var(--gray-400);padding:8px 12px 2px;text-transform:uppercase;letter-spacing:.06em">네비게이션 섹션 (5개)</div>
+
+          <div class="section-item" onclick="selectSection('decision_guide',this)">
+            <span>🧭</span><span class="sec-name">DECISION GUIDE</span>
+            <span style="font-size:9px;font-weight:600;color:var(--blue);background:var(--blue-l);padding:1px 5px;border-radius:3px;margin-right:4px">#decision</span>
+            <span class="sec-status st-done">완료</span>
+          </div>
+          <div class="section-item" onclick="selectSection('doctors',this)">
+            <span>👨‍⚕️</span><span class="sec-name">의료진 소개</span>
+            <span style="font-size:9px;font-weight:600;color:var(--blue);background:var(--blue-l);padding:1px 5px;border-radius:3px;margin-right:4px">#doctors</span>
+            <span class="sec-status st-done">완료</span>
+          </div>
+          <div class="section-item" onclick="selectSection('treatments',this)">
+            <span>💉</span><span class="sec-name">시술 안내</span>
+            <span style="font-size:9px;font-weight:600;color:var(--blue);background:var(--blue-l);padding:1px 5px;border-radius:3px;margin-right:4px">#treatments</span>
+            <span class="sec-status st-wait">검수 대기</span>
+          </div>
+          <!-- 눈·코 성형: 시술 안내 하위 섹션 -->
+          <div class="section-item" onclick="selectSection('eye',this)" style="padding-left:28px;border-left:2px solid var(--gray-200)">
+            <span style="color:var(--gray-400);font-size:11px;margin-right:4px">└</span><span>👁</span><span class="sec-name" style="font-size:12px">눈 성형 상세</span>
+            <span style="font-size:9px;color:var(--gray-400);margin-right:4px">하위</span>
+            <span class="sec-status st-ai">위반 감지</span>
+          </div>
+          <div class="section-item" onclick="selectSection('nose',this)" style="padding-left:28px;border-left:2px solid var(--gray-200)">
+            <span style="color:var(--gray-400);font-size:11px;margin-right:4px">└</span><span>👃</span><span class="sec-name" style="font-size:12px">코 성형 상세</span>
+            <span style="font-size:9px;color:var(--gray-400);margin-right:4px">하위</span>
+            <span class="sec-status st-done">완료</span>
+          </div>
+          <div class="section-item" onclick="selectSection('cases',this)">
+            <span>📸</span><span class="sec-name">시술 사례</span>
+            <span style="font-size:9px;font-weight:600;color:var(--blue);background:var(--blue-l);padding:1px 5px;border-radius:3px;margin-right:4px">#cases</span>
+            <span class="sec-status st-done">완료</span>
+          </div>
+          <!-- 환자 후기: 네비 없음 (사이트에 존재하나 nav 미노출) -->
+          <div class="section-item" onclick="selectSection('testimonials',this)">
+            <span>⭐</span><span class="sec-name">환자 후기</span>
+            <span style="font-size:9px;color:var(--gray-400);margin-right:4px">네비 없음</span>
+            <span class="sec-status st-done">완료</span>
+          </div>
+          <div class="section-item" onclick="selectSection('faq',this)">
+            <span>❓</span><span class="sec-name">자주 묻는 질문</span>
+            <span style="font-size:9px;font-weight:600;color:var(--blue);background:var(--blue-l);padding:1px 5px;border-radius:3px;margin-right:4px">#faq</span>
+            <span class="sec-status st-done">완료</span>
+          </div>
+
+          <!-- 푸터 섹션 구분 -->
+          <div style="font-size:9px;font-weight:700;color:var(--gray-400);padding:8px 12px 2px;text-transform:uppercase;letter-spacing:.06em">푸터 전용 섹션</div>
+
+          <div class="section-item" onclick="selectSection('contact',this)">
+            <span>📞</span><span class="sec-name">연락처 & 운영시간</span>
+            <span style="font-size:9px;font-weight:600;color:var(--gray-500);background:var(--gray-100);padding:1px 5px;border-radius:3px;margin-right:4px">푸터</span>
+            <span class="sec-status st-done">완료</span>
+          </div>
+          <div class="section-item" onclick="selectSection('access',this)">
+            <span>📍</span><span class="sec-name">오시는 길</span>
+            <span style="font-size:9px;font-weight:600;color:var(--gray-500);background:var(--gray-100);padding:1px 5px;border-radius:3px;margin-right:4px">푸터</span>
+            <span class="sec-status st-done">완료</span>
+          </div>
+
+          <!-- 고정 요소 -->
+          <div style="font-size:9px;font-weight:700;color:var(--gray-400);padding:8px 12px 2px;text-transform:uppercase;letter-spacing:.06em">고정 요소</div>
+          <div class="section-item" style="cursor:default">
+            <span>💬</span><span class="sec-name">LINE CTA 버튼</span>
+            <span style="font-size:9px;font-weight:600;color:var(--gray-500);background:var(--gray-100);padding:1px 5px;border-radius:3px;margin-right:4px">고정</span>
+            <span class="sec-status st-done">활성</span>
+          </div>
         </div>
         <div style="margin-top:12px;background:#fff;border:1px solid var(--gray-200);border-radius:var(--rl);padding:14px 16px">
           <div style="font-size:12px;font-weight:600;color:var(--gray-500);margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em">KPI 수치</div>
