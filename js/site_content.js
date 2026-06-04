@@ -1,594 +1,701 @@
-/* site_content.js — 콘텐츠 편집. 데이터: site-data.js, AI: gemini.js */
+/* ================================================================
+   site_content.js — 10개 섹션 콘텐츠 에디터
+   데이터: mock-data-hospital.js (TODO: 실제 API로 교체)
+   AI 재집필: gemini.js (callGemini)
+================================================================ */
 
-var curSec = 'hero';
-var curSecType = 'section'; // 'section' | 'treatment-item' | 'treatment-detail'
-var _pickerSelected = []; // 이미지 피커 선택 목록
+var curSection = 'hero';
+var curLang    = MOCK_CURRENT_LANG;
+var _imgPickerCb = null;  // 이미지 피커 콜백
+var _imgPickerSel = [];   // 피커 선택 목록
 
-/* ── KPI 수치 렌더링 ─────────────────────────────────────────── */
-function renderKPI() {
-  var c = document.getElementById('kpi-display-cases');
-  var m = document.getElementById('kpi-display-monthly');
-  var r = document.getElementById('kpi-display-rating');
-  if (c) c.textContent = SITE_KPI.totalCases;
-  if (m) m.textContent = SITE_KPI.japaneseMonthly + '명';
-  if (r) r.textContent = '★ ' + SITE_KPI.googleRating;
+/* ── 섹션 메타 정의 ─────────────────────────────────────────── */
+var SECTIONS = [
+  { id:'hero',       num:'01', name:'Hero',           icon:'🏠', data:function(){ return MOCK_SEC_HERO; } },
+  { id:'decision',   num:'02', name:'DECISION GUIDE', icon:'🧭', data:function(){ return MOCK_SEC_DECISION; } },
+  { id:'doctors',    num:'03', name:'의사 소개',        icon:'👨‍⚕️', data:function(){ return MOCK_SEC_DOCTORS; } },
+  { id:'treatments', num:'04', name:'시술 메뉴',        icon:'💉', data:function(){ return MOCK_SEC_TREATMENTS; } },
+  { id:'cases',      num:'05', name:'REAL CASES',      icon:'📸', data:function(){ return MOCK_SEC_CASES; } },
+  { id:'reviews',    num:'06', name:'REAL REVIEWS',    icon:'⭐', data:function(){ return MOCK_SEC_REVIEWS; } },
+  { id:'faq',        num:'07', name:'FAQ',              icon:'❓', data:function(){ return MOCK_SEC_FAQ; } },
+  { id:'guarantee',  num:'08', name:'서비스 보장',      icon:'🛡',  data:function(){ return MOCK_SEC_GUARANTEE; } },
+  { id:'consult',    num:'09', name:'무료 상담 시작',   icon:'💬', data:function(){ return MOCK_SEC_CONSULT; } },
+  { id:'footer',     num:'10', name:'푸터',             icon:'📌', data:function(){ return MOCK_SEC_FOOTER; } },
+];
+
+/* ── 상태 칩 렌더 헬퍼 ─────────────────────────────────────── */
+var STATUS_MAP = {
+  collected:  { cls:'chip-gray',  label:'수집됨'       },
+  ai_gen:     { cls:'chip-gray',  label:'AI 생성'      },
+  no_image:   { cls:'chip-red',   label:'이미지 없음'  },
+  done:       { cls:'chip-light', label:'완료'         },
+  pending:    { cls:'chip-gray',  label:'검수 대기'    },
+};
+var TRANS_MAP = {
+  none:   { cls:'ts-none',   label:'미번역'    },
+  ai:     { cls:'ts-ai',     label:'AI 의역'   },
+  review: { cls:'ts-review', label:'검수 대기' },
+  done:   { cls:'ts-done',   label:'완료'      },
+};
+
+function secChip(status) {
+  var m = STATUS_MAP[status] || STATUS_MAP.pending;
+  return '<span class="sec-chip ' + m.cls + '">' + m.label + '</span>';
+}
+function transChip(ts) {
+  var m = TRANS_MAP[ts] || TRANS_MAP.none;
+  return '<span class="trans-status-chip ' + m.cls + '">' + m.label + '</span>';
+}
+function getLangLabel() {
+  var opt = MOCK_LANG_OPTIONS.find(function(o){ return o.code === curLang; });
+  return opt ? opt.flag + ' ' + opt.label : '번역';
 }
 
-/* ── 컴플라이언스 집계 업데이트 ──────────────────────────────── */
-function updateComplianceCount() {
-  var violations = 0, grays = 0;
-  Object.keys(SITE_SECTIONS).forEach(function(key) {
-    var c = SITE_SECTIONS[key].compliance;
-    if (!c) return;
-    if (c.type === 'error') violations++;
-    else grays++;
-  });
-  if (typeof TREATMENTS !== 'undefined') {
-    TREATMENTS.forEach(function(t) {
-      var c = t.detail.compliance;
-      if (!c) return;
-      if (c.type === 'error') violations++;
-      else grays++;
-    });
-  }
-  var ve = document.getElementById('comp-violations');
-  var ge = document.getElementById('comp-grays');
-  if (ve) { ve.textContent = violations + '건'; ve.style.color = violations > 0 ? 'var(--red)' : 'var(--green)'; }
-  if (ge) { ge.textContent = grays + '건'; ge.style.color = grays > 0 ? 'var(--s500)' : 'var(--green)'; }
+/* 현재 선택 언어의 번역 객체 반환 — { text, ts } */
+function getTrans(tf) {
+  if (!tf) return {text:'', ts:'none'};
+  if (tf.translations) return tf.translations[curLang] || {text:'', ts:'none'};
+  return {text: tf.translated||'', ts: tf.ts||'none'}; // 구형 포맷 호환
 }
 
-/* ── 시술 목록 렌더링 (3단계) ────────────────────────────────── */
-function renderTreatmentDetailList() {
-  var container = document.getElementById('treatment-detail-list');
-  if (!container || typeof TREATMENTS === 'undefined') return;
-  var statusMap   = { ok:'st-done', warn:'st-wait', error:'st-ai' };
-  var statusLabel = { ok:'완료', warn:'검수 대기', error:'위반 감지' };
-
-  container.innerHTML = TREATMENTS.map(function(t) {
-    var menuCls = statusMap[t.menuStatus] || 'st-done';
-    var menuLbl = statusLabel[t.menuStatus] || '완료';
-    var detCls  = statusMap[t.detail.status] || 'st-done';
-    var detLbl  = statusLabel[t.detail.status] || '완료';
-
-    /* 시술명 항목 (1단계 들여쓰기) */
-    var itemHtml = '<div class="section-item" onclick="selectTreatmentItem(\'' + t.id + '\',this)" style="padding-left:28px;border-left:2px solid var(--gray-200)">'
-      + '<span style="color:var(--gray-400);font-size:11px;margin-right:4px">└</span>'
-      + '<span>' + t.icon + '</span>'
-      + '<span class="sec-name" style="font-size:12px">' + t.name + '</span>'
-      + '<span style="font-size:9px;color:var(--gray-400);margin-right:4px">메뉴</span>'
-      + '<span class="sec-status ' + menuCls + '">' + menuLbl + '</span>'
+/* ── 섹션 목록 렌더 ─────────────────────────────────────────── */
+function renderSectionList() {
+  var list = document.getElementById('section-list');
+  if (!list) return;
+  list.innerHTML = SECTIONS.map(function(s) {
+    var d = s.data();
+    var active = s.id === curSection ? ' active' : '';
+    return '<div class="section-item' + active + '" onclick="selectSection(\'' + s.id + '\')">'
+      + '<div class="sec-num">' + s.num + '</div>'
+      + '<span style="font-size:15px">' + s.icon + '</span>'
+      + '<span class="sec-name">' + s.name + '</span>'
+      + secChip(d.status)
       + '</div>';
-
-    /* 시술 상세 (2단계 들여쓰기) */
-    var detailHtml = '<div class="section-item" onclick="selectTreatmentDetail(\'' + t.id + '\',this)" style="padding-left:44px;border-left:2px solid var(--gray-100)">'
-      + '<span style="color:var(--gray-300);font-size:11px;margin-right:4px">└</span>'
-      + '<span style="font-size:11px">📄</span>'
-      + '<span class="sec-name" style="font-size:11px;color:var(--gray-500)">' + t.detail.title + '</span>'
-      + '<span style="font-size:9px;color:var(--gray-400);margin-right:4px">상세</span>'
-      + '<span class="sec-status ' + detCls + '">' + detLbl + '</span>'
-      + '</div>';
-
-    return itemHtml + detailHtml;
   }).join('');
 }
 
-/* ── 섹션 선택 ────────────────────────────────────────────────── */
-function selectSection(key, el) {
-  document.querySelectorAll('.section-item').forEach(function(i){ i.classList.remove('active'); });
-  el.classList.add('active');
-  curSec = key;
-  curSecIsDetail = false;
-  var s = SITE_SECTIONS[key];
-  document.getElementById('ep-title').textContent = s.title;
-  document.getElementById('ko-text').textContent  = s.ko;
-  document.getElementById('ja-text').value        = s.ja;
-  document.getElementById('save-info').textContent = '마지막 저장: ' + s.savedAt;
-  renderCompliance(s.compliance);
-  renderImages(s.images || []);
+/* ── 섹션 선택 ───────────────────────────────────────────────── */
+function selectSection(id) {
+  curSection = id;
+  renderSectionList();
+  var sec = SECTIONS.find(function(s){ return s.id === id; });
+  if (!sec) return;
+  var renderer = RENDERERS[id];
+  var panel = document.getElementById('edit-panel');
+  if (panel && renderer) {
+    panel.innerHTML = renderer(sec.data());
+    panel.scrollTop = 0;
+  }
 }
 
-/* ── 시술명(메뉴 항목) 선택 ─────────────────────────────────── */
-function selectTreatmentItem(id, el) {
-  document.querySelectorAll('.section-item').forEach(function(i){ i.classList.remove('active'); });
-  el.classList.add('active');
-  curSec = id;
-  curSecType = 'treatment-item';
-  var t = TREATMENTS.find(function(x){ return x.id === id; });
-  if (!t) return;
-  document.getElementById('ep-title').textContent = t.icon + ' ' + t.name + ' (메뉴 항목)';
-  document.getElementById('ko-text').textContent  = t.menuKo || '';
-  document.getElementById('ja-text').value        = t.menuJa || '';
-  document.getElementById('save-info').textContent = '마지막 저장: ' + t.menuSavedAt;
-  renderCompliance(t.menuCompliance);
-  renderImages([]);
+/* ── 언어 전환 ───────────────────────────────────────────────── */
+function renderLangDropdown() {
+  var dd = document.getElementById('lang-dropdown');
+  if (!dd) return;
+  dd.innerHTML = MOCK_LANG_OPTIONS.map(function(o) {
+    var active = o.code === curLang ? ' active' : '';
+    return '<div class="lang-option' + active + '" onclick="setLang(\'' + o.code + '\')">'
+      + o.flag + ' <span>' + o.label + '</span>'
+      + '<span style="font-size:11px;color:var(--s400);margin-left:4px">' + o.name + '</span>'
+      + '</div>';
+  }).join('');
+}
+function toggleLangDropdown() {
+  var dd = document.getElementById('lang-dropdown');
+  if (dd) dd.classList.toggle('open');
+}
+function setLang(code) {
+  curLang = code;
+  var opt = MOCK_LANG_OPTIONS.find(function(o){ return o.code === code; });
+  if (opt) {
+    var flagEl  = document.getElementById('lang-flag');
+    var labelEl = document.getElementById('lang-label');
+    if (flagEl)  flagEl.textContent  = opt.flag;
+    if (labelEl) labelEl.textContent = opt.label;
+  }
+  var dd = document.getElementById('lang-dropdown');
+  if (dd) dd.classList.remove('open');
+  renderLangDropdown();
+  selectSection(curSection); // 패널 재렌더
+  updateTransSummary();
 }
 
-/* ── 시술 상세 선택 ─────────────────────────────────────────── */
-function selectTreatmentDetail(id, el) {
-  document.querySelectorAll('.section-item').forEach(function(i){ i.classList.remove('active'); });
-  el.classList.add('active');
-  curSec = id;
-  curSecType = 'treatment-detail';
-  var t = TREATMENTS.find(function(x){ return x.id === id; });
-  if (!t) return;
-  document.getElementById('ep-title').textContent = t.detail.title;
-  document.getElementById('ko-text').textContent  = t.detail.ko;
-  document.getElementById('ja-text').value        = t.detail.ja;
-  document.getElementById('save-info').textContent = '마지막 저장: ' + t.detail.savedAt;
-  renderCompliance(t.detail.compliance);
-  renderImages(t.detail.images || []);
+/* ── 번역 현황 요약 ──────────────────────────────────────────── */
+function updateTransSummary() {
+  var el = document.getElementById('trans-summary');
+  if (!el) return;
+  var labels = { none:'미번역', ai:'AI 의역', review:'검수 대기', done:'완료' };
+  var counts = { none:0, ai:0, review:0, done:0 };
+  // 주요 섹션들의 번역 상태 집계 (Hero 기준 예시)
+  function countField(tf) { if (tf) { var tr = getTrans(tf); counts[tr.ts] = (counts[tr.ts]||0) + 1; } }
+  countField(MOCK_SEC_HERO.headline); countField(MOCK_SEC_HERO.subtext);
+  countField(MOCK_SEC_HERO.lineBtn); countField(MOCK_SEC_HERO.decisionBtn);
+  MOCK_SEC_FAQ.items.forEach(function(i){ countField(i.q); countField(i.a); });
+  MOCK_SEC_DECISION.items.forEach(function(i){ countField(i.anxiety); });
+
+  var total = counts.none + counts.ai + counts.review + counts.done;
+  el.innerHTML = Object.keys(counts).map(function(k) {
+    if (counts[k] === 0) return '';
+    return '<div style="display:flex;align-items:center;justify-content:space-between">'
+      + '<span class="trans-status-chip ts-' + k + '">' + labels[k] + '</span>'
+      + '<span style="font-size:12px;font-weight:600;color:var(--s700)">' + counts[k] + '건</span>'
+      + '</div>';
+  }).join('');
+
+  var overall = document.getElementById('trans-overall');
+  if (overall) {
+    var pct = total > 0 ? Math.round(counts.done / total * 100) : 0;
+    overall.textContent = '번역 ' + pct + '%';
+    overall.className = 'sec-chip ' + (pct === 100 ? 'chip-light' : 'chip-gray');
+  }
 }
 
-/* ── 시술 추가 ──────────────────────────────────────────────── */
-function addTreatmentDetail() {
-  if (typeof openModal !== 'function') return;
-  var formHtml = '<div style="display:flex;flex-direction:column;gap:10px">'
-    + '<div><label style="font-size:12px;font-weight:600;color:var(--gray-700);display:block;margin-bottom:4px">시술명 (한국어)</label>'
-    + '<input id="new-td-name" type="text" placeholder="예: 리프팅" style="width:100%;padding:8px 10px;border:1px solid var(--gray-200);border-radius:6px;font-size:13px;font-family:inherit"></div>'
-    + '<div><label style="font-size:12px;font-weight:600;color:var(--gray-700);display:block;margin-bottom:4px">아이콘 이모지</label>'
-    + '<input id="new-td-icon" type="text" placeholder="예: ✨" maxlength="2" style="width:80px;padding:8px 10px;border:1px solid var(--gray-200);border-radius:6px;font-size:16px;text-align:center;font-family:inherit"></div>'
+/* ── 공통: 번역 필드 렌더 ────────────────────────────────────── */
+function tfBlock(label, fieldId, tf, rows) {
+  rows = rows || 3;
+  var langLbl = getLangLabel();
+  var tr = getTrans(tf);
+  return '<div class="trans-block">'
+    + '<div class="trans-block-label"><span>' + label + '</span></div>'
+    + '<div class="trans-row">'
+    + '<div class="trans-col">'
+    + '<div class="trans-sublabel">🇰🇷 한국어 원문</div>'
+    + '<div class="trans-orig">' + (tf.ko || '') + '</div>'
+    + '</div>'
+    + '<div class="trans-col">'
+    + '<div class="trans-sublabel">' + langLbl + ' ' + transChip(tr.ts)
+    + '<button class="btn" style="font-size:10px;padding:2px 8px;margin-left:auto" onclick="aiTranslate(\'' + fieldId + '\')" title="AI 의역">✨ AI 의역</button>'
+    + '</div>'
+    + '<textarea class="trans-input" id="tf-' + fieldId + '" rows="' + rows + '">' + (tr.text || '') + '</textarea>'
+    + '</div>'
+    + '</div>'
     + '</div>';
-  openModal('➕ 시술 추가', formHtml, function() {
-    var name = document.getElementById('new-td-name') ? document.getElementById('new-td-name').value.trim() : '';
-    var icon = document.getElementById('new-td-icon') ? document.getElementById('new-td-icon').value.trim() : '💉';
-    if (!name) { showToast('시술명을 입력해주세요.', 'error'); return; }
-    var id = 'td_' + Date.now();
-    TREATMENTS.push({
-      id: id, name: name, icon: icon || '💉',
-      menuKo: '', menuJa: '', menuStatus: 'ok', menuSavedAt: '-', menuCompliance: null,
-      detail: { title: name + ' 상세', ko: '', ja: '', status: 'ok', savedAt: '-', compliance: null, images: [] },
-    });
-    renderTreatmentDetailList();
-    showToast('✓ "' + name + '" 시술이 추가되었습니다.', 'success');
-  }, '추가', 'btn-primary');
 }
 
-/* ── 컴플라이언스 표시 ────────────────────────────────────────── */
-function renderCompliance(c) {
-  var area = document.getElementById('compliance-area');
-  if (!c) { area.innerHTML = ''; return; }
-  if (c.type === 'error') {
-    area.innerHTML = '<div class="compliance-banner cb-warn"><span>⚠</span><div>'
-      + '<strong>컴플라이언스 위반 감지</strong><br>'
-      + c.expr + ' — 효과 단정 표현. 대안: ' + c.alt
-      + '</div></div>';
-  } else {
-    area.innerHTML = '<div class="compliance-banner" style="background:#FEF3C7;border:1px solid #FCD34D;color:#92400E"><span>⚡</span><div>'
-      + '<strong>회색지대 — 검토 필요</strong><br>' + c.expr + ' ' + c.alt
-      + '</div></div>';
-  }
-}
+/* ── 공통: AI 의역 (Gemini) ─────────────────────────────────── */
+function aiTranslate(fieldId) {
+  var origEl = document.querySelector('#tf-' + fieldId);
+  if (!origEl) { showToast('입력 필드를 찾을 수 없습니다.', 'error'); return; }
+  // TODO: 실제 원문을 찾아서 번역. 현재는 textarea 위 원문 div에서 읽음
+  var transBlock = origEl.closest('.trans-block');
+  var origDiv = transBlock ? transBlock.querySelector('.trans-orig') : null;
+  var koText = origDiv ? origDiv.textContent.trim() : '';
+  if (!koText) { showToast('원문이 없습니다.', 'error'); return; }
 
-/* ── ✨ AI 재집필 (Gemini 실제 구현) ─────────────────────────────
-   1) 현재 한국어 원문을 읽어
-   2) Gemini로 의료광고 컴플라이언스 준수 일본어 재집필 요청
-   3) 결과를 ja-text에 표시
-   4) 자동으로 컴플라이언스 재검사
-────────────────────────────────────────────────────────────────── */
-function rewriteAI() {
-  var btn = event.target;
-  var koText = document.getElementById('ko-text').textContent;
-  var jaEl   = document.getElementById('ja-text');
+  var langOpt = MOCK_LANG_OPTIONS.find(function(o){ return o.code === curLang; });
+  var langName = langOpt ? langOpt.name : '일본어';
 
-  btn.textContent = '✨ 재집필 중...';
-  btn.disabled    = true;
-  jaEl.style.background  = '#F0F9FF';
-  jaEl.style.borderColor = '#BAE6FD';
-
-  var prompt = '당신은 한국 성형외과 병원의 일본어 의료광고 전문 카피라이터입니다.\n'
-    + '병원명: 올래성형외과 (オーレ整形外科)\n\n'
-    + '아래 한국어 원문을 일본인 환자용 일본어로 재집필해주세요.\n\n'
-    + '준수 사항:\n'
-    + '- 일본 의료광고 가이드라인 준수\n'
-    + '- "絶対", "必ず", "100%" 등 효과 보장 표현 사용 금지\n'
-    + '- 자연스럽고 신뢰감 있는 일본어\n'
-    + '- 원문 의미는 유지하되 광고 문구로 개선\n'
-    + '- 재집필된 일본어 텍스트만 반환 (설명, 주석 없이)\n\n'
-    + '한국어 원문:\n' + koText;
+  origEl.style.background = '#EFF6FF'; origEl.style.borderColor = '#93C5FD';
+  var prompt = '당신은 한국 성형외과 병원의 의료 마케팅 전문 카피라이터입니다.\n'
+    + '아래 한국어 원문을 ' + langName + '(으)로 자연스럽게 의역해주세요.\n'
+    + '- 직역이 아닌 현지 감성에 맞는 의역\n'
+    + '- 의료광고 가이드라인 준수\n'
+    + '- 번역된 텍스트만 반환 (설명·주석 없이)\n\n'
+    + '원문:\n' + koText;
 
   callGemini(prompt, function(err, result) {
-    btn.textContent = '✨ AI 재집필';
-    btn.disabled    = false;
-    if (err || !result) {
-      document.getElementById('compliance-area').innerHTML =
-        '<div class="compliance-banner" style="background:#FEF2F2;border:1px solid #FECACA;color:#991B1B">'
-        + '<span>⚠</span><strong>AI 재집필 실패</strong> — 잠시 후 다시 시도하세요.</div>';
-      jaEl.style.background  = '';
-      jaEl.style.borderColor = '';
-      return;
-    }
-    jaEl.value = result;
-    jaEl.style.background  = '#F0FDF4';
-    jaEl.style.borderColor = '#6EE7B7';
-    SITE_SECTIONS[curSec].ja = result;
-    document.getElementById('compliance-area').innerHTML =
-      '<div class="compliance-banner cb-ai"><span>✨</span>'
-      + '<strong>AI 재집필 완료</strong> — 컴플라이언스 검사 중...</div>';
-    setTimeout(function() {
-      jaEl.style.background  = '';
-      jaEl.style.borderColor = '';
-      checkComp(true); // 재집필 후 자동 컴플라이언스 검사
-    }, 600);
+    origEl.style.background = ''; origEl.style.borderColor = '';
+    if (err || !result) { showToast('AI 의역 실패. 잠시 후 다시 시도하세요.', 'error'); return; }
+    origEl.value = result.trim();
+    origEl.style.background = '#F0FDF4'; origEl.style.borderColor = '#6EE7B7';
+    setTimeout(function(){ origEl.style.background = ''; origEl.style.borderColor = ''; }, 1500);
+    showToast('✓ AI 의역 완료', 'success');
   });
 }
 
-/* ── 🔍 컴플라이언스 검사 (Gemini 실제 구현) ───────────────────
-   현재 일본어 텍스트를 Gemini로 의료광고 위반 여부 검사
-────────────────────────────────────────────────────────────────── */
-function checkComp(autoMode) {
-  var jaText = document.getElementById('ja-text').value;
-  var area   = document.getElementById('compliance-area');
-
-  if (!autoMode) {
-    area.innerHTML = '<div class="compliance-banner" style="background:#EDE9FE;border:1px solid #C4B5FD;color:#4C1D95">'
-      + '<span>🔍</span> Gemini가 컴플라이언스 검사 중...</div>';
+/* ── 공통: 이미지 업로드 영역 렌더 ─────────────────────────── */
+function imgZone(hasImage, src, label, cb, required) {
+  if (hasImage && src) {
+    return '<div style="position:relative;display:inline-block">'
+      + '<div style="width:120px;height:120px;border-radius:var(--r);background:var(--s100);display:flex;align-items:center;justify-content:center;font-size:40px;border:1px solid var(--s200)">🖼</div>'
+      + '<button onclick="' + cb + '" class="btn" style="position:absolute;bottom:6px;right:6px;font-size:11px;padding:3px 8px">교체</button>'
+      + '</div>';
   }
-
-  var prompt = '당신은 일본 의료광고 컴플라이언스 전문가입니다.\n'
-    + '아래 일본어 의료광고 텍스트를 검토하여 위반 여부를 판단하세요.\n\n'
-    + '검토 기준:\n'
-    + '- 효과 보장 표현 (絶対, 必ず, 100% 등)\n'
-    + '- 비교 우위 표현 (最高, No.1, 一番 등 근거 없는)\n'
-    + '- 과장 광고 (劇的, 驚くほど 등)\n'
-    + '- 특정 효과 수치 단정 표현\n\n'
-    + '검토할 텍스트:\n' + jaText + '\n\n'
-    + '아래 JSON 형식으로만 반환하세요:\n'
-    + '{"pass":true/false,"violations":[{"expr":"위반표현","reason":"이유","alt":"대안"}],"grays":[{"expr":"회색지대표현","reason":"이유"}]}';
-
-  callGemini(prompt, function(err, result) {
-    if (err || !result) {
-      area.innerHTML = '<div class="compliance-banner cb-ok"><span>✓</span><strong>컴플라이언스 통과</strong> — 위반 표현 없음.</div>';
-      return;
-    }
-    try {
-      var d = safeParseJSON(result);
-      if (d.pass && (!d.violations || d.violations.length === 0) && (!d.grays || d.grays.length === 0)) {
-        area.innerHTML = '<div class="compliance-banner cb-ok"><span>✓</span>'
-          + '<strong>컴플라이언스 통과</strong> — 위반 표현 없음.</div>';
-        SITE_SECTIONS[curSec].compliance = null;
-      } else {
-        var html = '';
-        if (d.violations && d.violations.length > 0) {
-          d.violations.forEach(function(v) {
-            html += '<div class="compliance-banner cb-warn" style="margin-bottom:6px"><span>⚠</span><div>'
-              + '<strong>위반 감지</strong> — 「' + v.expr + '」 ' + v.reason
-              + (v.alt ? '<br>대안: 「' + v.alt + '」' : '')
-              + '</div></div>';
-          });
-        }
-        if (d.grays && d.grays.length > 0) {
-          d.grays.forEach(function(g) {
-            html += '<div class="compliance-banner" style="background:#FEF3C7;border:1px solid #FCD34D;color:#92400E;margin-bottom:6px"><span>⚡</span><div>'
-              + '<strong>회색지대</strong> — 「' + g.expr + '」 ' + g.reason
-              + '</div></div>';
-          });
-        }
-        area.innerHTML = html;
-      }
-    } catch(e) {
-      area.innerHTML = '<div class="compliance-banner cb-ok"><span>✓</span><strong>컴플라이언스 통과</strong> — 위반 표현 없음.</div>';
-    }
-  });
+  var cls = required ? 'img-upload-req' : 'img-upload-opt';
+  return '<div class="' + cls + '" onclick="' + cb + '" style="max-width:300px">'
+    + '<div style="font-size:24px;margin-bottom:6px">' + (required ? '📷' : '📁') + '</div>'
+    + '<div style="font-size:13px;font-weight:500;color:' + (required ? '#991B1B' : 'var(--s700)') + '">' + label + '</div>'
+    + '<div style="font-size:11px;color:' + (required ? '#DC2626' : 'var(--s400)') + ';margin-top:2px">' + (required ? '이미지 직접 업로드 필수 (AI 생성 금지)' : 'PNG, JPG, WebP · 최대 10MB') + '</div>'
+    + '</div>';
 }
 
-/* ── 섹션 이미지 렌더링 ─────────────────────────────────────── */
-function renderImages(images) {
-  var grid  = document.getElementById('sec-images');
-  var empty = document.getElementById('sec-images-empty');
-  if (!grid) return;
-  if (!images || images.length === 0) {
-    grid.innerHTML = '';
-    if (empty) empty.style.display = 'block';
-    return;
-  }
-  if (empty) empty.style.display = 'none';
-  grid.innerHTML = images.map(function(img, i) {
-    return '<div style="width:90px;border:1px solid var(--gray-200);border-radius:8px;overflow:hidden;position:relative;background:var(--gray-50)">'
-      + '<div style="height:64px;display:flex;align-items:center;justify-content:center;font-size:26px">' + img.em + '</div>'
-      + '<div style="padding:4px 6px;border-top:1px solid var(--gray-100)">'
-      + (img.badge ? '<span style="font-size:9px;background:#EDE9FE;color:#4C1D95;padding:1px 5px;border-radius:3px;display:block;margin-bottom:2px">' + img.badge + '</span>' : '')
-      + '<div style="font-size:10px;color:var(--gray-600);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + img.lb + '</div>'
-      + '<div style="font-size:9px;color:var(--gray-400)">' + img.sz + '</div>'
+/* ════════════════════════════════════════════════
+   섹션 렌더러
+════════════════════════════════════════════════ */
+var RENDERERS = {};
+
+/* ── 01. Hero ────────────────────────────────────────────────── */
+RENDERERS.hero = function(d) {
+  return '<div class="edit-panel-head">'
+    + '<div class="ep-title">🏠 Hero (최상단)</div>'
+    + '<div class="ep-actions">' + secChip(d.status) + '</div>'
+    + '</div>'
+    + '<div class="ai-inline"><div class="ai-inline-dot"></div>'
+    + '<span>AI가 한국 사이트에서 텍스트를 수집했습니다. 헤드라인과 서브텍스트를 확인하고 의역을 검수하세요.</span></div>'
+    + '<div style="padding:14px 20px;border-top:1px solid var(--s100)">'
+    + '<div style="font-size:12px;font-weight:600;color:var(--s500);margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em">대표 이미지</div>'
+    + imgZone(d.image.hasImage, d.image.src, d.image.label, 'openImgPicker(\'hero-img\')', false)
+    + '</div>'
+    + tfBlock('헤드라인 카피',    'hero-headline',    d.headline,    3)
+    + tfBlock('서브텍스트',       'hero-subtext',     d.subtext,     3)
+    + tfBlock('LINE 버튼 텍스트', 'hero-lineBtn',     d.lineBtn,     1)
+    + tfBlock('불안 선택 버튼',   'hero-decisionBtn', d.decisionBtn, 1)
+    + '<div class="save-bar"><span class="save-info">자동 저장됨</span>'
+    + '<button class="btn btn-primary" onclick="saveSection(\'hero\')">저장</button></div>';
+};
+
+/* ── 02. DECISION GUIDE ─────────────────────────────────────── */
+RENDERERS.decision = function(d) {
+  var items = d.items.map(function(item, i) {
+    var doctors = (MOCK_SEC_DOCTORS.items || []).map(function(doc) {
+      return '<option value="' + doc.id + '"' + (item.doctorId === doc.id ? ' selected' : '') + '>' + doc.name.ko + '</option>';
+    }).join('');
+    return '<div class="list-item">'
+      + '<div class="list-item-head">'
+      + '<span style="font-size:12px;color:var(--s400);min-width:20px">' + (i+1) + '</span>'
+      + '<span style="flex:1">' + (item.anxiety.ko || '(내용 없음)') + '</span>'
+      + transChip(getTrans(item.anxiety).ts)
+      + '<button onclick="deleteDecisionItem(' + item.id + ')" style="background:none;border:none;color:var(--s400);cursor:pointer;font-size:14px;padding:0 4px">✕</button>'
       + '</div>'
-      + '<button onclick="removeImage(' + i + ')" style="position:absolute;top:4px;right:4px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.5);color:#fff;border:none;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;line-height:1">✕</button>'
+      + '<div class="list-item-body">'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">'
+      + '<div><div style="font-size:11px;font-weight:600;color:var(--s400);margin-bottom:4px">🇰🇷 불안 요소</div>'
+      + '<input type="text" value="' + (item.anxiety.ko || '') + '" style="width:100%;padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit" placeholder="불안 요소 텍스트"></div>'
+      + '<div><div style="font-size:11px;font-weight:600;color:var(--s400);margin-bottom:4px">' + getLangLabel() + '</div>'
+      + '<input type="text" value="' + (getTrans(item.anxiety).text || '') + '" style="width:100%;padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit" placeholder="의역 텍스트"></div>'
+      + '</div>'
+      + '<div style="display:flex;align-items:center;gap:8px">'
+      + '<span style="font-size:12px;color:var(--s500);flex-shrink:0;white-space:nowrap">추천 의사:</span>'
+      + '<select style="width:auto;flex:1;min-width:0;padding:4px 8px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">' + doctors + '</select>'
+      + '</div>'
+      + '</div></div>';
+  }).join('');
+
+  return '<div class="edit-panel-head">'
+    + '<div class="ep-title">🧭 DECISION GUIDE</div>'
+    + '<div class="ep-actions">' + secChip(d.status)
+    + '<button class="btn" style="font-size:12px" onclick="addDecisionItem()">+ 항목 추가</button>'
+    + '</div></div>'
+    + '<div class="ai-inline"><div class="ai-inline-dot"></div>'
+    + '<span>진료과에 맞게 8개 불안 요소가 AI 생성됐습니다. 내용을 검토하고 추천 의사를 매칭하세요.</span></div>'
+    + '<div style="padding:14px 20px">' + items + '</div>'
+    + '<div class="save-bar"><span class="save-info">자동 저장됨</span>'
+    + '<button class="btn btn-primary" onclick="saveSection(\'decision\')">저장</button></div>';
+};
+
+/* ── 03. 의사 소개 ───────────────────────────────────────────── */
+RENDERERS.doctors = function(d) {
+  var visToggle = '<div class="tog-row" style="padding:14px 20px;border-top:1px solid var(--s100)">'
+    + '<div class="tog-sw ' + (d.sectionVisible ? 'on' : 'off') + '" onclick="toggleDoctorSection(this)"></div>'
+    + '<div class="tog-info"><div class="tog-title">섹션 노출</div>'
+    + '<div class="tog-desc">의사가 1명이면 자동 비노출 처리됩니다</div></div>'
+    + '<span style="font-size:12px;color:var(--s500)">' + (d.sectionVisible ? '노출' : '비노출') + '</span>'
+    + '</div>';
+
+  var langLbl = getLangLabel();
+  var inStyle = 'padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit;width:100%';
+  var gridStyle = 'display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px';
+  var subLbl = function(flag, txt){ return '<div style="font-size:10px;font-weight:600;color:var(--s400);margin-bottom:3px">' + flag + ' ' + txt + '</div>'; };
+
+  var cards = d.items.map(function(doc) {
+    return '<div class="list-item" style="margin-bottom:10px">'
+      + '<div class="list-item-head">'
+      + '<span style="font-size:18px">👨‍⚕️</span>'
+      + '<span style="flex:1;font-size:13px;font-weight:600;color:var(--navy)">' + doc.name.ko + '</span>'
+      + transChip(doc.name.ts)
+      + '<div class="order-btns"><button class="order-btn">↑</button><button class="order-btn">↓</button></div>'
+      + '<button onclick="deleteDoctor(' + doc.id + ')" style="background:none;border:none;color:var(--s400);cursor:pointer;font-size:14px;padding:0 4px">✕</button>'
+      + '</div>'
+      + '<div class="list-item-body">'
+
+      /* 사진 + 필드 2열 */
+      + '<div style="display:flex;gap:12px;margin-bottom:10px">'
+      + imgZone(doc.image != null, doc.image, '의사 프로필 사진', 'openImgPicker(\'doc-' + doc.id + '\')', true)
+      + '<div style="flex:1">'
+
+      /* 이름 */
+      + '<div style="' + gridStyle + '">'
+      + '<div>' + subLbl('🇰🇷', '이름') + '<input type="text" value="' + doc.name.ko + '" placeholder="이름" style="' + inStyle + '"></div>'
+      + '<div>' + subLbl(langLbl, '이름') + '<input type="text" value="' + (getTrans(doc.name).text||'') + '" placeholder="' + langLbl + '" style="' + inStyle + '"></div>'
+      + '</div>'
+
+      /* 직함 */
+      + '<div style="' + gridStyle + '">'
+      + '<div>' + subLbl('🇰🇷', '직함') + '<input type="text" value="' + doc.title.ko + '" placeholder="대표원장 등" style="' + inStyle + '"></div>'
+      + '<div>' + subLbl(langLbl, '직함') + '<input type="text" value="' + (getTrans(doc.title).text||'') + '" placeholder="' + langLbl + '" style="' + inStyle + '"></div>'
+      + '</div>'
+
+      /* 경력 */
+      + '<div style="' + gridStyle + '">'
+      + '<div>' + subLbl('🇰🇷', '경력') + '<input type="text" value="' + doc.career.ko + '" placeholder="경력" style="' + inStyle + '"></div>'
+      + '<div>' + subLbl(langLbl, '경력') + '<input type="text" value="' + (getTrans(doc.career).text||'') + '" placeholder="' + langLbl + '" style="' + inStyle + '"></div>'
+      + '</div>'
+
+      + '</div></div>' /* /flex */
+
+      /* 소개 2열 */
+      + '<div style="' + gridStyle + ';margin-bottom:8px">'
+      + '<div>' + subLbl('🇰🇷', '소개')
+      + '<textarea rows="2" style="' + inStyle + ';resize:vertical">' + doc.desc.ko + '</textarea></div>'
+      + '<div>' + subLbl(langLbl, '소개')
+      + '<textarea rows="2" style="' + inStyle + ';resize:vertical">' + (getTrans(doc.desc).text||'') + '</textarea></div>'
+      + '</div>'
+
+      /* 태그 */
+      + '<div style="display:flex;gap:4px;flex-wrap:wrap">'
+      + doc.tags.map(function(t){ return '<span style="font-size:11px;padding:2px 8px;border-radius:4px;background:var(--s100);color:var(--s700)">' + t + ' <span style="cursor:pointer;color:var(--s400)">✕</span></span>'; }).join('')
+      + '<input type="text" placeholder="태그 추가 후 Enter" style="font-size:11px;padding:2px 8px;border:1px dashed var(--s200);border-radius:4px;outline:none;width:120px;font-family:inherit">'
+      + '</div></div></div>';
+  }).join('');
+
+  return '<div class="edit-panel-head">'
+    + '<div class="ep-title">👨‍⚕️ 의사 소개</div>'
+    + '<div class="ep-actions">' + secChip(d.status)
+    + '<button class="btn" style="font-size:12px" onclick="addDoctor()">+ 의사 추가</button>'
+    + '</div></div>'
+    + visToggle
+    + '<div style="padding:14px 20px">' + cards + '</div>'
+    + '<div class="save-bar"><span class="save-info">자동 저장됨</span>'
+    + '<button class="btn btn-primary" onclick="saveSection(\'doctors\')">저장</button></div>';
+};
+
+/* ── 04. 시술 메뉴 ───────────────────────────────────────────── */
+RENDERERS.treatments = function(d) {
+  var items = d.items.map(function(t, i) {
+    return '<div class="list-item" style="margin-bottom:8px">'
+      + '<div class="list-item-head">'
+      + '<span style="font-size:18px">' + t.icon + '</span>'
+      + '<span style="flex:1;font-size:13px;font-weight:600;color:var(--navy)">' + t.name.ko + '</span>'
+      + transChip(getTrans(t.detail).ts)
+      + '<div class="order-btns"><button class="order-btn">↑</button><button class="order-btn">↓</button></div>'
+      + '<button onclick="deleteTreatment(\'' + t.id + '\')" style="background:none;border:none;color:var(--s400);cursor:pointer;font-size:14px;padding:0 4px">✕</button>'
+      + '</div>'
+      + '<div class="list-item-body">'
+      + '<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:10px">'
+      + imgZone(t.image != null, t.image, '시술 이미지 (없으면 AI 생성)', 'openImgPicker(\'treat-' + t.id + '\')', false)
+      + '<div style="flex:1">'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">'
+      + '<input type="text" value="' + t.name.ko + '" placeholder="시술명" style="padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
+      + '<input type="text" value="' + (getTrans(t.name).text||'') + '" placeholder="' + getLangLabel() + ' 시술명" style="padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
+      + '</div>'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+      + '<input type="text" value="' + t.brief.ko + '" placeholder="가격·한줄 요약" style="padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
+      + '<input type="text" value="' + (getTrans(t.brief).text||'') + '" placeholder="' + getLangLabel() + '" style="padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
+      + '</div>'
+      + '</div></div>'
+      + '<details style="border-top:1px solid var(--s100);padding-top:10px">'
+      + '<summary style="font-size:12px;color:var(--blue);cursor:pointer;font-weight:500;list-style:none">📄 팝업 상세 내용 편집 ▸</summary>'
+      + '<div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:10px">'
+      + '<textarea rows="4" placeholder="한국어 상세" style="width:100%;padding:8px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit;resize:vertical">' + t.detail.ko + '</textarea>'
+      + '<textarea rows="4" placeholder="' + getLangLabel() + ' 상세" style="width:100%;padding:8px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit;resize:vertical">' + (getTrans(t.detail).text||'') + '</textarea>'
+      + '</div></details>'
+      + '</div></div>';
+  }).join('');
+
+  return '<div class="edit-panel-head">'
+    + '<div class="ep-title">💉 시술 메뉴</div>'
+    + '<div class="ep-actions">' + secChip(d.status)
+    + '<button class="btn" style="font-size:12px" onclick="addTreatment()">+ 시술 추가</button>'
+    + '</div></div>'
+    + '<div class="ai-inline"><div class="ai-inline-dot"></div>'
+    + '<span>이미지가 없는 시술은 AI가 톤에 맞춰 이미지를 생성합니다. REAL CASES는 AI 생성 금지입니다.</span></div>'
+    + '<div style="padding:14px 20px">' + items + '</div>'
+    + '<div class="save-bar"><span class="save-info">자동 저장됨</span>'
+    + '<button class="btn btn-primary" onclick="saveSection(\'treatments\')">저장</button></div>';
+};
+
+/* ── 05. REAL CASES ─────────────────────────────────────────── */
+RENDERERS.cases = function(d) {
+  var items = d.items.map(function(c, i) {
+    return '<div class="list-item" style="margin-bottom:8px">'
+      + '<div class="list-item-head">'
+      + '<span style="font-size:12px;color:var(--s400)">CASE ' + (i+1) + '</span>'
+      + '<span style="flex:1;font-size:12px;color:var(--s700)">' + c.category + '</span>'
+      + '<button onclick="deleteCase(' + c.id + ')" style="background:none;border:none;color:var(--s400);cursor:pointer;font-size:14px">✕</button>'
+      + '</div>'
+      + '<div class="list-item-body" style="display:flex;gap:12px;align-items:flex-start">'
+      + imgZone(c.image != null, c.image, '시술 사진 업로드', 'openImgPicker(\'case-' + c.id + '\')', true)
+      + '<div style="flex:1">'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+      + '<input type="text" value="' + c.desc.ko + '" placeholder="설명 (시술·연령·다운타임 등)" style="padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
+      + '<input type="text" value="' + (getTrans(c.desc).text||'') + '" placeholder="' + getLangLabel() + '" style="padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
+      + '</div>'
+      + '</div></div></div>';
+  }).join('');
+
+  return '<div class="edit-panel-head">'
+    + '<div class="ep-title">📸 REAL CASES</div>'
+    + '<div class="ep-actions">' + secChip(d.status)
+    + '<button class="btn" style="font-size:12px" onclick="addCase()">+ 케이스 추가</button>'
+    + '</div></div>'
+    + '<div class="no-image-banner">⚠ <strong>이미지 없음 — 관리자 직접 등록 필요.</strong>&nbsp; AI 이미지 생성은 이 섹션에서 금지됩니다.</div>'
+    + '<div style="padding:14px 20px">' + items + '</div>'
+    + '<div class="save-bar"><span class="save-info">자동 저장됨</span>'
+    + '<button class="btn btn-primary" onclick="saveSection(\'cases\')">저장</button></div>';
+};
+
+/* ── 06. REAL REVIEWS ───────────────────────────────────────── */
+RENDERERS.reviews = function(d) {
+  var items = d.items.map(function(r, i) {
+    var stars = '★'.repeat(r.rating) + '☆'.repeat(5-r.rating);
+    return '<div class="list-item" style="margin-bottom:8px">'
+      + '<div class="list-item-head">'
+      + '<span style="font-size:12px;color:#F59E0B">' + stars + '</span>'
+      + '<span style="flex:1;font-size:12px;color:var(--s500)">' + r.from + '</span>'
+      + '<button onclick="deleteReview(' + r.id + ')" style="background:none;border:none;color:var(--s400);cursor:pointer;font-size:14px">✕</button>'
+      + '</div>'
+      + '<div class="list-item-body" style="display:flex;gap:12px;align-items:flex-start">'
+      + imgZone(r.image != null, r.image, '후기 사진 업로드', 'openImgPicker(\'rev-' + r.id + '\')', true)
+      + '<div style="flex:1">'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px">'
+      + '<textarea rows="3" placeholder="후기 텍스트" style="width:100%;padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit;resize:vertical">' + r.text.ko + '</textarea>'
+      + '<textarea rows="3" placeholder="' + getLangLabel() + '" style="width:100%;padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit;resize:vertical">' + (getTrans(r.text).text||'') + '</textarea>'
+      + '</div>'
+      + '<div style="display:flex;align-items:center;gap:8px">'
+      + '<span style="font-size:12px;color:var(--s500)">별점:</span>'
+      + '<select style="padding:3px 8px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
+      + [5,4,3,2,1].map(function(n){ return '<option' + (n===r.rating?' selected':'') + '>' + n + '점</option>'; }).join('')
+      + '</select>'
+      + '<span style="font-size:12px;color:var(--s500)">출처:</span>'
+      + '<input type="text" value="' + r.from + '" style="flex:1;padding:3px 8px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
+      + '</div></div></div></div>';
+  }).join('');
+
+  return '<div class="edit-panel-head">'
+    + '<div class="ep-title">⭐ REAL REVIEWS</div>'
+    + '<div class="ep-actions">' + secChip(d.status)
+    + '<button class="btn" style="font-size:12px" onclick="addReview()">+ 후기 추가</button>'
+    + '</div></div>'
+    + '<div class="no-image-banner">⚠ <strong>이미지 없음 — 관리자 직접 등록 필요.</strong>&nbsp; AI 이미지 생성은 이 섹션에서 금지됩니다.</div>'
+    + '<div style="padding:14px 20px">' + items + '</div>'
+    + '<div class="save-bar"><span class="save-info">자동 저장됨</span>'
+    + '<button class="btn btn-primary" onclick="saveSection(\'reviews\')">저장</button></div>';
+};
+
+/* ── 07. FAQ ─────────────────────────────────────────────────── */
+RENDERERS.faq = function(d) {
+  var items = d.items.map(function(item, i) {
+    return '<div class="list-item" style="margin-bottom:8px">'
+      + '<div class="list-item-head">'
+      + '<span style="font-size:11px;font-weight:700;color:var(--s400);min-width:20px">Q' + item.order + '</span>'
+      + '<span style="flex:1;font-size:12px;color:var(--s700)">' + item.q.ko + '</span>'
+      + transChip(getTrans(item.q).ts)
+      + '<div class="order-btns"><button class="order-btn">↑</button><button class="order-btn">↓</button></div>'
+      + '<button onclick="deleteFaq(' + item.id + ')" style="background:none;border:none;color:var(--s400);cursor:pointer;font-size:14px">✕</button>'
+      + '</div>'
+      + '<div class="faq-qa">'
+      + '<div><div class="faq-label">Q — 질문</div>'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+      + '<textarea class="faq-input" rows="2" placeholder="한국어 질문">' + item.q.ko + '</textarea>'
+      + '<textarea class="faq-input" rows="2" placeholder="' + getLangLabel() + '">' + (getTrans(item.q).text||'') + '</textarea>'
+      + '</div></div>'
+      + '<div><div class="faq-label">A — 답변</div>'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+      + '<textarea class="faq-input" rows="2" placeholder="한국어 답변">' + item.a.ko + '</textarea>'
+      + '<textarea class="faq-input" rows="2" placeholder="' + getLangLabel() + '">' + (getTrans(item.a).text||'') + '</textarea>'
+      + '</div></div>'
+      + '</div></div>';
+  }).join('');
+
+  return '<div class="edit-panel-head">'
+    + '<div class="ep-title">❓ FAQ</div>'
+    + '<div class="ep-actions">' + secChip(d.status)
+    + '<button class="btn" style="font-size:12px" onclick="addFaq()">+ Q/A 추가</button>'
+    + '</div></div>'
+    + '<div style="padding:14px 20px">' + items + '</div>'
+    + '<div class="save-bar"><span class="save-info">자동 저장됨</span>'
+    + '<button class="btn btn-primary" onclick="saveSection(\'faq\')">저장</button></div>';
+};
+
+/* ── 08. 서비스 보장 ────────────────────────────────────────── */
+RENDERERS.guarantee = function(d) {
+  var items = d.items.map(function(item) {
+    return '<div class="list-item" style="margin-bottom:8px">'
+      + '<div class="list-item-head">'
+      + '<span style="font-size:18px">' + item.icon + '</span>'
+      + '<span style="flex:1;font-size:13px;font-weight:600;color:var(--navy)">' + item.title.ko + '</span>'
+      + '<div class="tog-sw ' + (item.visible ? 'on' : 'off') + '" onclick="toggleGuarantee(' + item.id + ',this)" style="margin-right:4px"></div>'
+      + '<span style="font-size:11px;color:var(--s500)">' + (item.visible ? '노출' : '비노출') + '</span>'
+      + '</div>'
+      + '<div class="list-item-body">'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px">'
+      + '<input type="text" value="' + item.title.ko + '" placeholder="항목명" style="padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
+      + '<input type="text" value="' + (getTrans(item.title).text||'') + '" placeholder="' + getLangLabel() + '" style="padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
+      + '</div>'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+      + '<input type="text" value="' + item.desc.ko + '" placeholder="설명" style="padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
+      + '<input type="text" value="' + (getTrans(item.desc).text||'') + '" placeholder="' + getLangLabel() + '" style="padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
+      + '</div>'
+      + '</div></div>';
+  }).join('');
+
+  return '<div class="edit-panel-head">'
+    + '<div class="ep-title">🛡 서비스 보장</div>'
+    + '<div class="ep-actions">' + secChip(d.status) + '</div></div>'
+    + '<div style="padding:14px 20px">' + items + '</div>'
+    + '<div class="save-bar"><span class="save-info">자동 저장됨</span>'
+    + '<button class="btn btn-primary" onclick="saveSection(\'guarantee\')">저장</button></div>';
+};
+
+/* ── 09. 무료 상담 시작 ─────────────────────────────────────── */
+RENDERERS.consult = function(d) {
+  var cards = d.channels.map(function(ch) {
+    var extra = '';
+    if (ch.id === 'line') {
+      extra = '<div style="margin-top:8px;padding:8px 10px;background:var(--s50);border-radius:var(--r);font-size:11px;color:var(--s600)">'
+        + '<div style="font-weight:600;margin-bottom:4px">LINE 프리필 메시지 (DECISION GUIDE 선택 시 자동 전달)</div>'
+        + '<code style="font-size:10px;color:var(--navy)">https://line.me/ti/p/~{OAid}?text={불안요소+추천의사}</code>'
+        + '<div style="margin-top:4px;color:var(--s400)">TODO: OA ID 등록 후 실제 연동 처리</div>'
+        + '</div>';
+    }
+    if (ch.id === 'ippeo') {
+      extra = '<div style="margin-top:8px">'
+        + '<div style="font-size:11px;font-weight:600;color:var(--s500);margin-bottom:4px">앱 안내 팝업 문구</div>'
+        + '<input type="text" value="' + (ch.popupMsg||'') + '" style="width:100%;padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
+        + '</div>';
+    }
+    return '<div class="channel-card">'
+      + '<div class="channel-head">'
+      + '<span class="channel-icon">' + ch.icon + '</span>'
+      + '<span class="channel-name">' + ch.name + '</span>'
+      + '<div class="tog-sw ' + (ch.active ? 'on' : 'off') + '" onclick="toggleChannel(\'' + ch.id + '\',this)"></div>'
+      + '<span style="font-size:11px;color:var(--s500);margin-left:6px">' + (ch.active ? '활성' : '비활성') + '</span>'
+      + '</div>'
+      + '<div style="display:flex;align-items:center;gap:8px">'
+      + '<span style="font-size:12px;color:var(--s500);white-space:nowrap">링크:</span>'
+      + '<input type="url" value="' + (ch.link||'') + '" placeholder="채널 URL" style="flex:1;padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
+      + '</div>'
+      + extra
       + '</div>';
   }).join('');
-}
 
-/* ── 이미지 삭제 ────────────────────────────────────────────── */
-function removeImage(idx) {
-  var images;
-  if (curSecType === 'treatment-detail') {
-    var t = TREATMENTS.find(function(x){ return x.id === curSec; });
-    images = t ? t.detail.images : null;
-  } else {
-    images = SITE_SECTIONS[curSec] ? SITE_SECTIONS[curSec].images : null;
-  }
-  if (!images) return;
-  images.splice(idx, 1);
-  renderImages(images);
-}
+  return '<div class="edit-panel-head">'
+    + '<div class="ep-title">💬 무료 상담 시작</div>'
+    + '<div class="ep-actions">' + secChip(d.status) + '</div></div>'
+    + '<div style="padding:14px 20px">' + cards + '</div>'
+    + '<div class="save-bar"><span class="save-info">자동 저장됨</span>'
+    + '<button class="btn btn-primary" onclick="saveSection(\'consult\')">저장</button></div>';
+};
 
-/* ── 이미지 피커 열기 ───────────────────────────────────────── */
-function openImagePicker() {
-  _pickerSelected = [];
+/* ── 10. 푸터 ────────────────────────────────────────────────── */
+RENDERERS.footer = function(d) {
+  var sns = d.sns.map(function(ch) {
+    return '<div class="tog-row">'
+      + '<span style="font-size:16px;margin-right:4px">' + ch.icon + '</span>'
+      + '<div class="tog-info"><div class="tog-title">' + ch.name + '</div></div>'
+      + '<input type="url" value="' + (ch.link||'') + '" placeholder="URL" style="flex:1;padding:5px 8px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit;margin-right:8px">'
+      + '<div class="tog-sw ' + (ch.active ? 'on' : 'off') + '" onclick="this.classList.toggle(\'on\');this.classList.toggle(\'off\')"></div>'
+      + '</div>';
+  }).join('');
+
+  var legal = d.legal.map(function(item) {
+    return '<div class="tog-row">'
+      + '<div class="tog-sw ' + (item.active ? 'on' : 'off') + '" onclick="this.classList.toggle(\'on\');this.classList.toggle(\'off\')"></div>'
+      + '<div class="tog-info"><div class="tog-title">' + item.title + '</div></div>'
+      + '<button class="btn" style="font-size:11px;padding:3px 8px" onclick="editLegal(\'' + item.id + '\')">편집</button>'
+      + '</div>';
+  }).join('');
+
+  var sitemap = d.sitemap.map(function(col) {
+    return '<div style="flex:1">'
+      + col.links.map(function(link, i) {
+          return '<div style="display:flex;align-items:center;gap:4px;margin-bottom:4px">'
+            + '<input type="text" value="' + link + '" style="flex:1;padding:4px 8px;border:1px solid var(--s200);border-radius:4px;font-size:12px;font-family:inherit">'
+            + '<button style="background:none;border:none;color:var(--s400);cursor:pointer">✕</button>'
+            + '</div>';
+        }).join('')
+      + '<button style="font-size:11px;color:var(--blue);background:none;border:none;cursor:pointer;padding:4px 0">+ 링크 추가</button>'
+      + '</div>';
+  }).join('');
+
+  return '<div class="edit-panel-head">'
+    + '<div class="ep-title">📌 푸터</div>'
+    + '<div class="ep-actions">' + secChip(d.status) + '</div></div>'
+    + '<div style="padding:14px 20px;border-top:1px solid var(--s100)">'
+    + '<div style="font-size:11px;font-weight:700;color:var(--s400);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">SNS 채널</div>'
+    + '<div style="background:#fff;border:1px solid var(--s200);border-radius:var(--r);padding:0 14px">' + sns + '</div>'
+    + '</div>'
+    + '<div style="padding:0 20px 14px">'
+    + '<div style="font-size:11px;font-weight:700;color:var(--s400);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">사이트맵</div>'
+    + '<div style="display:flex;gap:16px">' + sitemap + '</div>'
+    + '</div>'
+    + '<div style="padding:0 20px 14px">'
+    + '<div style="font-size:11px;font-weight:700;color:var(--s400);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">법적 정보 (노출 2개 권장)</div>'
+    + '<div style="background:#fff;border:1px solid var(--s200);border-radius:var(--r);padding:0 14px">' + legal + '</div>'
+    + '</div>'
+    + '<div class="save-bar"><span class="save-info">자동 저장됨</span>'
+    + '<button class="btn btn-primary" onclick="saveSection(\'footer\')">저장</button></div>';
+};
+
+/* ── CRUD 더미 핸들러 ────────────────────────────────────────── */
+function saveSection(id)        { showToast('✓ 저장되었습니다.', 'success'); }
+function publishAll()           { openModal('🚀 발행', '현재 콘텐츠를 사이트에 반영합니다.', function(){ showToast('🚀 발행 완료!', 'success'); }, '발행하기', 'btn-primary'); }
+function tempSave()             { showToast('✓ 임시 저장되었습니다.', 'success'); }
+function addDecisionItem()      { showToast('항목 추가됨 (TODO)', ''); }
+function deleteDecisionItem(id) { showToast('삭제됨 (TODO)', ''); }
+function addDoctor()            { showToast('의사 추가됨 (TODO)', ''); }
+function deleteDoctor(id)       { showToast('삭제됨 (TODO)', ''); }
+function toggleDoctorSection(el){ el.classList.toggle('on'); el.classList.toggle('off'); }
+function addTreatment()         { showToast('시술 추가됨 (TODO)', ''); }
+function deleteTreatment(id)    { showToast('삭제됨 (TODO)', ''); }
+function addCase()              { showToast('케이스 추가됨 (TODO)', ''); }
+function deleteCase(id)         { showToast('삭제됨 (TODO)', ''); }
+function addReview()            { showToast('후기 추가됨 (TODO)', ''); }
+function deleteReview(id)       { showToast('삭제됨 (TODO)', ''); }
+function addFaq()               { showToast('Q/A 추가됨 (TODO)', ''); }
+function deleteFaq(id)          { showToast('삭제됨 (TODO)', ''); }
+function toggleGuarantee(id,el) { el.classList.toggle('on'); el.classList.toggle('off'); }
+function toggleChannel(id,el)   { el.classList.toggle('on'); el.classList.toggle('off'); }
+function editLegal(id)          { showToast('약관 편집 (TODO)', ''); }
+
+/* ── 이미지 피커 ─────────────────────────────────────────────── */
+function openImgPicker(ctx) {
+  _imgPickerCb  = ctx;
+  _imgPickerSel = [];
   var modal = document.getElementById('img-picker-modal');
-  if (!modal) return;
-  modal.style.display = 'flex';
-  renderPickerGrid();
+  if (modal) modal.style.display = 'flex';
+  renderImgPickerGrid();
 }
-
-function closeImagePicker() {
+function closeImgPicker() {
   var modal = document.getElementById('img-picker-modal');
   if (modal) modal.style.display = 'none';
-  _pickerSelected = [];
+  _imgPickerSel = [];
 }
-
-function renderPickerGrid() {
+function renderImgPickerGrid() {
   var grid = document.getElementById('img-picker-grid');
   if (!grid || typeof SITE_ASSETS === 'undefined') return;
-  var allAssets = []
-    .concat(SITE_ASSETS.ba      || [])
-    .concat(SITE_ASSETS.doctor  || [])
-    .concat(SITE_ASSETS.facility|| []);
-  grid.innerHTML = allAssets.map(function(a, i) {
-    var isSelected = _pickerSelected.indexOf(i) > -1;
-    return '<div onclick="togglePickerItem(this,' + i + ')" style="border:2px solid ' + (isSelected ? 'var(--blue)' : 'var(--gray-200)') + ';border-radius:8px;overflow:hidden;cursor:pointer;background:' + (isSelected ? 'var(--blue-l)' : '#fff') + ';transition:all .1s;position:relative">'
-      + (isSelected ? '<div style="position:absolute;top:5px;right:5px;width:18px;height:18px;border-radius:50%;background:var(--blue);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center">✓</div>' : '')
-      + '<div style="height:72px;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:28px">' + a.em + '</div>'
-      + '<div style="padding:5px 7px">'
-      + (a.badge ? '<span style="font-size:9px;background:#EDE9FE;color:#4C1D95;padding:1px 5px;border-radius:3px;display:inline-block;margin-bottom:2px">' + a.badge + '</span>' : '')
-      + '<div style="font-size:10px;color:var(--gray-700);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + a.lb + '</div>'
-      + '<div style="font-size:9px;color:var(--gray-400)">' + a.sz + '</div>'
-      + '</div></div>';
+  var all = [].concat(SITE_ASSETS.ba||[]).concat(SITE_ASSETS.doctor||[]).concat(SITE_ASSETS.facility||[]);
+  grid.innerHTML = all.map(function(a, i) {
+    var sel = _imgPickerSel.indexOf(i) > -1;
+    return '<div onclick="toggleImgPick(this,' + i + ')" style="border:2px solid ' + (sel?'var(--navy)':'var(--s200)') + ';border-radius:8px;overflow:hidden;cursor:pointer;background:' + (sel?'var(--navy-l)':'#fff') + '">'
+      + (sel ? '<div style="position:absolute;top:5px;right:5px;width:16px;height:16px;border-radius:50%;background:var(--navy);color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center">✓</div>' : '')
+      + '<div style="height:64px;background:var(--s100);display:flex;align-items:center;justify-content:center;font-size:26px">' + a.em + '</div>'
+      + '<div style="padding:4px 6px"><div style="font-size:10px;color:var(--s700);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + a.lb + '</div></div>'
+      + '</div>';
   }).join('');
-  updatePickerCount();
 }
-
-function togglePickerItem(el, idx) {
-  var pos = _pickerSelected.indexOf(idx);
-  if (pos > -1) _pickerSelected.splice(pos, 1);
-  else _pickerSelected.push(idx);
-  renderPickerGrid();
+function toggleImgPick(el, idx) {
+  var pos = _imgPickerSel.indexOf(idx);
+  if (pos > -1) _imgPickerSel.splice(pos, 1); else _imgPickerSel.push(idx);
+  renderImgPickerGrid();
+  var ct = document.getElementById('img-picker-count');
+  if (ct) ct.textContent = _imgPickerSel.length > 0 ? _imgPickerSel.length + '개 선택됨' : '선택 없음';
 }
-
-function updatePickerCount() {
-  var el = document.getElementById('img-picker-count');
-  if (!el) return;
-  el.textContent = _pickerSelected.length > 0
-    ? _pickerSelected.length + '개 선택됨'
-    : '선택된 이미지 없음';
+function confirmImgPick() {
+  showToast('✓ ' + (_imgPickerSel.length||0) + '개 이미지 선택 완료 (TODO: 실제 반영)', 'success');
+  closeImgPicker();
 }
-
-function confirmImageSelection() {
-  if (_pickerSelected.length === 0) { closeImagePicker(); return; }
-  var allAssets = []
-    .concat(SITE_ASSETS.ba      || [])
-    .concat(SITE_ASSETS.doctor  || [])
-    .concat(SITE_ASSETS.facility|| []);
-  var s;
-  if (curSecType === 'treatment-detail') {
-    var t = TREATMENTS.find(function(x){ return x.id === curSec; });
-    s = t ? t.detail : null;
-  } else { s = SITE_SECTIONS[curSec]; }
-  if (!s) { closeImagePicker(); return; }
-  if (!s.images) s.images = [];
-  _pickerSelected.forEach(function(i) {
-    var asset = allAssets[i];
-    if (asset) s.images.push({ lb: asset.lb, sz: asset.sz, em: asset.em, badge: asset.badge || '' });
-  });
-  renderImages(s.images);
-  closeImagePicker();
-  showToast('✓ ' + _pickerSelected.length + '개 이미지가 추가되었습니다.', 'success');
-}
-
-function triggerImgUpload() {
-  var input = document.getElementById('img-upload-input');
-  if (input) input.click();
-}
-
-function handleImgUpload(input) {
-  if (!input.files || !input.files.length) return;
-  var s;
-  if (curSecType === 'treatment-detail') {
-    var t = TREATMENTS.find(function(x){ return x.id === curSec; });
-    s = t ? t.detail : null;
-  } else { s = SITE_SECTIONS[curSec]; }
-  if (!s) return;
-  if (!s.images) s.images = [];
-  Array.from(input.files).forEach(function(f) {
-    s.images.push({ lb: f.name, sz: (f.size/1024 < 1024 ? Math.round(f.size/1024)+'KB' : (f.size/1048576).toFixed(1)+'MB'), em: '🖼', badge: '' });
-  });
-  renderImages(s.images);
-  closeImagePicker();
-  showToast('✓ ' + input.files.length + '개 파일이 업로드되었습니다.', 'success');
-  input.value = '';
-}
-
-/* ── 저장 ─────────────────────────────────────────────────────── */
-function saveSection() {
-  var now = new Date();
-  var timeStr = '오늘 ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
-  if (curSecType === 'treatment-item') {
-    var t = TREATMENTS.find(function(x){ return x.id === curSec; });
-    if (t) { t.menuJa = document.getElementById('ja-text').value; t.menuSavedAt = timeStr; }
-  } else if (curSecType === 'treatment-detail') {
-    var t = TREATMENTS.find(function(x){ return x.id === curSec; });
-    if (t) { t.detail.ja = document.getElementById('ja-text').value; t.detail.savedAt = timeStr; }
-  } else {
-    SITE_SECTIONS[curSec].ja      = document.getElementById('ja-text').value;
-    SITE_SECTIONS[curSec].savedAt = timeStr;
-  }
-  document.getElementById('save-info').textContent = '마지막 저장: ' + timeStr;
-  document.getElementById('compliance-area').innerHTML =
-    '<div class="compliance-banner cb-ok"><span>✓</span> 저장되었습니다.</div>';
-  setTimeout(function(){ document.getElementById('compliance-area').innerHTML = ''; }, 2000);
-}
-
-/* ── 🔍 전체 컴플라이언스 검사 (Gemini — 모든 섹션 순차 검사) ──
-   각 섹션의 일본어 텍스트를 Gemini로 검사하고 결과를 SITE_SECTIONS에 반영
-────────────────────────────────────────────────────────────────── */
-function startComplianceCheck() {
-  if (typeof showToast === 'function') showToast('🔍 전체 컴플라이언스 검사 시작 (12개 섹션)...', '');
-  var keys = Object.keys(SITE_SECTIONS);
-  var idx  = 0;
-  var violationCount = 0;
-  var grayCount = 0;
-
-  function checkNext() {
-    if (idx >= keys.length) {
-      // 전체 완료
-      updateComplianceCount();
-      var msg = violationCount > 0
-        ? '⚠ 검사 완료 — 위반 ' + violationCount + '건, 회색지대 ' + grayCount + '건'
-        : '✓ 전체 컴플라이언스 통과';
-      if (typeof showToast === 'function') showToast(msg, violationCount > 0 ? 'error' : 'success');
-      // 현재 섹션 결과 반영
-      renderCompliance(SITE_SECTIONS[curSec].compliance);
-      return;
-    }
-    var key = keys[idx++];
-    var s   = SITE_SECTIONS[key];
-    if (!s.ja || !s.ja.trim()) { checkNext(); return; }
-
-    var prompt = '일본 의료광고 컴플라이언스 검토.\n'
-      + '섹션: ' + s.title + '\n텍스트: ' + s.ja.slice(0, 200) + '\n\n'
-      + '위반(효과보장/비교우위/과장광고) 또는 회색지대 여부.\n'
-      + 'JSON만 반환: {"pass":true/false,"violations":[{"expr":"...","alt":"..."}],"grays":[{"expr":"...","reason":"..."}]}';
-
-    callGemini(prompt, function(err, result) {
-      if (!err && result) {
-        try {
-          var d = safeParseJSON(result);
-          if (d.violations && d.violations.length > 0) {
-            SITE_SECTIONS[key].compliance = { type:'error', expr:'「' + d.violations[0].expr + '」', alt: d.violations[0].alt || '' };
-            violationCount++;
-          } else if (d.grays && d.grays.length > 0) {
-            SITE_SECTIONS[key].compliance = { type:'warn', expr:'「' + d.grays[0].expr + '」', alt: d.grays[0].reason || '' };
-            grayCount++;
-          } else {
-            SITE_SECTIONS[key].compliance = null;
-          }
-        } catch(e) {
-          SITE_SECTIONS[key].compliance = null;
-        }
-      }
-      checkNext();
-    });
-  }
-  checkNext();
-}
-
-/* ── 💾 임시 저장 ────────────────────────────────────────────── */
-function tempSave() {
-  try {
-    var now = new Date();
-    var timeStr = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
-    sessionStorage.setItem('site_content_draft', JSON.stringify({
-      sections: SITE_SECTIONS,
-      savedAt: '오늘 ' + timeStr,
-      curSec: curSec
-    }));
-    showToast('✓ 임시 저장되었습니다.', 'success');
-  } catch(e) {
-    showToast('임시 저장에 실패했습니다.', 'error');
+function triggerImgUpload() { document.getElementById('img-upload-input').click(); }
+function handleImgUpload(inp) {
+  if (inp.files && inp.files.length) {
+    showToast('✓ ' + inp.files.length + '개 업로드 완료 (TODO)', 'success');
+    closeImgPicker();
+    inp.value = '';
   }
 }
 
-/* ── 🚀 게시 확인 ────────────────────────────────────────────── */
-function confirmPublish() {
-  var pendingSecs = Object.keys(SITE_SECTIONS).filter(function(k) {
-    return SITE_SECTIONS[k].status === 'warn' || SITE_SECTIONS[k].status === 'error';
-  });
-  var body = '현재 콘텐츠를 일본어 사이트에 배포합니다.';
-  if (pendingSecs.length > 0) {
-    body += '<br><br><span style="color:#D97706;font-weight:600">⚠ 미완료 섹션 ' + pendingSecs.length + '개:</span><br>'
-      + pendingSecs.map(function(k){ return '· ' + SITE_SECTIONS[k].title; }).join('<br>');
-  }
-  if (typeof openModal === 'function') {
-    openModal('🚀 게시하기', body, function() {
-      showToast('✓ 배포가 시작되었습니다.', 'success');
-      setTimeout(function(){ location.href = 'hospital_site_preview.html'; }, 1200);
-    }, '게시하기', 'btn-navy');
-  }
-}
-
-/* ── ↩ 버전 롤백 ─────────────────────────────────────────────
-   _siteVersions: 페이지 로드 시 섹션별 원본을 스냅샷으로 보관
-   v2 = 현재 site-data.js 저장값 (김지현 수정 이전)
-   v1 = 텍스트 앞 60% + 마침표 (최초 AI 생성 시뮬레이션)
-──────────────────────────────────────────────────────────────── */
-var _siteVersions = {};
-function initVersionSnapshots() {
-  Object.keys(SITE_SECTIONS).forEach(function(k) {
-    var ja = SITE_SECTIONS[k].ja || '';
-    _siteVersions[k] = {
-      v2: ja,
-      v1: ja.slice(0, Math.floor(ja.length * 0.65)) + (ja.length > 20 ? '。' : '')
-    };
-  });
-}
-
-function rollbackVersion(v) {
-  var labels = { v2:'어제 10:05 (김지현 수정)', v1:'5월 18일 (최초 AI 생성)' };
-  if (typeof openModal !== 'function') return;
-  openModal('↩ 버전 롤백',
-    '"' + labels[v] + '" 버전으로 되돌리겠습니까?<br>현재 편집 중인 내용은 사라집니다.',
-    function() {
-      var restored = (_siteVersions[curSec] && _siteVersions[curSec][v]) || SITE_SECTIONS[curSec].ja;
-      var jaEl = document.getElementById('ja-text');
-      if (!jaEl) return;
-      jaEl.value = restored;
-      jaEl.style.background  = '#FFF9C4';
-      setTimeout(function(){ jaEl.style.background = ''; }, 1200);
-      var saveInfo = document.getElementById('save-info');
-      if (saveInfo) saveInfo.textContent = '마지막 저장: ' + (v === 'v2' ? '어제 10:05' : '5월 18일');
-      showToast('✓ ' + (v === 'v2' ? 'v2' : 'v1') + '로 롤백되었습니다.', 'success');
-    }, '롤백', 'btn-warning');
-}
-
-/* ── 임시저장 복원 배너 ──────────────────────────────────────── */
-function checkAndShowDraftBanner() {
-  var draft = null;
-  try { draft = JSON.parse(sessionStorage.getItem('site_content_draft')); } catch(e) {}
-  if (!draft || !draft.sections) return;
-  var content = document.querySelector('.content');
-  if (!content) return;
-  var banner = document.createElement('div');
-  banner.id = '__draft-banner';
-  banner.style.cssText = 'background:#FEF3C7;border:1px solid #FCD34D;border-radius:var(--r);padding:10px 16px;font-size:12px;color:#92400E;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px';
-  banner.innerHTML = '📂 임시 저장된 콘텐츠가 있습니다 (' + draft.savedAt + ')&nbsp;&nbsp;'
-    + '<div style="display:flex;gap:6px">'
-    + '<button class="btn" style="font-size:12px;background:#F59E0B;color:#fff;border-color:#F59E0B" onclick="restoreDraft()">복원</button>'
-    + '<button class="btn" style="font-size:12px" onclick="document.getElementById(\'__draft-banner\').remove()">무시</button>'
-    + '</div>';
-  content.insertBefore(banner, content.firstChild);
-}
-
-function restoreDraft() {
-  var draft = null;
-  try { draft = JSON.parse(sessionStorage.getItem('site_content_draft')); } catch(e) {}
-  if (!draft || !draft.sections) return;
-  Object.keys(draft.sections).forEach(function(k) {
-    if (SITE_SECTIONS[k]) SITE_SECTIONS[k].ja = draft.sections[k].ja;
-  });
-  var activeItem = document.querySelector('.section-item.active');
-  if (activeItem) selectSection(curSec, activeItem);
-  var banner = document.getElementById('__draft-banner');
-  if (banner) banner.remove();
-  showToast('✓ 임시 저장 콘텐츠가 복원되었습니다.', 'success');
-}
-
-/* ── 초기화 ───────────────────────────────────────────────────── */
-renderCompliance(null);
-renderKPI();
-updateComplianceCount();
-initVersionSnapshots();
-renderTreatmentDetailList();
-// 첫 섹션 로드
-(function() {
-  var firstItem = document.querySelector('.section-item.active');
-  if (firstItem) selectSection('hero', firstItem);
-})();
-// 임시저장 복원 배너 (DOMContentLoaded 이후)
-document.addEventListener('DOMContentLoaded', checkAndShowDraftBanner);
+/* ── 초기화 ─────────────────────────────────────────────────── */
+renderSectionList();
+renderLangDropdown();
+updateTransSummary();
+selectSection('hero');
