@@ -47,7 +47,7 @@ function handleUpload(input) {
     updateAssetSummary();
     setTimeout(function() {
       zone.innerHTML = '<div class="uz-icon">📁</div>'
-        + '<div class="uz-title">사진을 드래그하거나 클릭하여 업로드</div>'
+        + '<div class="uz-title">사진 또는 이미지를 드래그하거나 클릭하여 업로드</div>'
         + '<div class="uz-sub">PNG, JPG, WebP · 최대 10MB · AI가 자동 분류</div>';
     }, 2500);
   }, 2000);
