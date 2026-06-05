@@ -191,7 +191,7 @@ var MOCK_SEC_CONSULT = {
   channels: [
     { id:'line',      icon:'💚', name:'LINE',      active:true,  link:'https://line.me/ti/p/~@oleps',       lineOAId:'@oleps' },
     { id:'instagram', icon:'🟣', name:'Instagram', active:true,  link:'https://instagram.com/oleps_ps',     lineOAId:null },
-    { id:'MEDIFLOW',     icon:'🔵', name:'MEDIFLOW',       active:true,  link:'https://MEDIFLOW.io/oleps',             lineOAId:null,
+    { id:'MEDIFLOW',     icon:'🩷', name:'IPPEO',       active:true,  link:'https://ippeo.io/oleps',             lineOAId:null,
       popupMsg:'화상 상담 전용 앱 설치가 필요합니다. 이동하시겠어요?' },
   ],
 };

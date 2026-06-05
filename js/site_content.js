@@ -550,7 +550,7 @@ RENDERERS.consult = function(d) {
     }
     if (ch.id === 'MEDIFLOW') {
       extra = '<div style="margin-top:8px">'
-        + '<div style="font-size:11px;font-weight:600;color:var(--s500);margin-bottom:4px">앱 안내 팝업 문구</div>'
+        + '<div style="font-size:11px;font-weight:600;color:var(--s500);margin-bottom:4px">IPPEO 앱 안내 팝업 문구</div>'
         + '<input type="text" value="' + (ch.popupMsg||'') + '" style="width:100%;padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
         + '</div>';
     }
