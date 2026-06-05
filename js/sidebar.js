@@ -26,8 +26,8 @@ function doLogout() {
     {t:'a',k:'booking',  hr:p+'hospital_crm_booking.html', ic:'📅',lb:'예약 관리'},
     {t:'a',k:'line',    hr:p+'hospital_line_auto.html',  ic:'🤖',lb:'LINE 자동상담',bg:'ON',tl:true},
     {t:'s',lb:'설정'},
-    {t:'a',k:'marketing',hr:p+'hospital_marketing.html', ic:'📣',lb:'마케팅 전략'},
-    {t:'a',k:'funnel',   hr:p+'hospital_funnel.html',   ic:'⚡',lb:'퍼널·자동화'},
+    {t:'a',k:'marketing',hr:p+'hospital_marketing.html', ic:'📣',lb:'마케팅 현황'},
+    {t:'a',k:'funnel',   hr:p+'hospital_funnel.html',   ic:'⚡',lb:'채널 & 자동 발송'},
     {t:'a',k:'reports',  hr:p+'hospital_reports.html',  ic:'📊',lb:'리포트'},
     {t:'a',k:'settings', hr:p+'hospital_settings.html', ic:'⚙', lb:'설정'},
     {t:'f'}

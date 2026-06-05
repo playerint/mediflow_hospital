@@ -1,4 +1,4 @@
-/* ================================================================
+﻿/* ================================================================
    site_content.js — 10개 섹션 콘텐츠 에디터
    데이터: mock-data-hospital.js (TODO: 실제 API로 교체)
    AI 재집필: gemini.js (callGemini)
@@ -376,18 +376,18 @@ RENDERERS.treatments = function(d) {
       + '<div style="flex:1">'
       + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">'
       + '<input type="text" value="' + t.name.ko + '" placeholder="시술명" style="padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
-      + '<input type="text" value="' + (getTrans(t.name).text||'') + '" placeholder="' + getLangLabel() + ' 시술명" style="padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
+      + '<input type="text" value="' + (getTrans(t.name).text||'') + '" placeholder="번역본 (' + getLangLabel() + ') 시술명" style="padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit;background:var(--s50)">'
       + '</div>'
       + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
       + '<input type="text" value="' + t.brief.ko + '" placeholder="가격·한줄 요약" style="padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
-      + '<input type="text" value="' + (getTrans(t.brief).text||'') + '" placeholder="' + getLangLabel() + '" style="padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
+      + '<input type="text" value="' + (getTrans(t.brief).text||'') + '" placeholder="번역본 (' + getLangLabel() + ')" style="padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit;background:var(--s50)">'
       + '</div>'
       + '</div></div>'
       + '<details style="border-top:1px solid var(--s100);padding-top:10px">'
       + '<summary style="font-size:12px;color:var(--blue);cursor:pointer;font-weight:500;list-style:none">📄 팝업 상세 내용 편집 ▸</summary>'
       + '<div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:10px">'
       + '<textarea rows="4" placeholder="한국어 상세" style="width:100%;padding:8px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit;resize:vertical">' + t.detail.ko + '</textarea>'
-      + '<textarea rows="4" placeholder="' + getLangLabel() + ' 상세" style="width:100%;padding:8px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit;resize:vertical">' + (getTrans(t.detail).text||'') + '</textarea>'
+      + '<textarea rows="4" placeholder="번역본 (' + getLangLabel() + ') 상세" style="width:100%;padding:8px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit;resize:vertical;background:var(--s50)">' + (getTrans(t.detail).text||'') + '</textarea>'
       + '</div></details>'
       + '</div></div>';
   }).join('');
@@ -418,7 +418,7 @@ RENDERERS.cases = function(d) {
       + '<div style="flex:1">'
       + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
       + '<input type="text" value="' + c.desc.ko + '" placeholder="설명 (시술·연령·다운타임 등)" style="padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
-      + '<input type="text" value="' + (getTrans(c.desc).text||'') + '" placeholder="' + getLangLabel() + '" style="padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
+      + '<input type="text" value="' + (getTrans(c.desc).text||'') + '" placeholder="번역본 (' + getLangLabel() + ')" style="padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit;background:var(--s50)">'
       + '</div>'
       + '</div></div></div>';
   }).join('');
@@ -448,12 +448,12 @@ RENDERERS.reviews = function(d) {
       + imgZone(r.image != null, r.image, '후기 사진 업로드', 'openImgPicker(\'rev-' + r.id + '\')', true)
       + '<div style="flex:1">'
       + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px">'
-      + '<textarea rows="3" placeholder="후기 텍스트" style="width:100%;padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit;resize:vertical">' + r.text.ko + '</textarea>'
-      + '<textarea rows="3" placeholder="' + getLangLabel() + '" style="width:100%;padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit;resize:vertical">' + (getTrans(r.text).text||'') + '</textarea>'
+      + '<textarea rows="3" placeholder="후기 텍스트 (한국어)" style="width:100%;padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit;resize:vertical">' + r.text.ko + '</textarea>'
+      + '<textarea rows="3" placeholder="번역본 (' + getLangLabel() + ')" style="width:100%;padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit;resize:vertical;background:var(--s50)">' + (getTrans(r.text).text||'') + '</textarea>'
       + '</div>'
       + '<div style="display:flex;align-items:center;gap:8px">'
       + '<span style="font-size:12px;color:var(--s500)">별점:</span>'
-      + '<select style="padding:3px 8px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
+      + '<select style="width:auto;padding:3px 8px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
       + [5,4,3,2,1].map(function(n){ return '<option' + (n===r.rating?' selected':'') + '>' + n + '점</option>'; }).join('')
       + '</select>'
       + '<span style="font-size:12px;color:var(--s500)">출처:</span>'
@@ -487,12 +487,12 @@ RENDERERS.faq = function(d) {
       + '<div><div class="faq-label">Q — 질문</div>'
       + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
       + '<textarea class="faq-input" rows="2" placeholder="한국어 질문">' + item.q.ko + '</textarea>'
-      + '<textarea class="faq-input" rows="2" placeholder="' + getLangLabel() + '">' + (getTrans(item.q).text||'') + '</textarea>'
+      + '<textarea class="faq-input" rows="2" placeholder="번역본 (' + getLangLabel() + ')" style="background:var(--s50)">' + (getTrans(item.q).text||'') + '</textarea>'
       + '</div></div>'
       + '<div><div class="faq-label">A — 답변</div>'
       + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
       + '<textarea class="faq-input" rows="2" placeholder="한국어 답변">' + item.a.ko + '</textarea>'
-      + '<textarea class="faq-input" rows="2" placeholder="' + getLangLabel() + '">' + (getTrans(item.a).text||'') + '</textarea>'
+      + '<textarea class="faq-input" rows="2" placeholder="번역본 (' + getLangLabel() + ')" style="background:var(--s50)">' + (getTrans(item.a).text||'') + '</textarea>'
       + '</div></div>'
       + '</div></div>';
   }).join('');
@@ -520,11 +520,11 @@ RENDERERS.guarantee = function(d) {
       + '<div class="list-item-body">'
       + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px">'
       + '<input type="text" value="' + item.title.ko + '" placeholder="항목명" style="padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
-      + '<input type="text" value="' + (getTrans(item.title).text||'') + '" placeholder="' + getLangLabel() + '" style="padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
+      + '<input type="text" value="' + (getTrans(item.title).text||'') + '" placeholder="번역본 (' + getLangLabel() + ')" style="padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit;background:var(--s50)">'
       + '</div>'
       + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
       + '<input type="text" value="' + item.desc.ko + '" placeholder="설명" style="padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
-      + '<input type="text" value="' + (getTrans(item.desc).text||'') + '" placeholder="' + getLangLabel() + '" style="padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'
+      + '<input type="text" value="' + (getTrans(item.desc).text||'') + '" placeholder="번역본 (' + getLangLabel() + ')" style="padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit;background:var(--s50)">'
       + '</div>'
       + '</div></div>';
   }).join('');
@@ -548,7 +548,7 @@ RENDERERS.consult = function(d) {
         + '<div style="margin-top:4px;color:var(--s400)">TODO: OA ID 등록 후 실제 연동 처리</div>'
         + '</div>';
     }
-    if (ch.id === 'ippeo') {
+    if (ch.id === 'MEDIFLOW') {
       extra = '<div style="margin-top:8px">'
         + '<div style="font-size:11px;font-weight:600;color:var(--s500);margin-bottom:4px">앱 안내 팝업 문구</div>'
         + '<input type="text" value="' + (ch.popupMsg||'') + '" style="width:100%;padding:6px 10px;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;font-family:inherit">'

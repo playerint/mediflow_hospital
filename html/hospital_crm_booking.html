@@ -39,6 +39,38 @@
 .table th:nth-child(4){width:140px;}.table th:nth-child(5){width:80px;}.table th:nth-child(6){width:130px;}
 .table th:nth-child(7){width:90px;}.table th:nth-child(8){width:70px;}.table th:nth-child(9){width:60px;}
 .badge{display:inline-flex;align-items:center;font-size:12px;padding:2px 8px;border-radius:6px;font-weight:500;}
+/* ── 예약 등록 모달 ── */
+.bk-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;display:flex;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto;}
+.bk-modal{background:#fff;border-radius:16px;width:100%;max-width:640px;max-height:90vh;margin:auto;box-shadow:0 20px 60px rgba(0,0,0,.25);display:flex;flex-direction:column;position:relative;}
+.bk-fade{position:absolute;left:0;right:0;bottom:62px;height:64px;background:linear-gradient(transparent,rgba(255,255,255,.97));pointer-events:none;transition:opacity .25s;border-radius:0 0 0 0;}
+.bk-modal-head{padding:20px 24px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.bk-modal-body{padding:20px 24px;overflow-y:auto;flex:1;}
+.bk-modal-foot{padding:16px 24px;border-top:1px solid var(--gray-100);display:flex;justify-content:flex-end;gap:8px;flex-shrink:0;}
+.bk-section{background:#fff;border:1px solid var(--s200);border-radius:var(--rl);padding:18px 20px;margin-bottom:14px;}
+.bk-section-title{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:16px;}
+.bk-grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.bk-field{margin-bottom:12px;}.bk-field:last-child{margin-bottom:0;}
+.bk-label{font-size:12px;font-weight:500;color:var(--gray-700);margin-bottom:5px;}
+.bk-input{width:100%;padding:8px 12px;border:1px solid var(--s200);border-radius:var(--r);font-size:13px;font-family:inherit;outline:none;color:var(--gray-700);background:#fff;}
+.bk-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.08);}
+.bk-select{width:100%;padding:8px 12px;border:1px solid var(--s200);border-radius:var(--r);font-size:13px;font-family:inherit;outline:none;color:var(--gray-700);background:#fff;}
+.bk-select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.08);}
+.bk-textarea{width:100%;padding:8px 12px;border:1px solid var(--s200);border-radius:var(--r);font-size:13px;font-family:inherit;outline:none;color:var(--gray-700);background:#fff;resize:vertical;line-height:1.6;}
+.bk-textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.08);}
+.bk-patient-wrap{position:relative;}
+.bk-patient-result{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--s200);border-radius:var(--r);box-shadow:0 4px 16px rgba(0,0,0,.08);z-index:10;margin-top:3px;display:none;}
+.bk-patient-item{display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;border-bottom:1px solid var(--s100);}
+.bk-patient-item:last-child{border-bottom:none;}
+.bk-patient-item:hover{background:var(--s50);}
+.bk-p-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;}
+.bk-sel-patient{display:none;align-items:center;gap:10px;padding:10px 12px;background:var(--navy-l);border:1px solid var(--blue);border-radius:var(--r);margin-top:6px;}
+.bk-time-slots{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:6px;}
+.bk-time-slot{padding:7px 4px;text-align:center;border:1px solid var(--s200);border-radius:var(--r);font-size:12px;cursor:pointer;color:var(--gray-600);transition:all .15s;background:#fff;}
+.bk-time-slot:hover{border-color:var(--blue);color:var(--blue);}
+.bk-time-slot.on{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:500;}
+.bk-time-slot.off{background:var(--s100);color:var(--s300);cursor:not-allowed;pointer-events:none;}
+.bk-send-check{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--s50);border-radius:var(--r);font-size:12px;color:var(--gray-700);cursor:pointer;}
+.bk-send-check input{width:14px;height:14px;accent-color:var(--navy);}
 </style>
 </head>
 <body>
@@ -52,7 +84,7 @@
     </div>
     <div class="topbar-right">
       <a class="btn" href="hospital_crm_inbox.html">← CRM 인박스</a>
-      <button class="btn btn-primary" onclick="location.href='hospital_crm_booking_new.html'">+ 예약 등록</button>
+      <button class="btn btn-primary" onclick="openBookingModal()">+ 예약 등록</button>
     </div>
   </div>
   <div class="content">

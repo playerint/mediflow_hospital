@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html lang="ko"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>마케팅 전략 — Hospital Site OS</title>
+<title>마케팅 현황 — Hospital Site OS</title>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet">
 <link rel="stylesheet" href="../css/common.css">
 <script src="../js/gate.js"></script>
@@ -34,11 +34,11 @@
     <div class="topbar-left">
       <a class="topbar-back" href="../index.html">← 대시보드</a>
       <span style="color:var(--gray-300)">/</span>
-      <span class="topbar-title">마케팅 전략</span>
+      <span class="topbar-title">마케팅 현황</span>
     </div>
     <div class="topbar-right">
       <span id="strategy-updated" style="font-size:12px;color:var(--gray-400)"></span>
-      <button class="btn" onclick="requestAIStrategy()">🤖 AI 전략 업데이트 요청</button>
+      <button class="btn" onclick="requestAIStrategy()">📋 AI 분석 리포트</button>
     </div>
   </div>
   <div class="content">
@@ -52,30 +52,36 @@
     <div class="mkt-grid">
       <!-- 전략 문서 -->
       <div class="card">
-        <div class="card-title" style="margin-bottom:12px">🎯 마케팅 전략</div>
+        <div class="card-title" style="margin-bottom:4px">🎯 마케팅 전략</div>
+        <div style="font-size:11px;color:var(--s400);margin-bottom:12px">MEDIFLOW가 설정한 타겟 고객·포지셔닝·핵심 메시지·주력 채널입니다.</div>
         <div id="strategy-doc"></div>
       </div>
 
       <!-- 경쟁사 분석 -->
       <div class="card">
-        <div class="card-title" style="margin-bottom:12px">🏆 경쟁사 분석</div>
+        <div class="card-title" style="margin-bottom:4px">🏆 경쟁사 분석</div>
+        <div style="font-size:11px;color:var(--s400);margin-bottom:12px">주요 경쟁 병원과의 강점·약점을 비교하고 우리 병원의 차별점을 확인합니다.</div>
         <div id="comp-list"></div>
       </div>
     </div>
 
     <!-- 키워드 -->
     <div class="card" style="margin-bottom:14px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <div class="card-title">🔑 타겟 키워드</div>
-        <button class="btn" style="font-size:12px;padding:3px 9px" onclick="addKeyword()">+ 추가</button>
+      <div style="margin-bottom:12px">
+        <div class="card-title" style="margin-bottom:4px">🔑 타겟 키워드</div>
+        <div style="font-size:11px;color:var(--s400)">Yahoo Japan에서 이 병원이 노출되길 목표로 하는 검색어입니다. 순위가 낮을수록 상위 노출 중입니다.</div>
       </div>
       <div style="margin-bottom:10px">
         <div style="font-size:12px;font-weight:600;color:var(--gray-400);margin-bottom:6px">메인 키워드</div>
         <div id="main-kws"></div>
       </div>
       <div>
-        <div style="font-size:12px;font-weight:600;color:var(--gray-400);margin-bottom:6px">롱테일 키워드</div>
+        <div style="font-size:12px;font-weight:600;color:var(--gray-400);margin-bottom:4px">롱테일 키워드</div>
+        <div style="font-size:11px;color:var(--s400);margin-bottom:6px">2~3개 단어 조합의 구체적인 검색어로, 전환율이 높은 잠재 환자를 타겟합니다.</div>
         <div id="longtail-kws"></div>
+      </div>
+      <div style="margin-top:12px;padding:10px 12px;background:var(--s50);border-radius:var(--r);font-size:12px;color:var(--s500)">
+        💬 키워드 변경이 필요하면 담당 매니저에게 문의하세요.
       </div>
     </div>
 
@@ -137,7 +143,7 @@ function renderCompetitors() {
       + '<div>강점: ' + c.strength + '</div>'
       + '<div>약점: ' + c.weakness + '</div>'
       + '</div>'
-      + '<div style="font-size:12px;color:var(--green);font-weight:500;text-align:right;flex-shrink:0;max-width:100px">우리: ' + c.ourEdge + '</div>'
+      + '<div style="font-size:12px;color:var(--green);font-weight:500;text-align:right;flex-shrink:0;white-space:nowrap">차별점: ' + c.ourEdge + '</div>'
       + '</div>';
   }).join('');
 }
@@ -149,19 +155,28 @@ function renderKeywords() {
   var tc = { up:'var(--green)', down:'var(--red)', same:'var(--gray-400)' };
   var ti = { up:'↑', down:'↓', same:'→' };
 
-  document.getElementById('main-kws').innerHTML = SITE_MARKETING.keywords.main.map(function(k) {
+  document.getElementById('main-kws').innerHTML = SITE_MARKETING.keywords.main.slice().sort(function(a, b) {
+    var ra = seoMap[a] ? seoMap[a].rank : 999;
+    var rb = seoMap[b] ? seoMap[b].rank : 999;
+    return ra - rb;
+  }).map(function(k) {
     var s = seoMap[k];
     var badge = s
       ? '<span class="kw-badge' + (s.rank <= 3 ? ' top' : '') + '">' + s.rank + '위</span>'
       : '<span class="kw-badge" style="background:var(--gray-300)">-</span>';
-    var vol   = s ? '<span class="kw-vol">' + s.vol + '</span>' : '';
+    var vol   = s ? '<span class="kw-vol">' + s.vol.replace('/월', '번 노출/월') + '</span>' : '';
     var arrow = s ? '<span class="kw-arrow" style="color:' + tc[s.trend] + '">' + ti[s.trend] + '</span>' : '';
     return '<div class="kw-main-row">' + badge + '<span class="kw-name">' + k + '</span>' + vol + arrow + '</div>';
   }).join('');
 
   document.getElementById('longtail-kws').innerHTML = SITE_MARKETING.keywords.longTail.map(function(item) {
-    var targets = item.aeoIdx.map(function(i){ return SITE_SEO.aeoTargets[i]; });
-    var cited   = targets.filter(function(t){ return t && t.cited; }).length;
+    var targets = (item.aeoQ || []).map(function(q) {
+      for (var ti = 0; ti < SITE_SEO.aeoTargets.length; ti++) {
+        if (SITE_SEO.aeoTargets[ti].q === q) return SITE_SEO.aeoTargets[ti];
+      }
+      return null;
+    }).filter(function(t){ return t != null; });
+    var cited   = targets.filter(function(t){ return t.cited; }).length;
     var total   = targets.length;
     var badge, badgeStyle;
     if (total === 0) {
@@ -190,50 +205,10 @@ function requestAIStrategy() {
     + '전략 개선 포인트 3가지와 다음 달 주력할 채널 1개를 추천해주세요. 한국어로 간결하게.';
   callGemini(prompt, function(err, result) {
     if (err || !result) { showToast('⚠ AI 제안 실패', 'error'); return; }
-    openModal('🤖 AI 전략 업데이트 제안', result.replace(/\n/g,'<br>'), null, '적용 요청', 'btn-primary');
+    openModal('📋 AI 분석 리포트', result.replace(/\n/g,'<br>'), null, null, '');
   });
 }
 
-function addKeyword() {
-  var prev = document.getElementById('__kw-add-modal');
-  if (prev) prev.remove();
-  var m = document.createElement('div');
-  m.id = '__kw-add-modal';
-  m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9500;display:flex;align-items:center;justify-content:center;padding:20px';
-  m.innerHTML = '<div style="background:#fff;border-radius:16px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden">'
-    + '<div style="padding:20px 24px;border-bottom:1px solid var(--gray-100)">'
-    + '<div style="font-size:15px;font-weight:700;color:var(--navy)">➕ 롱테일 키워드 추가</div>'
-    + '</div>'
-    + '<div style="padding:20px 24px;display:flex;flex-direction:column;gap:14px">'
-    + '<div>'
-    + '<div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">키워드 <span style="color:var(--red)">*</span> <span style="font-weight:400;color:var(--gray-400)">(일본어로 입력)</span></div>'
-    + '<input id="__kw-input" type="text" placeholder="例) 韓国 二重整形 モニター" style="width:100%;font-size:13px;padding:10px;border:1.5px solid var(--gray-200);border-radius:8px;font-family:inherit;outline:none;box-sizing:border-box">'
-    + '</div>'
-    + '<div>'
-    + '<div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">한국어 번역 <span style="font-weight:400;color:var(--gray-400)">(내부 참고용)</span></div>'
-    + '<input id="__kw-ko" type="text" placeholder="예) 한국 쌍꺼풀 모니터" style="width:100%;font-size:13px;padding:10px;border:1.5px solid var(--gray-200);border-radius:8px;font-family:inherit;outline:none;box-sizing:border-box">'
-    + '</div>'
-    + '</div>'
-    + '<div style="padding:16px 24px;background:var(--gray-50);display:flex;gap:8px;justify-content:flex-end">'
-    + '<button class="btn" onclick="document.getElementById(\'__kw-add-modal\').remove()">취소</button>'
-    + '<button class="btn btn-primary" onclick="submitAddKeyword()">추가</button>'
-    + '</div>'
-    + '</div>';
-  m.addEventListener('click', function(e){ if (e.target === m) m.remove(); });
-  document.body.appendChild(m);
-  var inp = document.getElementById('__kw-input');
-  inp.focus();
-  inp.addEventListener('keydown', function(e){ if (e.key === 'Enter') submitAddKeyword(); });
-}
-
-function submitAddKeyword() {
-  var kw = document.getElementById('__kw-input').value.trim();
-  if (!kw) { showToast('키워드를 입력해주세요.', 'error'); return; }
-  SITE_MARKETING.keywords.longTail.push({ kw: kw, aeoIdx: [] });
-  renderKeywords();
-  document.getElementById('__kw-add-modal').remove();
-  showToast('✓ 키워드가 추가되었습니다.', 'success');
-}
 
 function showToast(msg, type) {
   var e = document.getElementById('__toast'); if (e) e.remove();
@@ -247,14 +222,15 @@ function showToast(msg, type) {
 function openModal(title, bodyHtml, onConfirm, confirmLabel, confirmClass) {
   var e = document.getElementById('__modal'); if (e) e.remove();
   var m = document.createElement('div'); m.id='__modal';
-  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center';
-  m.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:520px;box-shadow:0 20px 60px rgba(0,0,0,.2)">'
-    +'<div style="font-size:16px;font-weight:700;color:#0D1B3E;margin-bottom:14px">'+title+'</div>'
-    +'<div style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:20px">'+bodyHtml+'</div>'
-    +'<div style="display:flex;gap:8px;justify-content:flex-end">'
+  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center;padding:24px 16px';
+  m.innerHTML='<div style="background:#fff;border-radius:16px;width:100%;max-width:520px;max-height:90vh;box-shadow:0 20px 60px rgba(0,0,0,.2);display:flex;flex-direction:column">'
+    +'<div style="padding:24px 28px 16px;font-size:16px;font-weight:700;color:#0D1B3E;flex-shrink:0;border-bottom:1px solid #F3F4F6">'+title+'</div>'
+    +'<div style="padding:16px 28px;font-size:13px;color:#374151;line-height:1.7;overflow-y:auto;flex:1">'+bodyHtml+'</div>'
+    +'<div style="padding:16px 28px;display:flex;gap:8px;justify-content:flex-end;flex-shrink:0;border-top:1px solid #F3F4F6">'
     +'<button class="btn" onclick="document.getElementById(\'__modal\').remove()">닫기</button>'
     +(onConfirm?'<button class="btn '+(confirmClass||'btn-primary')+'" id="__modal-confirm">'+(confirmLabel||'확인')+'</button>':'')
     +'</div></div>';
+  m.addEventListener('click', function(e){ if(e.target===m) m.remove(); });
   document.body.appendChild(m);
   var cb = document.getElementById('__modal-confirm');
   if (cb && onConfirm) cb.addEventListener('click', function(){ document.getElementById('__modal').remove(); onConfirm(); });

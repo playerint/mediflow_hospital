@@ -32,6 +32,13 @@
 .meta-desc{font-size:12px;color:var(--gray-500);line-height:1.5;}
 .badge-ok{background:#D1FAE5;color:#065F46;font-size:10px;padding:2px 7px;border-radius:6px;font-weight:600;}
 .badge-warn{background:#FEF3C7;color:#92400E;font-size:10px;padding:2px 7px;border-radius:6px;font-weight:600;}
+.badge-ai{background:var(--blue-b);color:var(--blue);font-size:10px;padding:2px 7px;border-radius:6px;font-weight:600;flex-shrink:0;}
+.aeo-section-sep{font-size:10px;font-weight:700;color:var(--s400);padding:10px 0 4px;margin-top:6px;border-top:1px solid var(--s100);letter-spacing:.04em;}
+.aeo-pending-row{background:var(--blue-l);border-radius:8px;padding:8px 10px !important;margin:2px 0;}
+.meta-pending-block{margin-top:8px;padding:10px 12px;background:var(--blue-l);border-radius:8px;display:flex;flex-direction:column;gap:6px;}
+.meta-pending-label{font-size:10px;font-weight:700;color:var(--blue);margin-bottom:2px;}
+.meta-pending-val{font-size:12px;color:var(--s700);line-height:1.5;}
+.meta-pending-actions{display:flex;gap:6px;margin-top:4px;}
 </style>
 </head><body>
 <div id="sidebar-mount" data-active="site_seo"></div>
@@ -44,7 +51,7 @@
       <span style="font-size:14px;color:var(--gray-600)">SEO·AEO 관리</span>
     </div>
     <div class="topbar-right">
-      <button class="btn" onclick="requestAISEO()">🤖 AI SEO 개선 제안</button>
+      <button class="btn" onclick="requestAISEO()">📋 종합 분석 리포트</button>
       <button class="btn btn-primary" onclick="saveSEOSettings()">💾 저장</button>
     </div>
   </div>
@@ -68,7 +75,8 @@
     <div class="seo-grid">
       <!-- 키워드 순위 -->
       <div class="card">
-        <div class="card-title" style="margin-bottom:12px">🔍 SEO 키워드 순위</div>
+        <div class="card-title" style="margin-bottom:4px">🔍 SEO 키워드 순위</div>
+        <div style="font-size:11px;color:var(--s400);margin-bottom:12px">Yahoo Japan 검색 결과에서 이 사이트가 몇 번째로 노출되는지를 보여줍니다. 숫자가 낮을수록 상위 노출입니다.</div>
         <div id="kw-list"></div>
       </div>
 
@@ -76,23 +84,17 @@
       <div class="card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
           <div class="card-title">🧠 AEO 타겟 질문</div>
-          <button class="btn" style="font-size:12px;padding:3px 9px" onclick="addAEOTarget()">+ 추가</button>
+          <button class="btn" id="aeo-suggest-btn" style="font-size:12px;padding:3px 9px" onclick="generateAEOSuggestions()">🤖 AI 제안 받기</button>
         </div>
         <div id="aeo-list"></div>
       </div>
-    </div>
-
-    <!-- 스키마 마크업 -->
-    <div class="card" style="margin-bottom:14px">
-      <div class="card-title" style="margin-bottom:12px">📋 스키마 마크업 현황</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px" id="schema-grid"></div>
     </div>
 
     <!-- 메타태그 편집 -->
     <div class="card" style="margin-bottom:14px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
         <div class="card-title">🏷 메타태그 편집</div>
-        <button class="btn" style="font-size:12px;padding:3px 9px" onclick="requestAISEO()">✨ AI 최적화</button>
+        <button class="btn" id="meta-suggest-btn" style="font-size:12px;padding:3px 9px" onclick="generateMetaSuggestions()">🤖 AI 메타태그 제안</button>
       </div>
       <div id="meta-list"></div>
     </div>
@@ -113,9 +115,9 @@ function renderCWV() {
   var badge = document.getElementById('cwv-score-badge');
   if (badge) badge.textContent = '종합 ' + d.score + '점 · ' + d.grade;
   var items = [
-    { lbl:'LCP', val:d.lcp, note:'Largest Contentful Paint' },
-    { lbl:'FID', val:d.fid, note:'First Input Delay' },
-    { lbl:'CLS', val:d.cls, note:'Cumulative Layout Shift' },
+    { lbl:'로딩 속도(LCP)', val:d.lcp, note:'Largest Contentful Paint' },
+    { lbl:'반응 속도(INP)', val:d.inp, note:'Interaction to Next Paint' },
+    { lbl:'화면 안정성(CLS)', val:d.cls, note:'Cumulative Layout Shift' },
     { lbl:'종합', val:d.score + '점', note:'Performance Score' },
   ];
   var el = document.getElementById('cwv-grid');
@@ -134,67 +136,167 @@ function renderKeywords() {
   var tc = { up:'var(--green)', down:'var(--red)', same:'var(--gray-400)' };
   var ic = { up:'↑', down:'↓', same:'→' };
 
-  var mainRows = SITE_SEO.keywords.map(function(k) {
+  var mainRows = SITE_SEO.keywords.slice().sort(function(a,b){ return a.rank - b.rank; }).map(function(k) {
     return '<div class="kw-row">'
       + '<div class="kw-rank' + (k.rank <= 3 ? ' top' : '') + '">' + k.rank + '</div>'
       + '<div class="kw-word">' + k.kw + '</div>'
-      + '<div class="kw-vol">' + k.vol + '</div>'
+      + '<div class="kw-vol">' + k.vol.replace('/월', '번 노출/월') + '</div>'
       + '<div class="kw-trend" style="color:' + tc[k.trend] + '">' + ic[k.trend] + '</div>'
       + '</div>';
   }).join('');
 
-  var sep = '<div style="font-size:10px;font-weight:600;color:var(--gray-400);padding:8px 0 2px;margin-top:4px;border-top:1px solid var(--gray-100)">롱테일 목표 (마케팅 전략)</div>';
+  el.innerHTML = mainRows;
+}
 
-  var longRows = SITE_MARKETING.keywords.longTail.map(function(k) {
-    return '<div class="kw-row">'
-      + '<div class="kw-rank" style="background:var(--gray-200);color:var(--gray-500)">·</div>'
-      + '<div class="kw-word">' + k + '</div>'
-      + '<div style="font-size:10px;padding:1px 6px;border-radius:5px;background:var(--blue-b);color:var(--blue);font-weight:600;flex-shrink:0">롱테일</div>'
-      + '<div class="kw-trend" style="color:var(--gray-300)">-</div>'
-      + '</div>';
-  }).join('');
+/* ── AEO 저장소 ───────────────────────────────────────────────── */
+var aeoPending = [];
 
-  el.innerHTML = mainRows + sep + longRows;
+function loadAEOStorage() {
+  try {
+    var saved = localStorage.getItem('aeo_targets');
+    if (saved) SITE_SEO.aeoTargets = JSON.parse(saved);
+    var pend = localStorage.getItem('aeo_pending');
+    if (pend) aeoPending = JSON.parse(pend);
+  } catch(e) {}
+}
+
+function saveAEOStorage() {
+  try {
+    localStorage.setItem('aeo_targets', JSON.stringify(SITE_SEO.aeoTargets));
+    localStorage.setItem('aeo_pending', JSON.stringify(aeoPending));
+  } catch(e) {}
 }
 
 /* ── AEO 타겟 질문 ────────────────────────────────────────────── */
 function renderAEO() {
   var el = document.getElementById('aeo-list');
-  el.innerHTML = SITE_SEO.aeoTargets.map(function(a, idx) {
-    var cited = a.cited
-      ? '<span class="badge-ok">인용됨 · ' + a.lastSeen + '</span>'
-      : '<span class="badge-warn">미인용</span>';
-    var linked = SITE_MARKETING.keywords.longTail
-      .filter(function(item){ return item.aeoIdx.indexOf(idx) > -1; })
-      .map(function(item){
-        return '<span style="font-size:10px;padding:1px 6px;border-radius:4px;background:var(--navy-l);color:var(--navy);margin-left:4px">' + item.kw + '</span>';
+
+  var activeHtml = SITE_SEO.aeoTargets.length === 0
+    ? '<div style="font-size:12px;color:var(--s400);padding:12px 0">등록된 질문이 없습니다.</div>'
+    : SITE_SEO.aeoTargets.map(function(a, idx) {
+        var cited = a.cited
+          ? '<span class="badge-ok">인용됨 · ' + a.lastSeen + '</span>'
+          : '<span class="badge-warn">미인용</span>';
+        return '<div class="aeo-row" style="flex-wrap:wrap;gap:6px">'
+          + '<div class="aeo-q">' + a.q + '</div>'
+          + '<span style="font-size:10px;color:var(--gray-400);flex-shrink:0">' + a.engine + '</span>'
+          + cited
+          + '<button class="btn" style="font-size:10px;padding:2px 7px;flex-shrink:0" onclick="editAEOTarget(this)">편집</button>'
+          + '</div>';
       }).join('');
-    return '<div class="aeo-row" style="flex-wrap:wrap;gap:6px">'
-      + '<div class="aeo-q">' + a.q + (linked ? '<div style="margin-top:4px">' + linked + '</div>' : '') + '</div>'
-      + '<span style="font-size:10px;color:var(--gray-400);flex-shrink:0">' + a.engine + '</span>'
-      + cited
-      + '<button class="btn" style="font-size:10px;padding:2px 7px;flex-shrink:0" onclick="editAEOTarget(this)">편집</button>'
-      + '</div>';
-  }).join('');
+
+  var pendingHtml = '';
+  if (aeoPending.length > 0) {
+    pendingHtml = '<div class="aeo-section-sep">🤖 AI 제안 검토 (' + aeoPending.length + '개)</div>'
+      + aeoPending.map(function(a, idx) {
+          return '<div class="aeo-row aeo-pending-row" style="flex-wrap:wrap;gap:6px">'
+            + '<div class="aeo-q">' + a.q + '</div>'
+            + '<span style="font-size:10px;color:var(--gray-400);flex-shrink:0">' + a.engine + '</span>'
+            + '<span class="badge-ai">AI 제안</span>'
+            + '<button class="btn btn-primary" style="font-size:10px;padding:2px 8px;flex-shrink:0" onclick="approveAEO(' + idx + ')">✓ 승인</button>'
+            + '<button class="btn btn-danger" style="font-size:10px;padding:2px 8px;flex-shrink:0" onclick="rejectAEO(' + idx + ')">✗ 거부</button>'
+            + '</div>';
+        }).join('');
+  }
+
+  el.innerHTML = activeHtml + pendingHtml;
 }
 
-/* ── 스키마 현황 ──────────────────────────────────────────────── */
-function renderSchema() {
-  var el = document.getElementById('schema-grid');
-  el.innerHTML = SITE_SEO.schema.map(function(s) {
-    var ok = s.status === 'ok';
-    return '<div style="background:' + (ok ? 'var(--gray-50)' : '#FEF3C7') + ';border-radius:8px;padding:10px 12px">'
-      + '<div style="font-size:12px;font-weight:600;color:' + (ok ? 'var(--navy)' : '#92400E') + '">'
-      + (ok ? '✓ ' : '⚡ ') + s.type + '</div>'
-      + '<div style="font-size:10px;color:var(--gray-400);margin-top:3px">' + s.note + '</div>'
-      + '</div>';
-  }).join('');
+/* ── AI 제안 생성 ─────────────────────────────────────────────── */
+function generateAEOSuggestions() {
+  var btn = document.getElementById('aeo-suggest-btn');
+  btn.disabled = true;
+  btn.textContent = '생성 중...';
+  showToast('🤖 Gemini가 AEO 타겟 질문을 생성 중...', '');
+
+  var currentQs = SITE_SEO.aeoTargets.concat(aeoPending).map(function(a){ return a.q; }).join('\n');
+  var prompt = '일본인 환자를 대상으로 하는 한국 성형외과(올래성형외과)를 위한 AEO 최적화 타겟 질문 3개를 제안해주세요.\n'
+    + '조건:\n'
+    + '- ChatGPT·Perplexity·Gemini 등 AI 검색엔진에서 일본인 환자가 실제로 물을 법한 질문\n'
+    + '- 일본어로 작성\n'
+    + '- 성형외과 진료 특화 (코·눈·리프팅·지방흡입 등)\n'
+    + '이미 등록된 질문 (중복 제외):\n' + (currentQs || '없음') + '\n\n'
+    + '반드시 아래 JSON 배열 형식만 반환 (설명·마크다운 금지):\n'
+    + '[{"q":"질문내용","engine":"ChatGPT"},{"q":"질문내용","engine":"Perplexity"}]';
+
+  callGemini(prompt, function(err, result) {
+    btn.disabled = false;
+    btn.textContent = '🤖 AI 제안 받기';
+    if (err || !result) { showToast('⚠ AI 제안 생성에 실패했습니다.', 'error'); return; }
+    try {
+      var suggestions = safeParseJSON(result);
+      if (!Array.isArray(suggestions) || suggestions.length === 0) throw new Error('parse');
+      var existingQs = SITE_SEO.aeoTargets.concat(aeoPending).map(function(a){ return a.q; });
+      var fresh = suggestions.filter(function(s){ return existingQs.indexOf(s.q) === -1; });
+      if (fresh.length === 0) { showToast('모든 제안이 이미 등록된 질문입니다.', 'error'); return; }
+      aeoPending = aeoPending.concat(fresh);
+      saveAEOStorage();
+      renderAEO();
+      showToast('✓ ' + fresh.length + '개 질문이 제안됐습니다. 검토 후 승인해주세요.', 'success');
+    } catch(e) {
+      showToast('⚠ AI 응답 파싱에 실패했습니다.', 'error');
+    }
+  });
 }
 
-/* ── 메타태그 ─────────────────────────────────────────────────── */
+function approveAEO(idx) {
+  var item = aeoPending[idx];
+  if (!item) return;
+  SITE_SEO.aeoTargets.push({ q: item.q, engine: item.engine, cited: false, lastSeen: '-' });
+  aeoPending.splice(idx, 1);
+  saveAEOStorage();
+  renderAEO();
+  showToast('✓ 질문이 승인되어 활성 목록에 추가됐습니다.', 'success');
+}
+
+function rejectAEO(idx) {
+  aeoPending.splice(idx, 1);
+  saveAEOStorage();
+  renderAEO();
+  showToast('거부됐습니다.', '');
+}
+
+/* ── 메타태그 저장소 ──────────────────────────────────────────── */
+var metaPending = {};
+
+function loadMetaStorage() {
+  try {
+    var saved = localStorage.getItem('meta_data');
+    if (saved) SITE_SEO.meta = JSON.parse(saved);
+    var pend = localStorage.getItem('meta_pending');
+    if (pend) metaPending = JSON.parse(pend);
+  } catch(e) {}
+}
+
+function saveMetaStorage() {
+  try {
+    localStorage.setItem('meta_data', JSON.stringify(SITE_SEO.meta));
+    localStorage.setItem('meta_pending', JSON.stringify(metaPending));
+  } catch(e) {}
+}
+
+/* ── 메타태그 렌더 ────────────────────────────────────────────── */
 function renderMeta() {
   var el = document.getElementById('meta-list');
   el.innerHTML = SITE_SEO.meta.map(function(m, i) {
+    var pending = metaPending[i];
+    var pendingBlock = '';
+    if (pending) {
+      pendingBlock = '<div class="meta-pending-block">'
+        + '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">'
+        + '<span class="badge-ai">AI 제안</span>'
+        + '<span style="font-size:10px;color:var(--s500)">현재 값과 비교 후 승인해주세요</span>'
+        + '</div>'
+        + '<div><div class="meta-pending-label">TITLE</div>'
+        + '<div class="meta-pending-val">' + pending.title + '</div></div>'
+        + '<div><div class="meta-pending-label">DESCRIPTION</div>'
+        + '<div class="meta-pending-val">' + pending.desc + '</div></div>'
+        + '<div class="meta-pending-actions">'
+        + '<button class="btn btn-primary" style="font-size:10px;padding:3px 10px" onclick="approveMeta(' + i + ')">✓ 승인</button>'
+        + '<button class="btn btn-danger" style="font-size:10px;padding:3px 10px" onclick="rejectMeta(' + i + ')">✗ 거부</button>'
+        + '</div>'
+        + '</div>';
+    }
     return '<div class="meta-row">'
       + '<div style="display:flex;align-items:center;gap:8px">'
       + '<span class="meta-page">' + m.page + '</span>'
@@ -204,8 +306,70 @@ function renderMeta() {
       + '</div>'
       + '<div class="meta-title">' + m.title + '</div>'
       + '<div class="meta-desc">' + m.desc + '</div>'
+      + pendingBlock
       + '</div>';
   }).join('');
+}
+
+/* ── AI 메타태그 제안 ─────────────────────────────────────────── */
+function generateMetaSuggestions() {
+  var btn = document.getElementById('meta-suggest-btn');
+  btn.disabled = true;
+  btn.textContent = '생성 중...';
+  showToast('🤖 Gemini가 메타태그를 분석 중...', '');
+
+  var currentMeta = SITE_SEO.meta.map(function(m, i) {
+    return '[' + i + '] ' + m.page + ' | title: "' + m.title + '" | desc: "' + m.desc + '"';
+  }).join('\n');
+
+  var prompt = '일본인 환자 대상 한국 성형외과(올래성형외과) 웹사이트의 메타태그를 SEO 최적화해주세요.\n\n'
+    + '현재 메타태그:\n' + currentMeta + '\n\n'
+    + '조건:\n'
+    + '- Title: 60자 이내, 핵심 키워드 포함, 클릭 유도\n'
+    + '- Description: 160자 이내, 차별화 포인트 강조\n'
+    + '- 일본어로 작성\n'
+    + '- 각 페이지 고유 콘텐츠에 맞게 작성\n\n'
+    + '반드시 아래 JSON 배열 형식만 반환 (설명·마크다운 금지):\n'
+    + '[{"idx":0,"title":"...","desc":"..."},{"idx":1,"title":"...","desc":"..."}]';
+
+  callGemini(prompt, function(err, result) {
+    btn.disabled = false;
+    btn.textContent = '🤖 AI 메타태그 제안';
+    if (err || !result) { showToast('⚠ AI 제안 생성에 실패했습니다.', 'error'); return; }
+    try {
+      var suggestions = safeParseJSON(result);
+      if (!Array.isArray(suggestions) || suggestions.length === 0) throw new Error('parse');
+      suggestions.forEach(function(s) {
+        if (typeof s.idx === 'number' && s.title && s.desc) {
+          metaPending[s.idx] = { title: s.title, desc: s.desc };
+        }
+      });
+      saveMetaStorage();
+      renderMeta();
+      showToast('✓ ' + suggestions.length + '개 페이지 메타태그 제안이 생성됐습니다.', 'success');
+    } catch(e) {
+      showToast('⚠ AI 응답 파싱에 실패했습니다.', 'error');
+    }
+  });
+}
+
+function approveMeta(idx) {
+  var p = metaPending[idx];
+  if (!p) return;
+  SITE_SEO.meta[idx].title = p.title;
+  SITE_SEO.meta[idx].desc = p.desc;
+  SITE_SEO.meta[idx].status = p.title.length <= 60 && p.desc.length <= 160 ? 'ok' : 'warn';
+  delete metaPending[idx];
+  saveMetaStorage();
+  renderMeta();
+  showToast('✓ 메타태그가 적용됐습니다.', 'success');
+}
+
+function rejectMeta(idx) {
+  delete metaPending[idx];
+  saveMetaStorage();
+  renderMeta();
+  showToast('제안이 거부됐습니다.', '');
 }
 
 /* ── AI SEO 개선 제안 (Gemini) ────────────────────────────────── */
@@ -216,53 +380,8 @@ function requestAISEO() {
     + '개선 우선순위 3가지를 간결하게 한국어로 제안해주세요.';
   callGemini(prompt, function(err, result) {
     if (err || !result) { showToast('⚠ AI 제안 실패', 'error'); return; }
-    openModal('🤖 AI SEO 개선 제안', result.replace(/\n/g,'<br>'), null, '닫기', '');
+    openModal('📋 종합 분석 리포트', result.replace(/\n/g,'<br>'), null, '닫기', '');
   });
-}
-
-function addAEOTarget() {
-  var prev = document.getElementById('__aeo-add-modal');
-  if (prev) prev.remove();
-  var m = document.createElement('div');
-  m.id = '__aeo-add-modal';
-  m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9500;display:flex;align-items:center;justify-content:center;padding:20px';
-  m.innerHTML = '<div style="background:#fff;border-radius:16px;width:100%;max-width:520px;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden">'
-    + '<div style="padding:20px 24px;border-bottom:1px solid var(--gray-100)">'
-    + '<div style="font-size:15px;font-weight:700;color:var(--navy)">➕ AEO 타겟 질문 추가</div>'
-    + '</div>'
-    + '<div style="padding:20px 24px;display:flex;flex-direction:column;gap:14px">'
-    + '<div>'
-    + '<div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">질문 <span style="color:var(--red)">*</span> <span style="font-weight:400;color:var(--gray-400)">(일본어로 입력)</span></div>'
-    + '<textarea id="__aeo-q" rows="3" placeholder="例) 二重整形の料金はいくらですか？" style="width:100%;font-size:13px;padding:10px;border:1.5px solid var(--gray-200);border-radius:8px;resize:vertical;font-family:inherit;line-height:1.6;outline:none;box-sizing:border-box"></textarea>'
-    + '</div>'
-    + '<div>'
-    + '<div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">AI 엔진</div>'
-    + '<select id="__aeo-engine" style="width:100%;padding:8px 12px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:13px;font-family:inherit;outline:none">'
-    + '<option value="ChatGPT">ChatGPT</option>'
-    + '<option value="Gemini">Gemini</option>'
-    + '<option value="Perplexity">Perplexity</option>'
-    + '<option value="Claude">Claude</option>'
-    + '</select>'
-    + '</div>'
-    + '</div>'
-    + '<div style="padding:16px 24px;background:var(--gray-50);display:flex;gap:8px;justify-content:flex-end">'
-    + '<button class="btn" onclick="document.getElementById(\'__aeo-add-modal\').remove()">취소</button>'
-    + '<button class="btn btn-primary" onclick="submitAddAEO()">추가</button>'
-    + '</div>'
-    + '</div>';
-  m.addEventListener('click', function(e){ if (e.target === m) m.remove(); });
-  document.body.appendChild(m);
-  document.getElementById('__aeo-q').focus();
-}
-
-function submitAddAEO() {
-  var q = document.getElementById('__aeo-q').value.trim();
-  var engine = document.getElementById('__aeo-engine').value;
-  if (!q) { showToast('질문을 입력해주세요.', 'error'); return; }
-  SITE_SEO.aeoTargets.push({ q:q, engine:engine, cited:false, lastSeen:'-' });
-  renderAEO();
-  document.getElementById('__aeo-add-modal').remove();
-  showToast('✓ AEO 타겟 질문이 추가되었습니다.', 'success');
 }
 
 function editAEOTarget(btn) {
@@ -373,13 +492,14 @@ function showToast(msg, type) {
 function openModal(title, bodyHtml, onConfirm, confirmLabel, confirmClass) {
   var e = document.getElementById('__modal'); if (e) e.remove();
   var m = document.createElement('div'); m.id='__modal';
-  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center';
-  m.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:500px;box-shadow:0 20px 60px rgba(0,0,0,.2)">'
-    +'<div style="font-size:16px;font-weight:700;color:#0D1B3E;margin-bottom:14px">'+title+'</div>'
-    +'<div style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:20px">'+bodyHtml+'</div>'
-    +'<div style="display:flex;gap:8px;justify-content:flex-end">'
+  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;display:flex;align-items:center;justify-content:center;padding:24px 16px';
+  m.innerHTML='<div style="background:#fff;border-radius:16px;width:100%;max-width:500px;max-height:90vh;box-shadow:0 20px 60px rgba(0,0,0,.2);display:flex;flex-direction:column">'
+    +'<div style="padding:24px 28px 16px;font-size:16px;font-weight:700;color:#0D1B3E;flex-shrink:0;border-bottom:1px solid #F3F4F6">'+title+'</div>'
+    +'<div style="padding:16px 28px;font-size:13px;color:#374151;line-height:1.7;overflow-y:auto;flex:1">'+bodyHtml+'</div>'
+    +'<div style="padding:16px 28px;display:flex;gap:8px;justify-content:flex-end;flex-shrink:0;border-top:1px solid #F3F4F6">'
     +'<button class="btn '+(confirmClass||'btn-primary')+'" onclick="document.getElementById(\'__modal\').remove()">'+(confirmLabel||'닫기')+'</button>'
     +'</div></div>';
+  m.addEventListener('click', function(e){ if(e.target===m) m.remove(); });
   document.body.appendChild(m);
 }
 
@@ -399,10 +519,11 @@ function saveSEOSettings() {
 }
 
 /* ── 초기화 ─────────────────────────────────────────────────── */
+loadAEOStorage();
+loadMetaStorage();
 renderCWV();
 renderKeywords();
 renderAEO();
-renderSchema();
 renderMeta();
 </script>
 </body></html>

@@ -14,7 +14,7 @@ function renderKPI() {
   var grid = document.getElementById('kpi-grid');
   if (!grid) return;
   grid.innerHTML = items.map(function(item) {
-    return '<div class="card" style="border-top:3px solid ' + item.color + '">'
+    return '<div class="card">'
       + '<div class="kpi-lbl">' + item.lbl + '</div>'
       + '<div class="kpi-num">' + item.num + '</div>'
       + '<div class="kpi-dl ' + item.cls + '">' + item.dl + '</div>'
@@ -47,7 +47,7 @@ function renderCalendar() {
       var b = ALL_BOOKINGS[j];
       if (b.date === day.dateKey) {
         var tc = TYPE_COLORS[b.type] || {bg:'#F3F4F6', tc:'#374151'};
-        chips += '<div class="bk-chip" style="background:' + tc.bg + ';color:' + tc.tc + '">'
+        chips += '<div class="bk-chip" style="background:' + tc.bg + ';color:' + tc.tc + ';cursor:pointer" onclick="openBookingDetail(' + j + ')">'
           + b.time.split(':')[0] + '시 ' + b.name.split(' ')[0]
           + '</div>';
       }
@@ -86,7 +86,8 @@ function renderToday() {
   for (var k = 0; k < todayBks.length; k++) {
     var tb = todayBks[k];
     var tc = TYPE_COLORS[tb.type] || {bg:'#F3F4F6', tc:'#374151'};
-    html += '<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #F3F4F6">';
+    var tbIdx = ALL_BOOKINGS.indexOf(tb);
+    html += '<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #F3F4F6;cursor:pointer" onclick="openBookingDetail(' + tbIdx + ')">';
     html += '<div style="font-size:12px;font-weight:600;color:var(--navy);min-width:38px">' + tb.time + '</div>';
     html += '<div style="flex:1"><div style="font-size:13px;font-weight:500">' + tb.name + '</div><div style="font-size:12px;color:#9CA3AF">' + tb.proc + '</div></div>';
     html += '<span class="badge" style="background:' + tc.bg + ';color:' + tc.tc + ';font-size:10px">' + (TYPE_LABELS[tb.type] || '') + '</span>';
@@ -234,6 +235,224 @@ function openModal(title, bodyHtml, onConfirm, confirmLabel, confirmClass) {
 
 function closeModal() {
   var m = document.getElementById('__modal'); if (m) m.remove();
+}
+
+/* ── 예약 등록 모달 ──────────────────────────────────────────────── */
+function openBookingModal() {
+  var prev = document.getElementById('__bk-modal');
+  if (prev) prev.remove();
+
+  var overlay = document.createElement('div');
+  overlay.id = '__bk-modal';
+  overlay.className = 'bk-overlay';
+
+  overlay.innerHTML =
+    '<div class="bk-modal">'
+    + '<div class="bk-modal-head">'
+    +   '<div style="font-size:16px;font-weight:700;color:var(--navy)">📅 예약 등록</div>'
+    +   '<button onclick="closeBkModal()" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--gray-400);padding:4px;line-height:1">✕</button>'
+    + '</div>'
+    + '<div class="bk-modal-body" id="bk-form-body">'
+    +   '<div class="bk-section">'
+    +     '<div class="bk-section-title">👤 환자 정보</div>'
+    +     '<div class="bk-field">'
+    +       '<div class="bk-label">기존 환자 검색 <span style="font-size:12px;color:var(--gray-400);font-weight:400">이름으로 검색</span></div>'
+    +       '<div class="bk-patient-wrap">'
+    +         '<input class="bk-input" id="bk-patient-search" placeholder="예) 야마다" oninput="bkSearchPatient(this.value)" autocomplete="off">'
+    +         '<div class="bk-patient-result" id="bk-patient-result"></div>'
+    +       '</div>'
+    +       '<div class="bk-sel-patient" id="bk-sel-patient">'
+    +         '<div class="bk-p-avatar" id="bk-sel-avatar" style="background:#EEF2FF;color:#0D1B3E"></div>'
+    +         '<div style="flex:1"><div style="font-size:13px;font-weight:500;color:var(--navy)" id="bk-sel-name"></div><div style="font-size:12px;color:var(--gray-500)" id="bk-sel-meta"></div></div>'
+    +         '<button class="btn" style="font-size:12px;padding:3px 9px" onclick="bkClearPatient()">✕ 해제</button>'
+    +       '</div>'
+    +     '</div>'
+    +     '<div style="display:flex;align-items:center;gap:8px;margin:12px 0">'
+    +       '<div style="flex:1;height:1px;background:var(--gray-100)"></div>'
+    +       '<span style="font-size:12px;color:var(--gray-400)">또는 신규 환자 직접 입력</span>'
+    +       '<div style="flex:1;height:1px;background:var(--gray-100)"></div>'
+    +     '</div>'
+    +     '<div class="bk-grid2">'
+    +       '<div class="bk-field"><div class="bk-label">성명 (일본어)<span style="color:var(--red);margin-left:2px">*</span></div><input class="bk-input" id="bk-name-ja" placeholder="山田 沙織"></div>'
+    +       '<div class="bk-field"><div class="bk-label">성명 (한국어)</div><input class="bk-input" id="bk-name-ko" placeholder="야마다 사오리"></div>'
+    +       '<div class="bk-field"><div class="bk-label">연락처 (LINE ID / Instagram ID)</div><input class="bk-input" id="bk-contact" placeholder="@yamada_saori"></div>'
+    +       '<div class="bk-field"><div class="bk-label">유입 채널</div>'
+    +         '<select class="bk-select" id="bk-channel"><option value="">선택</option><option value="LINE">LINE</option><option value="Instagram">Instagram</option></select>'
+    +       '</div>'
+    +     '</div>'
+    +   '</div>'
+    +   '<div class="bk-section">'
+    +     '<div class="bk-section-title">📅 예약 정보</div>'
+    +     '<div class="bk-grid2">'
+    +       '<div class="bk-field"><div class="bk-label">예약 유형<span style="color:var(--red);margin-left:2px">*</span></div>'
+    +         '<select class="bk-select" id="bk-type" onchange="bkUpdateSlots()">'
+    +           '<option value="">선택</option>'
+    +           '<option value="consult">상담 (카운슬링)</option>'
+    +           '<option value="online">비대면 상담</option>'
+    +           '<option value="surgery">수술</option>'
+    +           '<option value="checkup">사후 체크업</option>'
+    +           '<option value="laser">시술 (레이저 등)</option>'
+    +         '</select>'
+    +       '</div>'
+    +       '<div class="bk-field"><div class="bk-label">관심 시술</div><select class="bk-select" id="bk-procedure"><option value="">선택</option></select></div>'
+    +       '<div class="bk-field"><div class="bk-label">예약 날짜<span style="color:var(--red);margin-left:2px">*</span></div><input class="bk-input" type="date" id="bk-date" onchange="bkUpdateSlots()"></div>'
+    +       '<div class="bk-field"><div class="bk-label">담당 의사</div><select class="bk-select" id="bk-doctor" onchange="bkUpdateSlots()"><option value="">배정 없음</option></select></div>'
+    +     '</div>'
+    +     '<div class="bk-field"><div class="bk-label">예약 시간<span style="color:var(--red);margin-left:2px">*</span></div>'
+    +       '<div class="bk-time-slots" id="bk-time-slots"></div>'
+    +       '<input type="hidden" id="bk-selected-time">'
+    +     '</div>'
+    +   '</div>'
+    +   '<div class="bk-section">'
+    +     '<div class="bk-section-title">📝 메모 및 알림</div>'
+    +     '<div class="bk-field"><div class="bk-label">내부 메모</div>'
+    +       '<textarea class="bk-textarea" id="bk-memo" rows="3" placeholder="예) 일본어 전담 스탭 배정 필요 · 이전 상담 내용 참고"></textarea>'
+    +     '</div>'
+    +     '<div class="bk-field"><div class="bk-label">LINE 확정 메시지 발송</div>'
+    +       '<label class="bk-send-check"><input type="checkbox" id="bk-send-line" checked> 예약 등록 즉시 LINE으로 확정 메시지 자동 발송</label>'
+    +       '<label class="bk-send-check" style="margin-top:6px"><input type="checkbox" id="bk-send-reminder" checked> 예약 전일 오전 10시 리마인더 발송</label>'
+    +     '</div>'
+    +   '</div>'
+    + '</div>'
+    + '<div class="bk-fade" id="bk-fade"></div>'
+    + '<div class="bk-modal-foot">'
+    +   '<button class="btn" onclick="closeBkModal()">취소</button>'
+    +   '<button class="btn btn-primary" onclick="bkSubmitBooking()">📅 예약 등록</button>'
+    + '</div>'
+    + '</div>';
+
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) closeBkModal(); });
+  document.body.appendChild(overlay);
+  document.body.style.overflow = 'hidden';
+
+  var procEl = document.getElementById('bk-procedure');
+  PROCEDURES.forEach(function(p) {
+    var o = document.createElement('option'); o.textContent = p; procEl.appendChild(o);
+  });
+  var doctorEl = document.getElementById('bk-doctor');
+  DOCTORS.forEach(function(d) {
+    var o = document.createElement('option'); o.value = d; o.textContent = d; doctorEl.appendChild(o);
+  });
+  var today = new Date();
+  document.getElementById('bk-date').value = today.getFullYear() + '-'
+    + String(today.getMonth() + 1).padStart(2, '0') + '-'
+    + String(today.getDate()).padStart(2, '0');
+  bkUpdateSlots();
+
+  var body = document.getElementById('bk-form-body');
+  var fade = document.getElementById('bk-fade');
+  function bkCheckFade() {
+    var atBottom = body.scrollTop + body.clientHeight >= body.scrollHeight - 10;
+    if (fade) fade.style.opacity = atBottom ? '0' : '1';
+  }
+  body.addEventListener('scroll', bkCheckFade);
+  bkCheckFade();
+}
+
+function closeBkModal() {
+  var m = document.getElementById('__bk-modal');
+  if (m) m.remove();
+  document.body.style.overflow = '';
+}
+
+function bkSearchPatient(v) {
+  var res = document.getElementById('bk-patient-result');
+  if (!v.trim()) { res.style.display = 'none'; return; }
+  var patients = getPatientsFromBookings();
+  var matched = patients.filter(function(p) { return p.name.indexOf(v) !== -1; });
+  if (!matched.length) { res.style.display = 'none'; return; }
+  res.innerHTML = matched.slice(0, 6).map(function(p) {
+    return '<div class="bk-patient-item" onclick=\'bkSelectPatient(' + JSON.stringify(p).replace(/'/g, '&#39;') + ')\'>'
+      + '<div class="bk-p-avatar" style="background:' + p.bg + ';color:' + p.tc + '">' + p.init + '</div>'
+      + '<div><div style="font-size:13px;font-weight:500">' + p.name + '</div>'
+      + '<div style="font-size:12px;color:var(--gray-400)">' + p.ch + ' · ' + p.proc + '</div></div></div>';
+  }).join('');
+  res.style.display = 'block';
+}
+
+function bkSelectPatient(p) {
+  document.getElementById('bk-patient-search').value = p.name;
+  document.getElementById('bk-patient-result').style.display = 'none';
+  var sp = document.getElementById('bk-sel-patient');
+  var av = document.getElementById('bk-sel-avatar');
+  av.textContent = p.init; av.style.background = p.bg; av.style.color = p.tc;
+  document.getElementById('bk-sel-name').textContent = p.name;
+  document.getElementById('bk-sel-meta').textContent = p.ch + ' · ' + p.proc;
+  sp.style.display = 'flex';
+  document.getElementById('bk-name-ko').value = p.name;
+}
+
+function bkClearPatient() {
+  document.getElementById('bk-patient-search').value = '';
+  document.getElementById('bk-sel-patient').style.display = 'none';
+  document.getElementById('bk-name-ja').value = '';
+  document.getElementById('bk-name-ko').value = '';
+}
+
+function bkUpdateSlots() {
+  var typeEl   = document.getElementById('bk-type');
+  var dateEl   = document.getElementById('bk-date');
+  var doctorEl = document.getElementById('bk-doctor');
+  var el       = document.getElementById('bk-time-slots');
+  if (!el) return;
+  var type    = typeEl ? typeEl.value || 'consult' : 'consult';
+  var dateVal = dateEl ? dateEl.value : '';
+  var doctor  = doctorEl ? doctorEl.value : '';
+  var times   = SLOT_TIMES[type] || SLOT_TIMES.consult;
+  document.getElementById('bk-selected-time').value = '';
+  var dateKey = '';
+  if (dateVal) {
+    var parts = dateVal.split('-');
+    dateKey = parseInt(parts[1]) + '/' + parseInt(parts[2]);
+  }
+  var booked = dateKey ? getBookedTimes(dateKey, doctor || null) : [];
+  el.innerHTML = times.map(function(t) {
+    var isBooked = booked.indexOf(t) !== -1;
+    return '<div class="bk-time-slot' + (isBooked ? ' off' : '') + '"'
+      + (isBooked ? '' : ' onclick="bkSelectTime(\'' + t + '\',this)"') + '>'
+      + t + (isBooked ? '<br><span style="font-size:9px">예약됨</span>' : '')
+      + '</div>';
+  }).join('');
+}
+
+function bkSelectTime(t, el) {
+  document.querySelectorAll('.bk-time-slot').forEach(function(s) { s.classList.remove('on'); });
+  el.classList.add('on');
+  document.getElementById('bk-selected-time').value = t;
+}
+
+function bkSubmitBooking() {
+  var nameJa   = document.getElementById('bk-name-ja').value.trim();
+  var nameKo   = document.getElementById('bk-name-ko').value.trim();
+  var type     = document.getElementById('bk-type').value;
+  var dateVal  = document.getElementById('bk-date').value;
+  var time     = document.getElementById('bk-selected-time').value;
+  var proc     = document.getElementById('bk-procedure').value;
+  var doctor   = document.getElementById('bk-doctor').value;
+  var sendLine = document.getElementById('bk-send-line').checked;
+
+  if (!nameJa)  { showToast('환자 성명(일본어)을 입력해주세요.', 'error'); return; }
+  if (!type)    { showToast('예약 유형을 선택해주세요.', 'error'); return; }
+  if (!dateVal) { showToast('예약 날짜를 선택해주세요.', 'error'); return; }
+  if (!time)    { showToast('예약 시간을 선택해주세요.', 'error'); return; }
+
+  var parts   = dateVal.split('-');
+  var dateKey = parseInt(parts[1]) + '/' + parseInt(parts[2]);
+  var typeMap  = {consult:'consult', online:'online', surgery:'auto', checkup:'visit', laser:'auto'};
+
+  saveBooking({
+    date:   dateKey, time: time,
+    name:   nameKo || nameJa, proc: proc || '미정',
+    type:   typeMap[type] || 'consult', doctor: doctor || '미배정',
+    line:   sendLine, status: '확정',
+  });
+
+  closeBkModal();
+  renderBookingTable(_currentFilter);
+  renderCalendar();
+  renderToday();
+  renderKPI();
+  showToast('✓ ' + dateKey + ' ' + time + ' — ' + (nameKo || nameJa) + ' 예약 등록 완료', 'success');
 }
 
 /* ── 초기화 ─────────────────────────────────────────────────────── */

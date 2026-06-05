@@ -7,7 +7,7 @@ const ROLE_PERMS = [
   { menu:'CRM 인박스 조회',      admin:true,  editor:true,  viewer:true  },
   { menu:'CRM 답변 발송',        admin:true,  editor:true,  viewer:false },
   { menu:'LINE 자동상담 설정',    admin:true,  editor:false, viewer:false },
-  { menu:'퍼널·자동화 설정',     admin:true,  editor:false, viewer:false },
+  { menu:'채널 & 자동 발송',     admin:true,  editor:false, viewer:false },
   { menu:'리포트 조회',          admin:true,  editor:true,  viewer:true  },
   { menu:'리포트 PDF 생성',      admin:true,  editor:true,  viewer:false },
   { menu:'설정 — 병원 정보',     admin:true,  editor:false, viewer:false },
@@ -173,6 +173,7 @@ const sections = {
       <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--green-l);border:1px solid #6EE7B7;border-radius:var(--r);margin-bottom:16px">
         <span style="font-size:20px">✅</span><div><div style="font-size:13px;font-weight:500;color:#065F46">LINE Official Account 연결됨</div><div style="font-size:12px;color:#065F46">@oleps_official · 팔로워 1,247명</div></div>
       </div>
+      <div style="margin-bottom:14px;padding:10px 12px;background:var(--s50);border-radius:var(--r);font-size:12px;color:var(--s500)">아래 항목은 MEDIFLOW가 관리합니다. 변경이 필요하면 담당 매니저에게 문의하세요.</div>
       <div class="field-group"><div class="f-label">Channel ID</div><input type="text" value="2006xxxxxxxx" readonly></div>
       <div class="field-group"><div class="f-label">Channel Secret</div><input type="text" value="••••••••••••••••" readonly></div>
       <div class="field-group"><div class="f-label">Webhook URL</div><input type="text" value="https://api.hospital-site-os.com/webhook/line/oleps" readonly></div>
@@ -183,20 +184,21 @@ const sections = {
       <div class="s-section-title">📸 Instagram 연동</div>
       <div class="s-row"><div class="s-label">Instagram 계정</div><input class="s-input" value="@oleps_plastic"></div>
       <div class="s-row"><div class="s-label">DM 자동 응답</div><label class="toggle-wrap"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
-      <div class="s-row"><div class="s-label">연결 상태</div><span style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--gray-400)"><span style="width:8px;height:8px;border-radius:50%;background:var(--gray-300);display:inline-block"></span>미연결 (MVP 단계)</span></div>
-      <div style="margin-top:10px;padding:10px 12px;background:var(--navy-l);border-left:3px solid var(--navy);border-radius:var(--r);font-size:12px;color:var(--navy)">
-        Instagram Graph API 연동은 MVP 개발 단계에서 구현 예정입니다.<br>
-        <span style="font-size:12px;color:var(--gray-400)">DM 수신 → MEDIFLOW CRM 자동 연동</span>
+      <div class="s-row"><div class="s-label">연결 상태</div><span style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--gray-400)"><span style="width:8px;height:8px;border-radius:50%;background:var(--gray-300);display:inline-block"></span>미연결</span></div>
+      <div style="margin-top:10px;padding:10px 12px;background:var(--s50);border-radius:var(--r);font-size:12px;color:var(--s500)">
+        Instagram 연동은 현재 준비 중입니다. 연결이 완료되면 Instagram DM이 CRM 인박스로 자동 수신됩니다.<br>
+        <span style="color:var(--s400)">연동을 원하시면 담당 매니저에게 문의하세요.</span>
       </div>
     </div>`,
 
   domain: `
     <div class="card fade">
       <div style="font-size:15px;font-weight:600;color:var(--navy);margin-bottom:16px">🌐 도메인 설정</div>
-      <div style="padding:12px 14px;background:var(--green-l);border:1px solid #6EE7B7;border-radius:var(--r);margin-bottom:16px;font-size:12px;color:#065F46">✅ jp.oleps.co.kr 연결됨 · SSL 유효 · Core Web Vitals 98점</div>
-      <div class="field-group"><div class="f-label">현재 도메인</div><input type="text" value="jp.oleps.co.kr"></div>
-      <div class="field-group"><div class="f-label">CDN 설정</div><select><option>Cloudflare (활성)</option><option>AWS CloudFront</option><option>없음</option></select></div>
-      <div class="field-group"><div class="f-label">리디렉션</div><input type="text" value="oleps.co.kr → jp.oleps.co.kr (301)"></div>
+      <div style="padding:12px 14px;background:var(--green-l);border:1px solid #6EE7B7;border-radius:var(--r);margin-bottom:12px;font-size:12px;color:#065F46">✅ jp.oleps.co.kr 연결됨 · SSL 유효 · Core Web Vitals 98점</div>
+      <div style="margin-bottom:14px;padding:10px 12px;background:var(--s50);border-radius:var(--r);font-size:12px;color:var(--s500)">도메인·보안·속도 설정은 MEDIFLOW가 관리합니다. 도메인 변경이 필요하면 담당 매니저에게 문의하세요.</div>
+      <div class="field-group"><div class="f-label">현재 도메인</div><input type="text" value="jp.oleps.co.kr" readonly></div>
+      <div class="field-group"><div class="f-label">CDN 설정</div><input type="text" value="Cloudflare (활성)" readonly></div>
+      <div class="field-group"><div class="f-label">리디렉션</div><input type="text" value="oleps.co.kr → jp.oleps.co.kr" readonly></div>
     </div>`,
 
   roles: `
@@ -564,7 +566,7 @@ function requestDelete() {
     '<div style="color:var(--red);font-weight:600;margin-bottom:8px">이 작업은 되돌릴 수 없습니다.</div>'
     + '<div style="font-size:13px;color:var(--gray-700);line-height:1.7">'
     + '계정 삭제 시 모든 사이트·데이터·설정이 <strong>영구 삭제</strong>됩니다.<br>'
-    + '삭제를 원하시면 <strong>support@ippeo.co.kr</strong>로 문의해주세요.</div>',
+    + '삭제를 원하시면 <strong>support@MEDIFLOW.co.kr</strong>로 문의해주세요.</div>',
     function() {
       showToast('삭제 요청이 접수되었습니다. 영업일 기준 1~2일 내 연락드립니다.', '');
     },

@@ -1,4 +1,4 @@
-/* ================================================================
+﻿/* ================================================================
    mock-data-hospital.js — 병원 관리자 목 데이터
    TODO: 실제 크롤링/번역 API 연동 시 각 섹션 변수를 API 응답으로 교체
    - MOCK_LANG_OPTIONS     : 지원 언어 목록
@@ -167,7 +167,7 @@ var MOCK_SEC_FAQ = {
     { id:4, order:4, q: mkTF('수술 전 검사가 필요한가요?',                          '手術前に検査は必要ですか？',                               TRANS_STATUS.AI),
                      a: mkTF('네, 수술 당일 기본 혈액 검사가 진행됩니다.',           '', TRANS_STATUS.NONE) },
     { id:5, order:5, q: mkTF('공항 픽업 서비스가 있나요?',                          '空港送迎サービスはありますか？',                           TRANS_STATUS.AI),
-                     a: mkTF('네, IPPEO 공항 픽업 서비스를 이용하실 수 있습니다.',   '', TRANS_STATUS.NONE) },
+                     a: mkTF('네, MEDIFLOW 공항 픽업 서비스를 이용하실 수 있습니다.',   '', TRANS_STATUS.NONE) },
   ],
 };
 
@@ -191,7 +191,7 @@ var MOCK_SEC_CONSULT = {
   channels: [
     { id:'line',      icon:'💚', name:'LINE',      active:true,  link:'https://line.me/ti/p/~@oleps',       lineOAId:'@oleps' },
     { id:'instagram', icon:'🟣', name:'Instagram', active:true,  link:'https://instagram.com/oleps_ps',     lineOAId:null },
-    { id:'ippeo',     icon:'🔵', name:'이뻐',       active:true,  link:'https://ippeo.io/oleps',             lineOAId:null,
+    { id:'MEDIFLOW',     icon:'🔵', name:'MEDIFLOW',       active:true,  link:'https://MEDIFLOW.io/oleps',             lineOAId:null,
       popupMsg:'화상 상담 전용 앱 설치가 필요합니다. 이동하시겠어요?' },
   ],
 };
