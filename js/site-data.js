@@ -223,7 +223,7 @@ var SITE_DEPLOY = {
   checklist: [
     { label:'콘텐츠 검수',        status:'ok',   note:'11개 섹션 완료'         },
     { label:'컴플라이언스',       status:'warn', note:'경고 1건 — 눈 성형'     },
-    { label:'자산 업로드',        status:'ok',   note:'107개 파일'             },
+    { label:'이미지 업로드',       status:'ok',   note:'107개 파일'             },
     { label:'스키마 마크업',      status:'ok',   note:'9개 타입 적용'          },
     { label:'고정 LINE CTA',      status:'ok',   note:'우하단 고정 · 동작 확인' },
     { label:'네비 앵커 (5개)',    status:'ok',   note:'#decision~#faq 연결됨'  },

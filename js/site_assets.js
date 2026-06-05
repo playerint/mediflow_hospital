@@ -70,7 +70,7 @@ function replaceAsset(btn, label) {
 function deleteAsset(btn, label) {
   var card = btn.closest('.img-card');
   openModal(
-    '🗑 자산 삭제',
+    '🗑 이미지 삭제',
     '<strong>' + label + '</strong>을(를) 삭제하시겠습니까?<br><span style="font-size:12px;color:#9CA3AF">삭제 후 복구할 수 없습니다.</span>',
     function() {
       if (card) card.remove();

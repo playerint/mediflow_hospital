@@ -18,7 +18,7 @@ function doLogout() {
     {t:'p',ks:['site_content','site_assets','site_seo','site_preview'],
       hr:p+'hospital_site_content.html',ic:'🌐',lb:'사이트 관리',ch:[
         {k:'site_content',hr:p+'hospital_site_content.html',ic:'✏',lb:'콘텐츠 편집'},
-        {k:'site_assets', hr:p+'hospital_site_assets.html', ic:'🖼',lb:'자산 관리'},
+        {k:'site_assets', hr:p+'hospital_site_assets.html', ic:'🖼',lb:'이미지 관리'},
         {k:'site_seo',    hr:p+'hospital_seo_aeo.html',     ic:'🔍',lb:'SEO·AEO'},
         {k:'site_preview',hr:p+'hospital_site_preview.html',ic:'👁',lb:'미리보기 & 게시'},
       ]},

@@ -2,7 +2,7 @@
 const ROLE_PERMS = [
   { menu:'홈 대시보드',         admin:true,  editor:true,  viewer:true  },
   { menu:'사이트 — 콘텐츠 편집', admin:true,  editor:true,  viewer:false },
-  { menu:'사이트 — 자산 관리',   admin:true,  editor:true,  viewer:false },
+  { menu:'사이트 — 이미지 관리', admin:true,  editor:true,  viewer:false },
   { menu:'사이트 — 게시하기',    admin:true,  editor:false, viewer:false },
   { menu:'CRM 인박스 조회',      admin:true,  editor:true,  viewer:true  },
   { menu:'CRM 답변 발송',        admin:true,  editor:true,  viewer:false },
