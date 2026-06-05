@@ -29,19 +29,44 @@
 
 ---
 
-## 3. 프로젝트 구조 (모노레포)
+## 3. 프로젝트 구조
+
+### 현재 (HTML 프로토타입 단계)
 
 ```
 mediflow/
-├── CLAUDE.md                  # 이 파일 (프로젝트 최우선 규칙)
-├── core/                      # 공유 백엔드 (Spring Boot) — 한 번만 구축
+├── CLAUDE.md
+├── mediflow_hospital/          # 병원 관리자 프로토타입 (GitHub Pages)
+│   ├── html/                   # 각 화면 HTML
+│   ├── css/common.css          # 공통 스타일 (ZENO v2)
+│   ├── js/
+│   │   ├── config.js           # Gemini API 키
+│   │   ├── sidebar.js          # 사이드바 공통 렌더
+│   │   ├── mock-data-hospital.js
+│   │   └── site-data.js        # 사이트 섹션·마케팅 데이터
+│   └── CLAUDE.md
+└── mediflow_platform/          # 플랫폼(본사) 관리자 프로토타입 (GitHub Pages)
+    ├── html/
+    ├── css/common.css
+    ├── js/
+    │   ├── config.js           # Gemini API 키 + CLINIC_TYPES
+    │   ├── sidebar.js
+    │   ├── auth.js             # 세션·RBAC (super/ops/finance)
+    │   ├── hospital_list.js    # HOSPITALS 목업 배열 (+ clinicType·specialty)
+    │   └── mock-data-platform.js
+    └── CLAUDE.md
+```
+
+### 목표 (모노레포 — 미착수)
+
+```
+mediflow/
+├── core/          # Spring Boot 백엔드
 ├── apps/
-│   ├── platform-bo/           # 본사용 BO (Next.js) — 전체 병원
-│   ├── hospital-bo/           # 병원용 BO (Next.js) — 내 병원만
-│   └── patient-fo/            # 환자용 FO (Next.js) — 병원별
-├── packages/
-│   └── zeno-ui/               # 공용 디자인 컴포넌트 (BO 두 곳 공유)
-└── docs/
+│   ├── platform-bo/   # Next.js — 본사용
+│   ├── hospital-bo/   # Next.js — 병원용
+│   └── patient-fo/    # Next.js — 환자용
+└── packages/zeno-ui/  # 공용 컴포넌트
 ```
 
 ---
@@ -77,14 +102,46 @@ mediflow/
 
 ---
 
-## 6. 작업 방식
+## 6. 알아야 할 데이터 패턴
+
+### 중복 존재하는 HOSPITALS 배열 (주의)
+- `mediflow_platform/js/hospital_list.js` — 목록 화면용 (clinicType·specialty 포함)
+- `mediflow_platform/html/hospital_detail.html` — 상세·편집용 인라인 정의 (clinicType·specialty·subSpecialty 포함)
+- 두 곳을 **항상 같이 수정**해야 한다.
+
+### 진료과 유형 (CLINIC_TYPES)
+- `mediflow_platform/js/config.js` 한 곳에서만 관리
+- 새 진료과 추가 시 이 파일만 수정하면 전체 반영
+
+### 병원 편집 모드 흐름
+1. `hospital_detail.html` 편집 버튼 → `sessionStorage('MEDIFLOW_edit_hospital')` 저장
+2. `hospital_new.html?edit=ID` 로 이동
+3. sessionStorage에서 복원 (없으면 `hospital_list.js`의 HOSPITALS fallback)
+4. 복원 필드: `nameKr, nameJa, clinicType, specialty, subSpecialty, phone, email, address, website, plan, managerName, contractStart`
+
+### 온보딩 목업 분석 데이터
+- `onboarding_detail.html` 상단 `HOSPITAL_MOCK_ANALYSIS[H.id]` — id별 분석 결과 목업
+- `analyzed = curStep > 1` — 이미 진행된 병원은 분석 완료 상태로 초기화
+
+---
+
+## 7. 작업 방식
 
 - **한 번에 한 기능/한 화면만.** 크게 몰아서 만들지 않는다.
-- 기능 단위 진행 순서(권장): 백엔드 API → 그 데이터를 쓰는 화면 → 연결.
-  (단, 프론트를 가짜 데이터로 먼저 만들고 나중에 연결하는 순서도 허용 — 5번 참고)
 - 한 단계가 끝나면 **멈추고**, 어떻게 실행해 확인하는지 초보자 기준으로 알려준다.
-- 어느 폴더에서 작업 중인지 항상 명확히 한다(`core/` vs `apps/...`).
+- 어느 폴더에서 작업 중인지 항상 명확히 한다.
 - 에러가 나면 비전문가도 이해하도록 원인과 해결을 쉽게 설명한다.
+
+### Git·커밋 규칙
+- **명시적으로 요청할 때만 커밋·push한다.** 작업 후 자동 커밋 금지.
+- `mediflow_hospital`과 `mediflow_platform`은 **각자 별도 git repo**다. 항상 해당 폴더 안에서 커밋.
+- 커밋 메시지는 한국어로 작성한다.
+
+### 디자인 규칙 (ZENO v2)
+- 컬러: `--navy(#0D1B3E)`, `--teal(#0D9488)` 중심. Amber 제거.
+- `alert()` / `confirm()` 등 **네이티브 다이얼로그 사용 금지** — 커스텀 모달로 대체.
+- 아이콘은 이모지 사용 (외부 아이콘 라이브러리 추가 금지).
+- KPI 카드 컬러 라인(`border-left`, `border-top`) 사용 금지.
 
 ---
 
