@@ -8,7 +8,7 @@
 ## 1. 제품 개요
 
 - MEDIFLOW Hospital OS는 **여러 병원을 등록해 운영하는 멀티테넌트 B2B SaaS**다.
-- **테넌트 = 병원.** 본사(메디힘/이뻐)가 파트너 병원을 입점시켜 관리한다.
+- **테넌트 = 병원.** 본사(MEDIFLOW)가 파트너 병원을 입점시켜 관리한다.
 - 일본 등 외국인 환자의 의사결정·상담·전환·사후관리를 자동화하는 것이 목적이다.
 
 ### 사용자(화면)는 3종류로 나뉜다
@@ -25,7 +25,7 @@
 - **공용 디자인:** ZENO 디자인 시스템 (packages/zeno-ui 공용 컴포넌트)
 - 비밀키·비밀번호 등 시크릿은 **코드에 하드코딩 금지.** `.env`로만 관리하고 `.gitignore`에 넣는다.
 
-> 확인 필요(아래 7번 참고): JDK 버전, 빌드 도구(Gradle/Maven), AI/RAG 처리 위치는 CTO 확인 후 채운다.
+> 확인 필요(아래 8번 참고): JDK 버전, 빌드 도구(Gradle/Maven), AI/RAG 처리 위치는 CTO 확인 후 채운다.
 
 ---
 
@@ -145,10 +145,10 @@ mediflow/
 
 ---
 
-## 7. 확인 필요 (CTO/개발팀에 물어보고 채울 것)
+## 8. 확인 필요 (CTO/개발팀에 물어보고 채울 것)
 
-- [ ] JDK 버전 (예: 17 / 21)
-- [ ] 빌드 도구: Gradle vs Maven
-- [ ] 회사 표준 Spring Boot 프로젝트 구조/규칙이 따로 있는지
-- [ ] AI/RAG 처리를 **Spring Boot 안에서** 하는지, **별도 Python 서비스**로 두는지
+- [x] JDK 버전: **17**
+- [x] 빌드 도구: **Gradle**
+- [x] 백엔드 아키텍처: **Spring MVC 패턴** (Controller → Service → Repository)
+- [x] AI/RAG 처리: **별도 Python 서비스** (Spring Boot ↔ Python FastAPI REST 통신)
 - [ ] 데이터 분리 방식: 공유 DB + `hospital_id`(권장) vs 병원별 DB 분리
