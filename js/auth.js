@@ -6,11 +6,11 @@
 
 // 데모 계정
 const HOSPITAL_ACCOUNTS = [
-  { email:'admin@oleps.co.kr',   password:'admin1234',  name:'김지현', role:'admin',   hospital:'올래성형외과' },
-  { email:'staff@oleps.co.kr',   password:'staff1234',  name:'이수진', role:'staff',   hospital:'올래성형외과' },
+  { email:'admin@oleps.co.kr',   password:'admin1234',  name:'김지현', role:'admin',   hospital:'젬마의원' },
+  { email:'staff@oleps.co.kr',   password:'staff1234',  name:'이수진', role:'staff',   hospital:'젬마의원' },
 ];
 
-var DEFAULT_SESSION = { email:'admin@oleps.co.kr', name:'김지현', role:'admin', hospital:'올래성형외과' };
+var DEFAULT_SESSION = { email:'admin@oleps.co.kr', name:'김지현', role:'admin', hospital:'젬마의원' };
 
 function getSession() {
   try {

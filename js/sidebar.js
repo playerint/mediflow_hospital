@@ -39,7 +39,7 @@ function doLogout() {
   function build(active, user) {
     var name     = user ? user.name     : '김지현';
     var email    = user ? user.email    : 'oleps@hospital.co.kr';
-    var hospital = user ? user.hospital : '올래성형외과';
+    var hospital = user ? user.hospital : '젬마의원';
     var role     = user ? user.role     : 'admin';
     var roleLabel = role === 'admin' ? '관리자' : '스탭';
     var roleColor = role === 'admin' ? '#5EEAD4' : '#FCD34D';
@@ -51,7 +51,7 @@ function doLogout() {
        + '</div>';
     h += '<div class="hospital-card">'
        + '<div class="hospital-name">'+hospital+'</div>'
-       + '<div class="hospital-meta">jp.oleps.co.kr</div>'
+       + '<div class="hospital-meta">jp.gemcell.co.kr</div>'
        + '<div class="hospital-meta live-dot" style="margin-top:4px;color:#34D399">게시 중</div>'
        + '</div>';
 
@@ -96,7 +96,7 @@ function doLogout() {
     try {
       user = typeof getSession === 'function' ? getSession() : null;
     } catch(e) {}
-    if (!user) user = { email:'admin@oleps.co.kr', name:'김지현', role:'admin', hospital:'올래성형외과' };
+    if (!user) user = { email:'admin@oleps.co.kr', name:'김지현', role:'admin', hospital:'젬마의원' };
 
     var aside = document.createElement('aside');
     aside.className = 'sidebar';
